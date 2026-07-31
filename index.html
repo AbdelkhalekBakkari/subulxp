@@ -269,14 +269,13 @@
   <div class="wrap">
     <div class="sec-head">
       <div class="tag" data-fr="Tarif simple">Simple pricing</div>
-      <h2 data-fr="Un prix pour 2 mois. Dans votre monnaie locale.">One price for 2 months. Your local currency.</h2>
-      <p data-fr="Une fraction du prix d'un bootcamp — avec des infrastructures que les bootcamps n'offrent pas.">A fraction of a bootcamp — with infrastructure bootcamps don't give you.</p>
+      <h2 data-fr="Choisissez votre durée. Par personne.">Choose your duration. Per person.</h2>
+      <p data-fr="Plus la résidence est longue, plus vous construisez d'expérience — et plus le tarif mensuel baisse. Tarifs Tunisie.">The longer the residency, the more experience you build — and the lower the monthly rate. Tunisia pricing.</p>
     </div>
     <div class="prices">
-      <div class="price"><div class="flag">🇹🇳</div><div class="m" data-fr="Tunisie">Tunisia</div><div class="p">300 TND</div><div class="per" data-fr="pour 2 mois">for 2 months</div></div>
-      <div class="price"><div class="flag">🇲🇦</div><div class="m" data-fr="Maroc">Morocco</div><div class="p">299 MAD</div><div class="per" data-fr="pour 2 mois">for 2 months</div></div>
-      <div class="price"><div class="flag">🇫🇷</div><div class="m">France</div><div class="p">99 €</div><div class="per" data-fr="pour 2 mois">for 2 months</div></div>
-      <div class="price"><div class="flag">🇬🇧</div><div class="m" data-fr="Royaume-Uni">United Kingdom</div><div class="p">£89</div><div class="per" data-fr="pour 2 mois">for 2 months</div></div>
+      <div class="price"><div class="flag">🇹🇳</div><div class="m" data-fr="2 mois">2 months</div><div class="p">299 TND</div><div class="per" data-fr="par personne">per person</div></div>
+      <div class="price" style="border-color:var(--magenta);border-width:2.5px"><div class="flag">🇹🇳</div><div class="m" data-fr="4 mois · populaire">4 months · popular</div><div class="p">399 TND</div><div class="per" data-fr="par personne">per person</div></div>
+      <div class="price"><div class="flag">🇹🇳</div><div class="m" data-fr="6 mois">6 months</div><div class="p">599 TND</div><div class="per" data-fr="par personne">per person</div></div>
     </div>
     <p class="included" data-fr="SUBUL comprend : +70 certifications (AWS, Azure, Google Cloud, IBM, NVIDIA) · 500 laboratoires pratiques · 5h AWS Sandbox + 5h Azure Sandbox · quizzes (80% requis) · en partenariat avec Microsoft, Amazon &amp; NVIDIA. XP comprend : catalogue de projets réels sur environnement de production AWS &amp; Azure · un expert dédié · 2 réunions/semaine · en solo ou équipe (1 à 4) · durées 2, 4 ou 6 mois · expérience ajoutable sur LinkedIn avec avis positif de Smartovate.">SUBUL includes: 70+ certifications (AWS, Azure, Google Cloud, IBM, NVIDIA) · 500 hands-on labs · 5h AWS Sandbox + 5h Azure Sandbox · quizzes (80% to pass) · in partnership with Microsoft, Amazon &amp; NVIDIA. XP includes: catalog of real projects on live AWS &amp; Azure production environments · a dedicated expert · 2 meetings/week · solo or team (1 to 4) · 2, 4 or 6-month durations · experience you can add to LinkedIn with a positive review from Smartovate.</p>
     <div style="text-align:center;margin-top:28px">
@@ -330,13 +329,22 @@
             <label for="ff-country" data-fr="Pays *">Country *</label>
             <select id="ff-country" name="country" required>
               <option value="">—</option>
-              <option value="Tunisia">🇹🇳 Tunisia — 300 TND / 2 months</option>
-              <option value="Morocco">🇲🇦 Morocco — 299 MAD / 2 months</option>
-              <option value="France">🇫🇷 France — 99 € / 2 months</option>
-              <option value="United Kingdom">🇬🇧 UK — £89 / 2 months</option>
-              <option value="Other">🌍 Other</option>
+              <option value="Tunisia">🇹🇳 Tunisie</option>
+              <option value="Morocco">🇲🇦 Maroc</option>
+              <option value="France">🇫🇷 France</option>
+              <option value="United Kingdom">🇬🇧 UK</option>
+              <option value="Other">🌍 Autre / Other</option>
             </select>
           </div>
+        </div>
+        <div class="f-field">
+          <label for="ff-duration" data-fr="Durée souhaitée (Tunisie)">Preferred duration (Tunisia)</label>
+          <select id="ff-duration" name="duration">
+            <option value="">—</option>
+            <option value="2 months">2 mois — 299 TND / personne</option>
+            <option value="4 months">4 mois — 399 TND / personne</option>
+            <option value="6 months">6 mois — 599 TND / personne</option>
+          </select>
         </div>
         <div class="f-field">
           <label for="ff-track" data-fr="Parcours qui vous intéresse *">Track you're interested in *</label>
@@ -446,6 +454,7 @@
       email: document.getElementById('ff-email').value.trim(),
       whatsapp: document.getElementById('ff-phone').value.trim(),
       country: document.getElementById('ff-country').value,
+      duration: document.getElementById('ff-duration') ? document.getElementById('ff-duration').value : '',
       track: document.getElementById('ff-track').value,
       goal: document.getElementById('ff-msg').value.trim()
     };
@@ -457,6 +466,7 @@
       '\nEmail: ' + f.email +
       '\nWhatsApp/Phone: ' + (f.whatsapp || '-') +
       '\nCountry: ' + f.country +
+      '\nDuration: ' + (f.duration || '-') +
       '\nTrack: ' + f.track +
       '\nGoal: ' + (f.goal || '-');
   }
@@ -507,6 +517,7 @@
       email: f.email,
       whatsapp: f.whatsapp || '-',
       country: f.country,
+      duration: f.duration || '-',
       track: f.track,
       goal: f.goal || '-',
       _subject: 'Subul XP — New fit call request: ' + f.name + ' (' + f.country + ' · ' + f.track + ')',
