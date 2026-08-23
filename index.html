@@ -167,9 +167,6 @@
     background:var(--purple-dk) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 12l6 6L20 6'/%3E%3C/svg%3E") center/11px no-repeat;
   }
 
-  #autreWrap{ display:none; margin-top:12px; }
-  #autreWrap.on{ display:block; }
-
   .err{
     display:none;
     margin-top:11px;
@@ -355,26 +352,6 @@
         </div>
 
         <div class="field">
-          <label class="lab" for="specialite">Quelle est ta spécialité ?</label>
-          <select id="specialite" name="specialite" required>
-            <option value="" disabled selected>Sélectionner…</option>
-            <option>Génie logiciel / Informatique</option>
-            <option>Réseaux &amp; Télécoms</option>
-            <option>Systèmes embarqués</option>
-            <option>Data &amp; Intelligence artificielle</option>
-            <option>Cybersécurité</option>
-            <option>Génie industriel</option>
-            <option>Mathématiques / Statistiques</option>
-            <option>Gestion / Business</option>
-            <option value="Autre">Autre</option>
-          </select>
-          <div id="autreWrap">
-            <input type="text" id="autre" name="specialite_autre" placeholder="Précise ta spécialité" aria-label="Précise ta spécialité">
-          </div>
-          <p class="err" id="e-specialite">Indique ta spécialité.</p>
-        </div>
-
-        <div class="field">
           <span class="lab" id="lbl-niv">Ton niveau actuel</span>
           <div class="opts" role="radiogroup" aria-labelledby="lbl-niv">
             <input type="radio" id="n1" name="niveau" value="Débutant">
@@ -455,12 +432,6 @@ function buildMessage(d){
 const $ = id => document.getElementById(id);
 const f = $("f");
 
-$("specialite").addEventListener("change", e => {
-  const autre = e.target.value === "Autre";
-  $("autreWrap").classList.toggle("on", autre);
-  if (autre) $("autre").focus();
-});
-
 /* "A", "A et B", "A, B et C" */
 function joinFr(list){
   if (list.length <= 1) return list[0] || "";
@@ -494,10 +465,6 @@ const FIELD_CHECK = {
   statut(){
     return mark("statut", !f.querySelector("input[name=statut]:checked"));
   },
-  specialite(){
-    const spec = $("specialite").value.trim();
-    return mark("specialite", spec === "" || (spec === "Autre" && $("autre").value.trim().length < 2), $("specialite"));
-  },
   niveau(){
     return mark("niveau", !f.querySelector("input[name=niveau]:checked"));
   },
@@ -511,7 +478,7 @@ const FIELD_CHECK = {
 
 const STEP_KEYS = {
   1: ["identite", "email", "whatsapp"],
-  2: ["statut", "specialite", "niveau"],
+  2: ["statut", "niveau"],
   3: ["domaines", "rgpd"]
 };
 const KEY_STEP = {};
@@ -586,9 +553,6 @@ f.addEventListener("submit", async e => {
     email:      fd.get("email").trim(),
     whatsapp:   fd.get("whatsapp").trim(),
     statut:     fd.get("statut"),
-    specialite: fd.get("specialite") === "Autre"
-                  ? fd.get("specialite_autre").trim()
-                  : fd.get("specialite"),
     domaines:   joinFr(checkedDomaines()),
     niveau:     fd.get("niveau"),
     envoye_le:  new Date().toISOString()
@@ -632,8 +596,7 @@ f.addEventListener("submit", async e => {
 
 /* efface l'erreur dès correction */
 const MAP = { prenom:"identite", nom:"identite", email:"email", whatsapp:"whatsapp",
-              statut:"statut", specialite:"specialite", specialite_autre:"specialite",
-              domaines:"domaines", niveau:"niveau", consentement:"rgpd" };
+              statut:"statut", domaines:"domaines", niveau:"niveau", consentement:"rgpd" };
 
 function clearErr(e){
   const k = MAP[e.target.name];
