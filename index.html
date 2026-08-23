@@ -29,8 +29,6 @@
     --purple-lt: #F4EAFE;
     --magenta:   #D6006E;
     --magenta-lt:#FBE8F1;
-    --wa:        #25D366;
-    --wa-dk:     #128C7E;
   }
 
   *{ box-sizing:border-box; }
@@ -179,10 +177,6 @@
   }
   .err.on{ display:block; }
 
-  .consent{ display:flex; gap:11px; align-items:flex-start; margin-bottom:22px; }
-  .consent input{ width:17px; height:17px; margin:3px 0 0; accent-color:var(--purple); flex:none; }
-  .consent label{ font-size:13.5px; color:var(--body); }
-
   button{
     width:100%;
     padding:17px;
@@ -202,37 +196,6 @@
   button:disabled{ opacity:.55; cursor:progress; }
 
   .fine{ margin:14px 0 0; text-align:center; font-size:12.5px; color:var(--label); }
-
-  .state{ display:none; margin-top:20px; padding:19px 20px; border-radius:6px; font-size:15px; }
-  .state.on{ display:block; }
-  .state.ok{ background:var(--purple-lt); color:var(--purple-dk); }
-  .state.ko{ background:var(--magenta-lt); color:var(--magenta); }
-  .state strong{ display:block; font-weight:800; margin-bottom:6px; }
-  .state pre{
-    margin:11px 0 0; padding:12px;
-    background:#fff; border:1px solid var(--line); border-radius:4px;
-    font-family:ui-monospace,monospace; font-size:11.5px; line-height:1.6;
-    color:var(--title); overflow-x:auto; white-space:pre-wrap; word-break:break-word;
-  }
-
-  a.wa{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:10px;
-    margin-top:15px;
-    padding:16px;
-    background:var(--wa);
-    color:#fff;
-    font-weight:700;
-    font-size:16px;
-    text-decoration:none;
-    border-radius:6px;
-    transition:background .15s;
-  }
-  a.wa:hover{ background:var(--wa-dk); }
-  a.wa:focus-visible{ outline:3px solid var(--purple-dk); outline-offset:2px; }
-  a.wa svg{ width:21px; height:21px; fill:currentColor; flex:none; }
 
   /* stepper */
   .stepper{ display:flex; align-items:flex-start; margin-bottom:8px; }
@@ -393,21 +356,12 @@
           <p class="err" id="e-domaines">Choisis au moins un domaine.</p>
         </div>
 
-        <div class="consent">
-          <input type="checkbox" id="rgpd" name="consentement">
-          <label for="rgpd">J'accepte que Subul XP me recontacte par email ou WhatsApp au sujet de ma demande.</label>
-        </div>
-        <p class="err" id="e-rgpd">Ton accord est nécessaire pour te recontacter.</p>
-
         <div class="nav">
           <button type="button" class="btn-back" data-back>Retour</button>
           <button type="submit" id="go">Envoyer sur WhatsApp</button>
         </div>
         <p class="fine">Sans engagement · Réponse sous 48 h</p>
       </div>
-
-      <div class="state ok" id="ok" role="status" aria-live="polite"></div>
-      <div class="state ko" id="ko" role="alert" aria-live="assertive"></div>
 
     </form>
   </div>
@@ -469,16 +423,13 @@ const FIELD_CHECK = {
   },
   domaines(){
     return mark("domaines", checkedDomaines().length === 0);
-  },
-  rgpd(){
-    return mark("rgpd", !$("rgpd").checked);
   }
 };
 
 const STEP_KEYS = {
   1: ["identite", "email", "whatsapp"],
   2: ["statut", "niveau"],
-  3: ["domaines", "rgpd"]
+  3: ["domaines"]
 };
 const KEY_STEP = {};
 Object.entries(STEP_KEYS).forEach(([step, keys]) => keys.forEach(k => KEY_STEP[k] = Number(step)));
@@ -530,10 +481,8 @@ f.querySelectorAll("[data-back]").forEach(btn => {
   btn.addEventListener("click", () => showStep(currentStep - 1));
 });
 
-f.addEventListener("submit", async e => {
+f.addEventListener("submit", e => {
   e.preventDefault();
-  $("ok").classList.remove("on");
-  $("ko").classList.remove("on");
 
   if (!validate()){
     const first = f.querySelector(".err.on");
@@ -560,42 +509,22 @@ f.addEventListener("submit", async e => {
   const texte = buildMessage(data);
   const lien  = "https://wa.me/" + WHATSAPP + "?text=" + encodeURIComponent(texte);
 
-  /* copie JSON facultative — n'empêche jamais l'ouverture de WhatsApp */
+  /* copie JSON facultative, en tâche de fond — n'empêche jamais la redirection */
   if (ENDPOINT){
-    const btn = $("go");
-    btn.disabled = true;
-    btn.textContent = "Envoi…";
-    try{
-      await fetch(ENDPOINT, {
-        method:"POST",
-        headers:{ "Content-Type":"application/json", "Accept":"application/json" },
-        body: JSON.stringify({ ...data, message: texte })
-      });
-    }catch(err){
-      /* la copie a échoué : on continue quand même vers WhatsApp */
-    }
-    btn.disabled = false;
-    btn.textContent = "Envoyer sur WhatsApp";
+    fetch(ENDPOINT, {
+      method:"POST",
+      headers:{ "Content-Type":"application/json", "Accept":"application/json" },
+      body: JSON.stringify({ ...data, message: texte })
+    }).catch(() => {});
   }
 
-  /* panneau de confirmation avec lien de secours */
-  $("ok").innerHTML =
-    "<strong>Ton message est prêt</strong>" +
-    "WhatsApp devrait s'ouvrir avec ce message. Si rien ne se passe, utilise le bouton ci-dessous." +
-    "<pre>" + texte.replace(/</g,"&lt;") + "</pre>" +
-    '<a class="wa" href="' + lien + '" target="_blank" rel="noopener">' +
-      '<svg viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1s-.5-.1-.7.1-.8 1-1 1.2-.4.2-.7.1a8 8 0 0 1-2.4-1.5 9 9 0 0 1-1.6-2c-.2-.3 0-.5.1-.6l.5-.6.3-.5v-.5l-1-2.3c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.2 3.4 5.4 4.7.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.3zM12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3A8.2 8.2 0 1 1 12 20.2z"/></svg>' +
-      'Ouvrir WhatsApp</a>';
-  $("ok").classList.add("on");
-  $("ok").scrollIntoView({ block:"center", behavior:"smooth" });
-
-  /* tentative d'ouverture automatique */
-  window.open(lien, "_blank", "noopener");
+  /* redirection directe vers WhatsApp */
+  window.location.href = lien;
 });
 
 /* efface l'erreur dès correction */
 const MAP = { prenom:"identite", nom:"identite", email:"email", whatsapp:"whatsapp",
-              statut:"statut", domaines:"domaines", niveau:"niveau", consentement:"rgpd" };
+              statut:"statut", domaines:"domaines", niveau:"niveau" };
 
 function clearErr(e){
   const k = MAP[e.target.name];
