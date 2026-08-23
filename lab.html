@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<!--
+  SUBUL XP — Ta demande de lab
+  ---------------------------------------------------------------
+  CONFIGURATION (voir le <script> en bas) :
+    WHATSAPP  -> numéro destinataire, format international sans "+"
+    ENDPOINT  -> URL qui reçoit une copie JSON (facultatif)
+                 vide = aucune copie envoyée, WhatsApp s'ouvre quand même
+-->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Subul XP — Ta demande de lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg:        #291240;
+    --card:      #FFFFFF;
+    --title:     #1A0E2E;
+    --body:      #5C5568;
+    --label:     #6E6880;
+    --line:      #E6E1EC;
+    --purple:    #6D28D9;
+    --purple-dk: #4C1D95;
+    --purple-lt: #F4EAFE;
+    --magenta:   #D6006E;
+    --magenta-lt:#FBE8F1;
+    --wa:        #25D366;
+    --wa-dk:     #128C7E;
+  }
+
+  *{ box-sizing:border-box; }
+  html{ -webkit-text-size-adjust:100%; }
+
+  body{
+    margin:0;
+    padding:34px 18px 60px;
+    background:var(--bg);
+    font-family:"Plus Jakarta Sans",system-ui,sans-serif;
+    color:var(--title);
+    line-height:1.55;
+  }
+
+  .wrap{ max-width:560px; margin:0 auto; position:relative; }
+  .wrap::after{
+    content:"";
+    position:absolute;
+    top:26px; right:-9px; bottom:26px;
+    width:9px;
+    background:var(--magenta);
+    border-radius:0 4px 4px 0;
+  }
+  @media (max-width:600px){ .wrap::after{ right:-6px; width:6px; } }
+
+  .card{
+    position:relative;
+    z-index:1;
+    background:var(--card);
+    border-radius:6px;
+    padding:38px 34px 34px;
+  }
+  @media (max-width:600px){ .card{ padding:30px 22px 28px; } }
+
+  h1{
+    font-size:clamp(28px,7vw,36px);
+    font-weight:800;
+    letter-spacing:-.03em;
+    line-height:1.1;
+    margin:0 0 10px;
+  }
+  .sub{ margin:0; color:var(--body); font-size:15.5px; }
+
+  hr{ border:0; border-top:1px solid var(--line); margin:26px 0 28px; }
+
+  .field{ margin-bottom:26px; }
+  .lab{
+    display:block;
+    font-size:12px;
+    font-weight:600;
+    letter-spacing:.13em;
+    text-transform:uppercase;
+    color:var(--label);
+    margin-bottom:11px;
+  }
+  .hint{ text-transform:none; letter-spacing:0; font-weight:500; color:#948DA3; }
+
+  .duo{ display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+  @media (max-width:520px){ .duo{ grid-template-columns:1fr; gap:26px; } }
+
+  input[type=text],input[type=email],input[type=tel],select{
+    width:100%;
+    padding:13px 15px;
+    font-family:inherit;
+    font-size:15.5px;
+    font-weight:500;
+    color:var(--title);
+    background:#fff;
+    border:1.5px solid var(--line);
+    border-radius:6px;
+    transition:border-color .14s, box-shadow .14s;
+  }
+  input::placeholder{ color:#AFA8BC; font-weight:400; }
+
+  select{
+    appearance:none;
+    color:var(--purple);
+    font-weight:600;
+    background-image:linear-gradient(45deg,transparent 50%,var(--purple) 50%),
+                     linear-gradient(135deg,var(--purple) 50%,transparent 50%);
+    background-position:calc(100% - 20px) 22px, calc(100% - 14px) 22px;
+    background-size:6px 6px;
+    background-repeat:no-repeat;
+    padding-right:42px;
+  }
+  select:invalid{ color:#AFA8BC; font-weight:400; }
+
+  input:focus,select:focus{
+    outline:none;
+    border-color:var(--purple);
+    box-shadow:0 0 0 3px rgba(109,40,217,.14);
+  }
+  input[aria-invalid=true],select[aria-invalid=true]{ border-color:var(--magenta); }
+
+  .opts{ display:flex; flex-direction:column; gap:10px; }
+  .opts input{ position:absolute; opacity:0; width:0; height:0; }
+  .opts label{
+    display:flex;
+    align-items:center;
+    gap:13px;
+    padding:15px 18px;
+    font-size:16px;
+    font-weight:600;
+    color:var(--purple);
+    background:#fff;
+    border:1.5px solid var(--line);
+    border-radius:6px;
+    cursor:pointer;
+    transition:background .14s, border-color .14s;
+  }
+  .opts label::before{
+    content:"";
+    flex:none;
+    width:19px; height:19px;
+    border-radius:50%;
+    border:2px solid #C9C2D4;
+    transition:border-color .14s, border-width .14s, background .14s;
+  }
+  .opts label:hover{ border-color:#CDBFE4; }
+  .opts input:checked + label{
+    background:var(--purple-lt);
+    border-color:var(--purple);
+    color:var(--purple-dk);
+  }
+  .opts input:checked + label::before{ border-color:var(--purple-dk); border-width:6px; }
+  .opts input:focus-visible + label{ box-shadow:0 0 0 3px rgba(109,40,217,.25); }
+
+  /* cases à cocher (choix multiple) */
+  .opts.multi label::before{ border-radius:5px; }
+  .opts.multi input:checked + label::before{
+    border-width:2px;
+    border-color:var(--purple-dk);
+    background:var(--purple-dk) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 12l6 6L20 6'/%3E%3C/svg%3E") center/11px no-repeat;
+  }
+
+  #autreWrap{ display:none; margin-top:12px; }
+  #autreWrap.on{ display:block; }
+
+  .err{
+    display:none;
+    margin-top:11px;
+    padding:13px 16px;
+    background:var(--magenta-lt);
+    border-radius:6px;
+    color:var(--magenta);
+    font-size:15px;
+    font-weight:600;
+  }
+  .err.on{ display:block; }
+
+  .consent{ display:flex; gap:11px; align-items:flex-start; margin-bottom:22px; }
+  .consent input{ width:17px; height:17px; margin:3px 0 0; accent-color:var(--purple); flex:none; }
+  .consent label{ font-size:13.5px; color:var(--body); }
+
+  button{
+    width:100%;
+    padding:17px;
+    font-family:inherit;
+    font-size:16px;
+    font-weight:700;
+    color:#fff;
+    background:var(--purple-dk);
+    border:0;
+    border-radius:6px;
+    cursor:pointer;
+    transition:background .15s, transform .07s;
+  }
+  button:hover:not(:disabled){ background:var(--magenta); }
+  button:active:not(:disabled){ transform:translateY(1px); }
+  button:focus-visible{ outline:3px solid var(--magenta); outline-offset:2px; }
+  button:disabled{ opacity:.55; cursor:progress; }
+
+  .fine{ margin:14px 0 0; text-align:center; font-size:12.5px; color:var(--label); }
+
+  .state{ display:none; margin-top:20px; padding:19px 20px; border-radius:6px; font-size:15px; }
+  .state.on{ display:block; }
+  .state.ok{ background:var(--purple-lt); color:var(--purple-dk); }
+  .state.ko{ background:var(--magenta-lt); color:var(--magenta); }
+  .state strong{ display:block; font-weight:800; margin-bottom:6px; }
+  .state pre{
+    margin:11px 0 0; padding:12px;
+    background:#fff; border:1px solid var(--line); border-radius:4px;
+    font-family:ui-monospace,monospace; font-size:11.5px; line-height:1.6;
+    color:var(--title); overflow-x:auto; white-space:pre-wrap; word-break:break-word;
+  }
+
+  a.wa{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    margin-top:15px;
+    padding:16px;
+    background:var(--wa);
+    color:#fff;
+    font-weight:700;
+    font-size:16px;
+    text-decoration:none;
+    border-radius:6px;
+    transition:background .15s;
+  }
+  a.wa:hover{ background:var(--wa-dk); }
+  a.wa:focus-visible{ outline:3px solid var(--purple-dk); outline-offset:2px; }
+  a.wa svg{ width:21px; height:21px; fill:currentColor; flex:none; }
+
+  @media (prefers-reduced-motion:reduce){ *{ transition:none !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+
+    <h1>Ta demande de lab</h1>
+    <p class="sub">Une seule étape. Moins d'une minute.</p>
+
+    <hr>
+
+    <form id="f" novalidate>
+
+      <div class="duo">
+        <div class="field">
+          <label class="lab" for="prenom">Prénom</label>
+          <input type="text" id="prenom" name="prenom" autocomplete="given-name" placeholder="Anas">
+        </div>
+        <div class="field">
+          <label class="lab" for="nom">Nom</label>
+          <input type="text" id="nom" name="nom" autocomplete="family-name" placeholder="Baccari">
+        </div>
+      </div>
+      <p class="err" id="e-identite">Indique ton prénom et ton nom.</p>
+
+      <div class="field">
+        <label class="lab" for="email">Adresse email</label>
+        <input type="email" id="email" name="email" autocomplete="email" placeholder="anas@exemple.com">
+        <p class="err" id="e-email">Cette adresse email ne semble pas valide.</p>
+      </div>
+
+      <div class="field">
+        <label class="lab" for="whatsapp">Ton numéro WhatsApp</label>
+        <input type="tel" id="whatsapp" name="whatsapp" autocomplete="tel" placeholder="+216 00 000 000">
+        <p class="err" id="e-whatsapp">Indique un numéro WhatsApp joignable.</p>
+      </div>
+
+      <div class="field">
+        <span class="lab" id="lbl-statut">Quel est ton statut ?</span>
+        <div class="opts" role="radiogroup" aria-labelledby="lbl-statut">
+          <input type="radio" id="s1" name="statut" value="Étudiant(e)">
+          <label for="s1">Étudiant(e)</label>
+          <input type="radio" id="s2" name="statut" value="Jeune diplômé(e)">
+          <label for="s2">Jeune diplômé(e)</label>
+          <input type="radio" id="s3" name="statut" value="En poste">
+          <label for="s3">En poste</label>
+          <input type="radio" id="s4" name="statut" value="En reconversion">
+          <label for="s4">En reconversion</label>
+          <input type="radio" id="s5" name="statut" value="En recherche d'emploi">
+          <label for="s5">En recherche d'emploi</label>
+        </div>
+        <p class="err" id="e-statut">Choisis ton statut.</p>
+      </div>
+
+      <div class="field">
+        <label class="lab" for="specialite">Quelle est ta spécialité ?</label>
+        <select id="specialite" name="specialite" required>
+          <option value="" disabled selected>Sélectionner…</option>
+          <option>Génie logiciel / Informatique</option>
+          <option>Réseaux &amp; Télécoms</option>
+          <option>Systèmes embarqués</option>
+          <option>Data &amp; Intelligence artificielle</option>
+          <option>Cybersécurité</option>
+          <option>Génie industriel</option>
+          <option>Mathématiques / Statistiques</option>
+          <option>Gestion / Business</option>
+          <option value="Autre">Autre</option>
+        </select>
+        <div id="autreWrap">
+          <input type="text" id="autre" name="specialite_autre" placeholder="Précise ta spécialité" aria-label="Précise ta spécialité">
+        </div>
+        <p class="err" id="e-specialite">Indique ta spécialité.</p>
+      </div>
+
+      <div class="field">
+        <span class="lab" id="lbl-dom">Quel domaine souhaites-tu explorer ?
+          <span class="hint">— plusieurs choix possibles</span></span>
+        <div class="opts multi" role="group" aria-labelledby="lbl-dom">
+          <input type="checkbox" id="d1" name="domaines" value="DevOps">
+          <label for="d1">DevOps</label>
+          <input type="checkbox" id="d2" name="domaines" value="AI &amp; Agents">
+          <label for="d2">AI &amp; Agents</label>
+          <input type="checkbox" id="d3" name="domaines" value="Cybersecurity">
+          <label for="d3">Cybersecurity</label>
+          <input type="checkbox" id="d4" name="domaines" value="Data Analysis">
+          <label for="d4">Data Analysis</label>
+          <input type="checkbox" id="d5" name="domaines" value="Full Stack">
+          <label for="d5">Full Stack</label>
+          <input type="checkbox" id="d6" name="domaines" value="Cloud">
+          <label for="d6">Cloud</label>
+        </div>
+        <p class="err" id="e-domaines">Choisis au moins un domaine.</p>
+      </div>
+
+      <div class="field">
+        <span class="lab" id="lbl-niv">Ton niveau actuel</span>
+        <div class="opts" role="radiogroup" aria-labelledby="lbl-niv">
+          <input type="radio" id="n1" name="niveau" value="Débutant">
+          <label for="n1">Débutant</label>
+          <input type="radio" id="n2" name="niveau" value="Intermédiaire">
+          <label for="n2">Intermédiaire</label>
+          <input type="radio" id="n3" name="niveau" value="Avancé">
+          <label for="n3">Avancé</label>
+        </div>
+        <p class="err" id="e-niveau">Choisis ton niveau actuel.</p>
+      </div>
+
+      <div class="consent">
+        <input type="checkbox" id="rgpd" name="consentement">
+        <label for="rgpd">J'accepte que Subul XP me recontacte par email ou WhatsApp au sujet de ma demande.</label>
+      </div>
+      <p class="err" id="e-rgpd">Ton accord est nécessaire pour te recontacter.</p>
+
+      <button type="submit" id="go">Envoyer sur WhatsApp</button>
+      <p class="fine">Sans engagement · Réponse sous 48 h</p>
+
+      <div class="state ok" id="ok" role="status" aria-live="polite"></div>
+      <div class="state ko" id="ko" role="alert" aria-live="assertive"></div>
+
+    </form>
+  </div>
+</div>
+
+<script>
+/* ==========================================================
+   CONFIGURATION
+   ========================================================== */
+const WHATSAPP = "32492493852";   // format international, sans "+"
+const ENDPOINT = "";              // copie JSON (facultatif)
+
+/* Le message pré-rempli. Modifie librement ce texte. */
+function buildMessage(d){
+  return "Bonjour Subul XP ! Je m'appelle " + d.prenom + " " + d.nom + ". " +
+         "Je suis " + d.statut + " par la résidence " + d.domaines + ". " +
+         "Mon niveau est " + d.niveau + ". " +
+         "Je souhaite organiser mon premier lab gratuit.";
+}
+
+const $ = id => document.getElementById(id);
+const f = $("f");
+
+$("specialite").addEventListener("change", e => {
+  const autre = e.target.value === "Autre";
+  $("autreWrap").classList.toggle("on", autre);
+  if (autre) $("autre").focus();
+});
+
+/* "A", "A et B", "A, B et C" */
+function joinFr(list){
+  if (list.length <= 1) return list[0] || "";
+  return list.slice(0,-1).join(", ") + " et " + list[list.length-1];
+}
+
+function mark(key, bad, el){
+  $("e-" + key).classList.toggle("on", bad);
+  if (el) el.setAttribute("aria-invalid", bad ? "true" : "false");
+  return !bad;
+}
+
+function checkedDomaines(){
+  return [...f.querySelectorAll("input[name=domaines]:checked")].map(i => i.value);
+}
+
+function validate(){
+  const v = id => $(id).value.trim();
+  let ok = true;
+
+  const badNom = v("prenom").length < 2 || v("nom").length < 2;
+  $("prenom").setAttribute("aria-invalid", v("prenom").length < 2);
+  $("nom").setAttribute("aria-invalid", v("nom").length < 2);
+  ok = mark("identite", badNom) && ok;
+
+  ok = mark("email", !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v("email")), $("email")) && ok;
+  ok = mark("whatsapp", v("whatsapp").replace(/\D/g,"").length < 8, $("whatsapp")) && ok;
+  ok = mark("statut", !f.querySelector("input[name=statut]:checked")) && ok;
+
+  const spec = v("specialite");
+  ok = mark("specialite", spec === "" || (spec === "Autre" && v("autre").length < 2), $("specialite")) && ok;
+
+  ok = mark("domaines", checkedDomaines().length === 0) && ok;
+  ok = mark("niveau", !f.querySelector("input[name=niveau]:checked")) && ok;
+  ok = mark("rgpd", !$("rgpd").checked) && ok;
+
+  return ok;
+}
+
+f.addEventListener("submit", async e => {
+  e.preventDefault();
+  $("ok").classList.remove("on");
+  $("ko").classList.remove("on");
+
+  if (!validate()){
+    const first = f.querySelector(".err.on");
+    if (first) first.scrollIntoView({ block:"center", behavior:"smooth" });
+    return;
+  }
+
+  const fd = new FormData(f);
+  const data = {
+    prenom:     fd.get("prenom").trim(),
+    nom:        fd.get("nom").trim(),
+    email:      fd.get("email").trim(),
+    whatsapp:   fd.get("whatsapp").trim(),
+    statut:     fd.get("statut"),
+    specialite: fd.get("specialite") === "Autre"
+                  ? fd.get("specialite_autre").trim()
+                  : fd.get("specialite"),
+    domaines:   joinFr(checkedDomaines()),
+    niveau:     fd.get("niveau"),
+    envoye_le:  new Date().toISOString()
+  };
+
+  const texte = buildMessage(data);
+  const lien  = "https://wa.me/" + WHATSAPP + "?text=" + encodeURIComponent(texte);
+
+  /* copie JSON facultative — n'empêche jamais l'ouverture de WhatsApp */
+  if (ENDPOINT){
+    const btn = $("go");
+    btn.disabled = true;
+    btn.textContent = "Envoi…";
+    try{
+      await fetch(ENDPOINT, {
+        method:"POST",
+        headers:{ "Content-Type":"application/json", "Accept":"application/json" },
+        body: JSON.stringify({ ...data, message: texte })
+      });
+    }catch(err){
+      /* la copie a échoué : on continue quand même vers WhatsApp */
+    }
+    btn.disabled = false;
+    btn.textContent = "Envoyer sur WhatsApp";
+  }
+
+  /* panneau de confirmation avec lien de secours */
+  $("ok").innerHTML =
+    "<strong>Ton message est prêt</strong>" +
+    "WhatsApp devrait s'ouvrir avec ce message. Si rien ne se passe, utilise le bouton ci-dessous." +
+    "<pre>" + texte.replace(/</g,"&lt;") + "</pre>" +
+    '<a class="wa" href="' + lien + '" target="_blank" rel="noopener">' +
+      '<svg viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1s-.5-.1-.7.1-.8 1-1 1.2-.4.2-.7.1a8 8 0 0 1-2.4-1.5 9 9 0 0 1-1.6-2c-.2-.3 0-.5.1-.6l.5-.6.3-.5v-.5l-1-2.3c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.2 3.4 5.4 4.7.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.3zM12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3A8.2 8.2 0 1 1 12 20.2z"/></svg>' +
+      'Ouvrir WhatsApp</a>';
+  $("ok").classList.add("on");
+  $("ok").scrollIntoView({ block:"center", behavior:"smooth" });
+
+  /* tentative d'ouverture automatique */
+  window.open(lien, "_blank", "noopener");
+});
+
+/* efface l'erreur dès correction */
+const MAP = { prenom:"identite", nom:"identite", email:"email", whatsapp:"whatsapp",
+              statut:"statut", specialite:"specialite", specialite_autre:"specialite",
+              domaines:"domaines", niveau:"niveau", consentement:"rgpd" };
+
+function clearErr(e){
+  const k = MAP[e.target.name];
+  if (k) $("e-" + k).classList.remove("on");
+  if (e.target.hasAttribute("aria-invalid")) e.target.setAttribute("aria-invalid","false");
+}
+f.addEventListener("input", clearErr);
+f.addEventListener("change", clearErr);
+</script>
+</body>
+</html>
