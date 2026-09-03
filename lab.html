@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<!--
+  SUBUL XP — Ta demande de lab
+  ---------------------------------------------------------------
+  CONFIGURATION (voir le <script> en bas) :
+    WHATSAPP  -> numéro destinataire, format international sans "+"
+    ENDPOINT  -> URL qui reçoit une copie JSON (facultatif)
+                 vide = aucune copie envoyée, WhatsApp s'ouvre quand même
+-->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Subul XP — Ta demande de lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg:        #291240;
+    --card:      #FFFFFF;
+    --title:     #1A0E2E;
+    --body:      #5C5568;
+    --label:     #6E6880;
+    --line:      #E6E1EC;
+    --purple:    #6D28D9;
+    --purple-dk: #4C1D95;
+    --purple-lt: #F4EAFE;
+    --magenta:   #D6006E;
+    --magenta-lt:#FBE8F1;
+  }
+
+  *{ box-sizing:border-box; }
+  html{ -webkit-text-size-adjust:100%; }
+
+  body{
+    margin:0;
+    padding:34px 18px 60px;
+    background:var(--bg);
+    font-family:"Plus Jakarta Sans",system-ui,sans-serif;
+    color:var(--title);
+    line-height:1.55;
+  }
+
+  .wrap{ max-width:560px; margin:0 auto; position:relative; }
+  .wrap::after{
+    content:"";
+    position:absolute;
+    top:26px; right:-9px; bottom:26px;
+    width:9px;
+    background:var(--magenta);
+    border-radius:0 4px 4px 0;
+  }
+  @media (max-width:600px){ .wrap::after{ right:-6px; width:6px; } }
+
+  .card{
+    position:relative;
+    z-index:1;
+    background:var(--card);
+    border-radius:6px;
+    padding:38px 34px 34px;
+  }
+  @media (max-width:600px){ .card{ padding:30px 22px 28px; } }
+
+  h1{
+    font-size:clamp(28px,7vw,36px);
+    font-weight:800;
+    letter-spacing:-.03em;
+    line-height:1.1;
+    margin:0 0 10px;
+    color:var(--magenta);
+  }
+  .sub{ margin:0; color:var(--body); font-size:15.5px; }
+
+  hr{ border:0; border-top:1px solid var(--line); margin:26px 0 28px; }
+
+  .field{ margin-bottom:26px; }
+  .lab{
+    display:block;
+    font-size:12px;
+    font-weight:600;
+    letter-spacing:.13em;
+    text-transform:uppercase;
+    color:var(--label);
+    margin-bottom:11px;
+  }
+  .hint{ text-transform:none; letter-spacing:0; font-weight:500; color:#948DA3; }
+
+  .duo{ display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+  @media (max-width:520px){ .duo{ grid-template-columns:1fr; gap:26px; } }
+
+  input[type=text],input[type=email],input[type=tel],select{
+    width:100%;
+    padding:13px 15px;
+    font-family:inherit;
+    font-size:15.5px;
+    font-weight:500;
+    color:var(--title);
+    background:#fff;
+    border:1.5px solid var(--line);
+    border-radius:6px;
+    transition:border-color .14s, box-shadow .14s;
+  }
+  input::placeholder{ color:#AFA8BC; font-weight:400; }
+
+  select{
+    appearance:none;
+    color:var(--purple);
+    font-weight:600;
+    background-image:linear-gradient(45deg,transparent 50%,var(--purple) 50%),
+                     linear-gradient(135deg,var(--purple) 50%,transparent 50%);
+    background-position:calc(100% - 20px) 22px, calc(100% - 14px) 22px;
+    background-size:6px 6px;
+    background-repeat:no-repeat;
+    padding-right:42px;
+  }
+  select:invalid{ color:#AFA8BC; font-weight:400; }
+
+  input:focus,select:focus{
+    outline:none;
+    border-color:var(--purple);
+    box-shadow:0 0 0 3px rgba(109,40,217,.14);
+  }
+  input[aria-invalid=true],select[aria-invalid=true]{ border-color:var(--magenta); }
+
+  .opts{ display:flex; flex-direction:column; gap:10px; }
+  .opts input{ position:absolute; opacity:0; width:0; height:0; }
+  .opts label{
+    display:flex;
+    align-items:center;
+    gap:13px;
+    padding:15px 18px;
+    font-size:16px;
+    font-weight:600;
+    color:var(--purple);
+    background:#fff;
+    border:1.5px solid var(--line);
+    border-radius:6px;
+    cursor:pointer;
+    transition:background .14s, border-color .14s;
+  }
+  .opts label::before{
+    content:"";
+    flex:none;
+    width:19px; height:19px;
+    border-radius:50%;
+    border:2px solid #C9C2D4;
+    transition:border-color .14s, border-width .14s, background .14s;
+  }
+  .opts label:hover{ border-color:#CDBFE4; }
+  .opts input:checked + label{
+    background:var(--purple-lt);
+    border-color:var(--purple);
+    color:var(--purple-dk);
+  }
+  .opts input:checked + label::before{ border-color:var(--purple-dk); border-width:6px; }
+  .opts input:focus-visible + label{ box-shadow:0 0 0 3px rgba(109,40,217,.25); }
+
+  /* cases à cocher (choix multiple) */
+  .opts.multi label::before{ border-radius:5px; }
+  .opts.multi input:checked + label::before{
+    border-width:2px;
+    border-color:var(--purple-dk);
+    background:var(--purple-dk) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 12l6 6L20 6'/%3E%3C/svg%3E") center/11px no-repeat;
+  }
+
+  .err{
+    display:none;
+    margin-top:11px;
+    padding:13px 16px;
+    background:var(--magenta-lt);
+    border-radius:6px;
+    color:var(--magenta);
+    font-size:15px;
+    font-weight:600;
+  }
+  .err.on{ display:block; }
+
+  button{
+    width:100%;
+    padding:17px;
+    font-family:inherit;
+    font-size:16px;
+    font-weight:700;
+    color:#fff;
+    background:var(--purple-dk);
+    border:0;
+    border-radius:6px;
+    cursor:pointer;
+    transition:background .15s, transform .07s;
+  }
+  button:hover:not(:disabled){ background:var(--magenta); }
+  button:active:not(:disabled){ transform:translateY(1px); }
+  button:focus-visible{ outline:3px solid var(--magenta); outline-offset:2px; }
+  button:disabled{ opacity:.55; cursor:progress; }
+
+  .fine{ margin:14px 0 0; text-align:center; font-size:12.5px; color:var(--label); }
+
+  /* stepper */
+  .stepper{ display:flex; align-items:flex-start; margin-bottom:8px; }
+  .step-dot{ display:flex; flex-direction:column; align-items:center; gap:6px; flex:none; }
+  .step-dot .dot-num{
+    width:30px; height:30px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-size:13px; font-weight:800; color:#AFA8BC;
+    background:#F4F1F8; border:2px solid var(--line);
+    transition:background .18s, border-color .18s, color .18s;
+  }
+  .step-dot .dot-label{
+    font-size:10.5px; font-weight:700; color:var(--label);
+    text-transform:uppercase; letter-spacing:.06em; white-space:nowrap;
+  }
+  .step-dot.active .dot-num{ background:var(--purple-dk); border-color:var(--purple-dk); color:#fff; }
+  .step-dot.active .dot-label{ color:var(--purple-dk); }
+  .step-dot.done .dot-num{ background:var(--magenta); border-color:var(--magenta); color:#fff; }
+  .step-dot.done .dot-label{ color:var(--magenta); }
+  .step-line{ flex:1; height:2px; background:var(--line); margin:14px 6px 0; transition:background .18s; }
+  .step-line.done{ background:var(--magenta); }
+  @media (max-width:480px){ .step-dot .dot-label{ display:none; } }
+
+  .step{ display:none; }
+  .step.active{ display:block; }
+  .step-title{ font-size:19px; font-weight:800; margin:0 0 4px; letter-spacing:-.01em; }
+  .step-sub{ margin:0 0 24px; color:var(--body); font-size:14px; }
+
+  .nav{ display:flex; gap:12px; margin-top:4px; }
+  .nav button{ width:auto; flex:1; }
+  .btn-back{
+    background:#fff; color:var(--purple-dk);
+    border:1.5px solid var(--line);
+  }
+  .btn-back:hover:not(:disabled){ background:var(--purple-lt); border-color:var(--purple); color:var(--purple-dk); }
+
+  @media (prefers-reduced-motion:reduce){ *{ transition:none !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+
+    <a href="index.html" style="display:inline-block;margin-bottom:18px;font-size:13px;font-weight:700;color:var(--purple-dk);text-decoration:none;">&larr; Dev4Caustaza / SUBUL XP</a>
+
+    <h1>Formulaire</h1>
+
+    <hr>
+
+    <div class="stepper" aria-hidden="true">
+      <div class="step-dot active" data-dot="1">
+        <span class="dot-num">1</span><span class="dot-label">Tes infos</span>
+      </div>
+      <div class="step-line" data-line="1"></div>
+      <div class="step-dot" data-dot="2">
+        <span class="dot-num">2</span><span class="dot-label">Ton profil</span>
+      </div>
+      <div class="step-line" data-line="2"></div>
+      <div class="step-dot" data-dot="3">
+        <span class="dot-num">3</span><span class="dot-label">Ton projet</span>
+      </div>
+    </div>
+
+    <form id="f" novalidate>
+
+      <div class="step active" data-step="1">
+        <p class="step-title">Étape 1 sur 3 — Tes informations</p>
+        <p class="step-sub">Comment on te contacte.</p>
+
+        <div class="duo">
+          <div class="field">
+            <label class="lab" for="prenom">Prénom</label>
+            <input type="text" id="prenom" name="prenom" autocomplete="given-name" placeholder="Sara">
+          </div>
+          <div class="field">
+            <label class="lab" for="nom">Nom</label>
+            <input type="text" id="nom" name="nom" autocomplete="family-name" placeholder="Amri">
+          </div>
+        </div>
+        <p class="err" id="e-identite">Indique ton prénom et ton nom.</p>
+
+        <div class="field">
+          <label class="lab" for="email">Adresse email</label>
+          <input type="email" id="email" name="email" autocomplete="email" placeholder="sara.amri@exemple.com">
+          <p class="err" id="e-email">Cette adresse email ne semble pas valide.</p>
+        </div>
+
+        <div class="field">
+          <label class="lab" for="whatsapp">Ton numéro WhatsApp</label>
+          <input type="tel" id="whatsapp" name="whatsapp" autocomplete="tel" placeholder="+216 ** *** ***">
+          <p class="err" id="e-whatsapp">Indique un numéro WhatsApp joignable.</p>
+        </div>
+
+        <div class="nav">
+          <button type="button" class="btn-next" data-next>Suivant</button>
+        </div>
+      </div>
+
+      <div class="step" data-step="2">
+        <p class="step-title">Étape 2 sur 3 — Ton profil</p>
+        <p class="step-sub">Pour adapter le lab à ton niveau.</p>
+
+        <div class="field">
+          <span class="lab" id="lbl-statut">Quel est ton statut ?</span>
+          <div class="opts" role="radiogroup" aria-labelledby="lbl-statut">
+            <input type="radio" id="s1" name="statut" value="Étudiant(e)">
+            <label for="s1">Étudiant(e)</label>
+            <input type="radio" id="s2" name="statut" value="Jeune diplômé(e)">
+            <label for="s2">Jeune diplômé(e)</label>
+            <input type="radio" id="s3" name="statut" value="En poste">
+            <label for="s3">En poste</label>
+            <input type="radio" id="s4" name="statut" value="En reconversion">
+            <label for="s4">En reconversion</label>
+            <input type="radio" id="s5" name="statut" value="En recherche d'emploi">
+            <label for="s5">En recherche d'emploi</label>
+          </div>
+          <p class="err" id="e-statut">Choisis ton statut.</p>
+        </div>
+
+        <div class="field">
+          <span class="lab" id="lbl-niv">Ton niveau actuel</span>
+          <div class="opts" role="radiogroup" aria-labelledby="lbl-niv">
+            <input type="radio" id="n1" name="niveau" value="Débutant">
+            <label for="n1">Débutant</label>
+            <input type="radio" id="n2" name="niveau" value="Intermédiaire">
+            <label for="n2">Intermédiaire</label>
+            <input type="radio" id="n3" name="niveau" value="Avancé">
+            <label for="n3">Avancé</label>
+          </div>
+          <p class="err" id="e-niveau">Choisis ton niveau actuel.</p>
+        </div>
+
+        <div class="nav">
+          <button type="button" class="btn-back" data-back>Retour</button>
+          <button type="button" class="btn-next" data-next>Suivant</button>
+        </div>
+      </div>
+
+      <div class="step" data-step="3">
+        <p class="step-title">Étape 3 sur 3 — Ton projet</p>
+        <p class="step-sub">Dernière étape avant l'envoi.</p>
+
+        <div class="field">
+          <span class="lab" id="lbl-dom">Quel domaine souhaites-tu explorer ?
+            <span class="hint">— plusieurs choix possibles</span></span>
+          <div class="opts multi" role="group" aria-labelledby="lbl-dom">
+            <input type="checkbox" id="d1" name="domaines" value="DevOps">
+            <label for="d1">DevOps</label>
+            <input type="checkbox" id="d2" name="domaines" value="AI &amp; Agents">
+            <label for="d2">AI &amp; Agents</label>
+            <input type="checkbox" id="d3" name="domaines" value="Cybersecurity">
+            <label for="d3">Cybersecurity</label>
+            <input type="checkbox" id="d4" name="domaines" value="Data Analysis">
+            <label for="d4">Data Analysis</label>
+            <input type="checkbox" id="d5" name="domaines" value="Full Stack">
+            <label for="d5">Full Stack</label>
+            <input type="checkbox" id="d6" name="domaines" value="Cloud">
+            <label for="d6">Cloud</label>
+          </div>
+          <p class="err" id="e-domaines">Choisis au moins un domaine.</p>
+        </div>
+
+        <div class="nav">
+          <button type="button" class="btn-back" data-back>Retour</button>
+          <button type="submit" id="go">Envoyer sur WhatsApp</button>
+        </div>
+        <p class="fine">Sans engagement · Réponse sous 48 h</p>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+<script>
+/* ==========================================================
+   CONFIGURATION
+   ========================================================== */
+const WHATSAPP = "32492493852";   // format international, sans "+"
+const ENDPOINT = "";              // copie JSON (facultatif)
+
+/* Le message pré-rempli. Modifie librement ce texte. */
+function buildMessage(d){
+  return "Bonjour Subul XP ! Je m'appelle " + d.prenom + " " + d.nom + ". " +
+         "Je suis " + d.statut + " par la résidence " + d.domaines + ". " +
+         "Mon niveau est " + d.niveau + ". " +
+         "Je souhaite organiser mon premier lab gratuit.";
+}
+
+const $ = id => document.getElementById(id);
+const f = $("f");
+
+/* "A", "A et B", "A, B et C" */
+function joinFr(list){
+  if (list.length <= 1) return list[0] || "";
+  return list.slice(0,-1).join(", ") + " et " + list[list.length-1];
+}
+
+function mark(key, bad, el){
+  $("e-" + key).classList.toggle("on", bad);
+  if (el) el.setAttribute("aria-invalid", bad ? "true" : "false");
+  return !bad;
+}
+
+function checkedDomaines(){
+  return [...f.querySelectorAll("input[name=domaines]:checked")].map(i => i.value);
+}
+
+const FIELD_CHECK = {
+  identite(){
+    const v = id => $(id).value.trim();
+    const bad = v("prenom").length < 2 || v("nom").length < 2;
+    $("prenom").setAttribute("aria-invalid", v("prenom").length < 2);
+    $("nom").setAttribute("aria-invalid", v("nom").length < 2);
+    return mark("identite", bad);
+  },
+  email(){
+    return mark("email", !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test($("email").value.trim()), $("email"));
+  },
+  whatsapp(){
+    return mark("whatsapp", $("whatsapp").value.trim().replace(/\D/g,"").length < 8, $("whatsapp"));
+  },
+  statut(){
+    return mark("statut", !f.querySelector("input[name=statut]:checked"));
+  },
+  niveau(){
+    return mark("niveau", !f.querySelector("input[name=niveau]:checked"));
+  },
+  domaines(){
+    return mark("domaines", checkedDomaines().length === 0);
+  }
+};
+
+const STEP_KEYS = {
+  1: ["identite", "email", "whatsapp"],
+  2: ["statut", "niveau"],
+  3: ["domaines"]
+};
+const KEY_STEP = {};
+Object.entries(STEP_KEYS).forEach(([step, keys]) => keys.forEach(k => KEY_STEP[k] = Number(step)));
+
+function validateStep(n){
+  let ok = true;
+  STEP_KEYS[n].forEach(k => { ok = FIELD_CHECK[k]() && ok; });
+  return ok;
+}
+
+function validate(){
+  let ok = true;
+  [1, 2, 3].forEach(n => { ok = validateStep(n) && ok; });
+  return ok;
+}
+
+/* ==========================================================
+   NAVIGATION ENTRE ÉTAPES
+   ========================================================== */
+let currentStep = 1;
+
+function showStep(n){
+  currentStep = n;
+  f.querySelectorAll(".step").forEach(el => {
+    el.classList.toggle("active", Number(el.dataset.step) === n);
+  });
+  f.parentElement.querySelectorAll(".step-dot").forEach(el => {
+    const s = Number(el.dataset.dot);
+    el.classList.toggle("active", s === n);
+    el.classList.toggle("done", s < n);
+  });
+  f.parentElement.querySelectorAll(".step-line").forEach(el => {
+    el.classList.toggle("done", Number(el.dataset.line) < n);
+  });
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+f.querySelectorAll("[data-next]").forEach(btn => {
+  btn.addEventListener("click", () => {
+    if (!validateStep(currentStep)){
+      const first = f.querySelector(".step.active .err.on");
+      if (first) first.scrollIntoView({ block:"center", behavior:"smooth" });
+      return;
+    }
+    showStep(currentStep + 1);
+  });
+});
+f.querySelectorAll("[data-back]").forEach(btn => {
+  btn.addEventListener("click", () => showStep(currentStep - 1));
+});
+
+f.addEventListener("submit", e => {
+  e.preventDefault();
+
+  if (!validate()){
+    const first = f.querySelector(".err.on");
+    if (first){
+      const key = first.id.replace("e-", "");
+      showStep(KEY_STEP[key] || currentStep);
+      first.scrollIntoView({ block:"center", behavior:"smooth" });
+    }
+    return;
+  }
+
+  const fd = new FormData(f);
+  const data = {
+    prenom:     fd.get("prenom").trim(),
+    nom:        fd.get("nom").trim(),
+    email:      fd.get("email").trim(),
+    whatsapp:   fd.get("whatsapp").trim(),
+    statut:     fd.get("statut"),
+    domaines:   joinFr(checkedDomaines()),
+    niveau:     fd.get("niveau"),
+    envoye_le:  new Date().toISOString()
+  };
+
+  const texte = buildMessage(data);
+  const lien  = "https://wa.me/" + WHATSAPP + "?text=" + encodeURIComponent(texte);
+
+  /* copie JSON facultative, en tâche de fond — n'empêche jamais la redirection */
+  if (ENDPOINT){
+    fetch(ENDPOINT, {
+      method:"POST",
+      headers:{ "Content-Type":"application/json", "Accept":"application/json" },
+      body: JSON.stringify({ ...data, message: texte })
+    }).catch(() => {});
+  }
+
+  /* redirection directe vers WhatsApp */
+  window.location.href = lien;
+});
+
+/* efface l'erreur dès correction */
+const MAP = { prenom:"identite", nom:"identite", email:"email", whatsapp:"whatsapp",
+              statut:"statut", domaines:"domaines", niveau:"niveau" };
+
+function clearErr(e){
+  const k = MAP[e.target.name];
+  if (k) $("e-" + k).classList.remove("on");
+  if (e.target.hasAttribute("aria-invalid")) e.target.setAttribute("aria-invalid","false");
+}
+f.addEventListener("input", clearErr);
+f.addEventListener("change", clearErr);
+</script>
+</body>
+</html>
