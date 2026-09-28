@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>SUBUL XP</title>
+    <!-- Vendored runtimes: nothing loads from the network at render time. -->
+    <script src="vendor/gsap.min.js"></script>
+    <script src="kit/film.js"></script>
+    <script src="kit/motion.js"></script>
+    <script src="kit/words.js"></script>
+    <script src="kit/draw.js"></script>
+    <script src="kit/fx.js"></script>
+    <script src="kit/three.js"></script>
+    <script src="kit/debug.js"></script>
+    <script src="cues.js"></script>
+    <style>
+      /* The brand's fonts, from local files (BRAND.md "Type"). Plus Jakarta Sans is a variable font: one face. */
+      @font-face { font-family: "Plus Jakarta Sans"; src: url("assets/fonts/PlusJakartaSans-800.woff2") format("woff2"); font-weight: 200 800; font-display: block; }
+      @font-face { font-family: "Space Mono"; src: url("assets/fonts/SpaceMono-400.woff2") format("woff2"); font-weight: 400; font-display: block; }
+      @font-face { font-family: "Space Mono"; src: url("assets/fonts/SpaceMono-700.woff2") format("woff2"); font-weight: 700; font-display: block; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: #1A1350; }
+      #root { position: relative; width: 100%; height: 100%; overflow: hidden; background: #1A1350; color: #FFFFFF; font-family: "Plus Jakarta Sans", system-ui, sans-serif; }
+      .full { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; overflow: hidden; }
+      /* Headlines: the carousel's sentence case, tight leading, Plus Jakarta Sans 800. */
+      .head { position: absolute; left: 90px; font-weight: 800; line-height: 1; letter-spacing: -0.03em; white-space: nowrap; visibility: hidden; transform-origin: 0% 60%; }
+      .grad { background: linear-gradient(90deg, #DB1E8D 0%, #F0409E 40%, #CA7AF9 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+      .grad2 { background: linear-gradient(90deg, #DB1E8D 0%, #751D86 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+      .hide { visibility: hidden; }
+      /* Feature pill (slide 6): white, 28 px radius, lilac border, pink dot. */
+      .pill { position: absolute; left: 90px; width: 870px; padding: 26px 40px 26px 84px; background: #FFFFFF; border: 1px solid #EAE4F0; border-radius: 28px; color: #1A0E2E; font-size: 40px; font-weight: 700; line-height: 1.2; visibility: hidden; transform-origin: 50% 50%; }
+      .pill::before { content: ""; position: absolute; left: 40px; top: 50%; width: 18px; height: 18px; margin-top: -9px; border-radius: 50%; background: #E11D8C; }
+      /* Price card (slide 7). */
+      .card { position: absolute; left: 90px; width: 870px; height: 250px; padding: 44px 46px; background: #FFFFFF; border-radius: 28px; color: #6C6880; font-size: 40px; font-weight: 600; line-height: 1.15; visibility: hidden; transform-origin: 50% 50%; }
+      .card .price { display: block; margin-top: 16px; color: #D6006E; font-size: 116px; font-weight: 800; letter-spacing: -0.03em; line-height: 1; }
+      /* Outcome rows (slides 3 to 5): a pink mono number, then the line in ink. */
+      .row { position: absolute; left: 90px; width: 870px; visibility: hidden; transform-origin: 0% 50%; }
+      .row .num { display: block; font-family: "Space Mono", monospace; font-weight: 700; font-size: 84px; line-height: 1; color: #FD51AF; letter-spacing: -0.02em; }
+      .row .txt { display: block; margin-top: 10px; font-size: 64px; font-weight: 800; line-height: 1.05; letter-spacing: -0.03em; color: #1A0E2E; }
+      .mono { font-family: "Space Mono", monospace; }
+      #topbar { position: absolute; left: 0; top: 0; width: 1080px; height: 8px; background: linear-gradient(90deg, #D31B89, #AA1780, #721D85); }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="20.5714" data-width="1080" data-height="1920">
+      <!--
+        Layers, bottom to top: the 3D canvas (shaken) > words, pills and cards
+        (DOM, crisp, measurable) > the flood layer for chapter cuts > vignette,
+        grain > the HUD and the brand's top gradient bar.
+      -->
+      <canvas id="three" data-layout-allow-overflow width="1080" height="1920" class="full"></canvas>
+
+      <div id="words" class="full">
+        <!-- 01 Hook -->
+        <div id="w1a" class="head" style="top:520px;font-size:112px;color:#FFFFFF">Fais de ton PFE</div>
+        <div id="w1b" class="head" style="top:660px;font-size:150px;color:#FFFFFF">ton premier</div>
+        <div id="w1c" class="head grad" style="top:830px;font-size:150px">emploi.</div>
+        <!-- 02 SUBUL XP -->
+        <div id="w2a" class="head" style="top:470px;font-size:64px;color:#1A0E2E;letter-spacing:-0.01em">Pendant ton PFE avec</div>
+        <div id="w2b" class="head grad2" style="top:560px;font-size:210px">SUBUL XP</div>
+        <!-- 03 Encadrement -->
+        <div id="w3a" class="head" style="top:440px;font-size:150px;color:#FFFFFF">Un expert</div>
+        <div id="w3b" class="head" style="top:610px;font-size:110px;color:#FD51AF">chaque semaine</div>
+        <div id="p1" class="pill" style="top:860px">Jira Premium et un Project Manager</div>
+        <div id="p2" class="pill" style="top:990px">Un Product Owner</div>
+        <div id="p3" class="pill" style="top:1120px">Formation certifiée par SUBUL selon ton sujet</div>
+        <div id="p4" class="pill" style="top:1298px">Formation soft skills</div>
+        <!-- 04 Résultats -->
+        <div id="r1" class="row" style="top:300px"><span class="num">01</span><span class="txt">CV, LinkedIn<br>et portfolio</span></div>
+        <div id="r2" class="row" style="top:590px"><span class="num">02</span><span class="txt">Entretiens RH<br>et techniques</span></div>
+        <div id="r3" class="row" style="top:880px"><span class="num">03</span><span class="txt">Visibilité auprès<br>des entreprises</span></div>
+        <!-- 05 Formats -->
+        <div id="c1" class="card" style="top:500px">Ingénieur &amp; Master · 6 mois<span class="price">600 TND</span></div>
+        <div id="c2" class="card" style="top:800px">Licence · 4 mois<span class="price">400 TND</span></div>
+        <div id="c3" class="pill" style="top:1130px;width:auto;padding-right:44px">Sans engagement · Réponse sous 48 h</div>
+        <!-- 06 Lockup -->
+        <div id="l1" class="head grad" style="top:560px;left:0;width:1080px;text-align:center;font-size:210px;transform-origin:50% 60%">SUBUL XP</div>
+        <div id="l2" class="hide" style="position:absolute;left:140px;width:800px;top:830px;text-align:center;transform-origin:50% 50%"><img src="assets/logo-pill.png" width="387" height="118" alt="SUBUL | Smartovate" style="display:inline-block;border-radius:40px"></div>
+        <div id="l3" class="hide mono" style="position:absolute;left:140px;width:800px;top:1010px;text-align:center;font-size:60px;font-weight:700;color:#FD51AF;letter-spacing:0.02em">xp.subul.uk</div>
+        <div id="l4" class="hide" style="position:absolute;left:140px;width:800px;top:1110px;text-align:center;font-size:46px;font-weight:600;color:#E3D9EF">Contacte-nous sur WhatsApp</div>
+      </div>
+
+      <div id="flood" class="full" data-layout-ignore style="background:#D6006E;visibility:hidden"></div>
+      <div id="vignette" class="full" data-layout-ignore></div>
+      <canvas id="grain" class="full" width="540" height="960" data-layout-ignore style="width:100%;height:100%"></canvas>
+      <div id="hud-layer" class="full" data-layout-ignore></div>
+      <div id="topbar" data-layout-ignore></div>
+
+      <!-- Three.js and add-ons are ES modules: they hand themselves to the kit, then the film starts. -->
+      <script type="importmap">
+        { "imports": { "three": "./vendor/three/three.module.min.js" } }
+      </script>
+      <script type="module">
+        import * as THREE from "three";
+        import { EffectComposer } from "./vendor/three/addons/postprocessing/EffectComposer.js";
+        import { RenderPass } from "./vendor/three/addons/postprocessing/RenderPass.js";
+        import { UnrealBloomPass } from "./vendor/three/addons/postprocessing/UnrealBloomPass.js";
+        import { OutputPass } from "./vendor/three/addons/postprocessing/OutputPass.js";
+        import { RoomEnvironment } from "./vendor/three/addons/environments/RoomEnvironment.js";
+        window.THREE = THREE;
+        window.THREE_ADDONS = { EffectComposer, RenderPass, UnrealBloomPass, OutputPass, RoomEnvironment };
+        PF.signal("three").resolve();
+      </script>
+      <!-- pf:audio -->
+      <audio id="pf-music" data-timeline-role="music" src="assets/audio/bed.wav" data-start="0" data-duration="20.5714" data-track-index="20" data-volume="0.9"></audio>
+      <audio id="pf-sfx-01-tick" src="assets/audio/sfx/tick.wav" data-start="0.8570" data-duration="0.0500" data-track-index="21" data-volume="0.2"></audio>
+      <audio id="pf-sfx-02-thud" src="assets/audio/sfx/thud.wav" data-start="1.7120" data-duration="0.4000" data-track-index="21" data-volume="0.4"></audio>
+      <audio id="pf-sfx-03-thud" src="assets/audio/sfx/thud.wav" data-start="2.1406" data-duration="0.4000" data-track-index="21" data-volume="0.3"></audio>
+      <audio id="pf-sfx-04-thud" src="assets/audio/sfx/thud.wav" data-start="2.5691" data-duration="0.4000" data-track-index="21" data-volume="0.4"></audio>
+      <audio id="pf-sfx-05-whoosh" src="assets/audio/sfx/whoosh.wav" data-start="2.8908" data-duration="0.6000" data-track-index="22" data-volume="0.35"></audio>
+      <audio id="pf-sfx-06-thud" src="assets/audio/sfx/thud.wav" data-start="3.4263" data-duration="0.4000" data-track-index="21" data-volume="0.45"></audio>
+      <audio id="pf-sfx-07-tick" src="assets/audio/sfx/tick.wav" data-start="4.2856" data-duration="0.0500" data-track-index="21" data-volume="0.2"></audio>
+      <audio id="pf-sfx-08-tick" src="assets/audio/sfx/tick.wav" data-start="5.1428" data-duration="0.0500" data-track-index="21" data-volume="0.2"></audio>
+      <audio id="pf-sfx-09-tick" src="assets/audio/sfx/tick.wav" data-start="5.9999" data-duration="0.0500" data-track-index="21" data-volume="0.2"></audio>
+      <audio id="pf-sfx-10-whoosh" src="assets/audio/sfx/whoosh.wav" data-start="6.3194" data-duration="0.6000" data-track-index="21" data-volume="0.35"></audio>
+      <audio id="pf-sfx-11-thud" src="assets/audio/sfx/thud.wav" data-start="6.8548" data-duration="0.4000" data-track-index="22" data-volume="0.5"></audio>
+      <audio id="pf-sfx-12-thud" src="assets/audio/sfx/thud.wav" data-start="7.7120" data-duration="0.4000" data-track-index="21" data-volume="0.4"></audio>
+      <audio id="pf-sfx-13-pop" src="assets/audio/sfx/pop.wav" data-start="8.5711" data-duration="0.0900" data-track-index="21" data-volume="0.35"></audio>
+      <audio id="pf-sfx-14-pop" src="assets/audio/sfx/pop.wav" data-start="8.9997" data-duration="0.0900" data-track-index="21" data-volume="0.3"></audio>
+      <audio id="pf-sfx-15-pop" src="assets/audio/sfx/pop.wav" data-start="9.4283" data-duration="0.0900" data-track-index="21" data-volume="0.3"></audio>
+      <audio id="pf-sfx-16-pop" src="assets/audio/sfx/pop.wav" data-start="9.8568" data-duration="0.0900" data-track-index="21" data-volume="0.3"></audio>
+      <audio id="pf-sfx-17-whoosh" src="assets/audio/sfx/whoosh.wav" data-start="9.7479" data-duration="0.6000" data-track-index="22" data-volume="0.35"></audio>
+      <audio id="pf-sfx-18-ping" src="assets/audio/sfx/ping.wav" data-start="10.2833" data-duration="0.9000" data-track-index="21" data-volume="0.35"></audio>
+      <audio id="pf-sfx-19-ping" src="assets/audio/sfx/ping.wav" data-start="11.1405" data-duration="0.9000" data-track-index="22" data-volume="0.35"></audio>
+      <audio id="pf-sfx-20-ping" src="assets/audio/sfx/ping.wav" data-start="11.9976" data-duration="0.9000" data-track-index="21" data-volume="0.35"></audio>
+      <audio id="pf-sfx-21-tick" src="assets/audio/sfx/tick.wav" data-start="12.8570" data-duration="0.0500" data-track-index="22" data-volume="0.2"></audio>
+      <audio id="pf-sfx-22-whoosh" src="assets/audio/sfx/whoosh.wav" data-start="13.1765" data-duration="0.6000" data-track-index="21" data-volume="0.35"></audio>
+      <audio id="pf-sfx-23-pop" src="assets/audio/sfx/pop.wav" data-start="13.7140" data-duration="0.0900" data-track-index="22" data-volume="0.4"></audio>
+      <audio id="pf-sfx-24-pop" src="assets/audio/sfx/pop.wav" data-start="14.5711" data-duration="0.0900" data-track-index="21" data-volume="0.4"></audio>
+      <audio id="pf-sfx-25-tick" src="assets/audio/sfx/tick.wav" data-start="15.4285" data-duration="0.0500" data-track-index="21" data-volume="0.25"></audio>
+      <audio id="pf-sfx-26-tick" src="assets/audio/sfx/tick.wav" data-start="16.2856" data-duration="0.0500" data-track-index="21" data-volume="0.2"></audio>
+      <audio id="pf-sfx-27-whoosh" src="assets/audio/sfx/whoosh.wav" data-start="16.6051" data-duration="0.6000" data-track-index="21" data-volume="0.35"></audio>
+      <audio id="pf-sfx-28-chime" src="assets/audio/sfx/chime.wav" data-start="17.1382" data-duration="1.4000" data-track-index="22" data-volume="0.35"></audio>
+      <audio id="pf-sfx-29-thud" src="assets/audio/sfx/thud.wav" data-start="17.9977" data-duration="0.4000" data-track-index="21" data-volume="0.4"></audio>
+      <audio id="pf-sfx-30-pop" src="assets/audio/sfx/pop.wav" data-start="18.8568" data-duration="0.0900" data-track-index="21" data-volume="0.35"></audio>
+      <audio id="pf-sfx-31-tick" src="assets/audio/sfx/tick.wav" data-start="19.7142" data-duration="0.0500" data-track-index="21" data-volume="0.2"></audio>
+      <!-- /pf:audio -->
+    </div>
+    <script>
+      const b = PF.grid(CUES.grid);
+      const $ = PF.$;
+      const W = CUES.width, H = CUES.height;
+      // The brand palette (BRAND.md "Color"), hex only. Pink is the one highlight.
+      const C = { navy: "#1A1350", plum: "#291240", violet: "#4C1D95", purple: "#6D28D9", ink: "#1A0E2E", light: "#FAFAFC", lilac: "#F4EAFE",
+                  magenta: "#D6006E", rose: "#DB1E8D", grape: "#751D86", pink: "#FD51AF", lavender: "#CA7AF9", soft: "#E3D9EF", white: "#FFFFFF" };
+      // Chapters: one 3D scene, one background, one HUD label each. Cuts on downbeats.
+      const CH = [
+        { label: "01 — Ton PFE",     n: "01 / 06", from: b(1, 1),  to: b(3, 1),        bg: C.navy,   dark: true },
+        { label: "02 — SUBUL XP",    n: "02 / 06", from: b(3, 1),  to: b(5, 1),        bg: C.light,  dark: false },
+        { label: "03 — Encadrement", n: "03 / 06", from: b(5, 1),  to: b(7, 1),        bg: C.plum,   dark: true },
+        { label: "04 — Résultats",   n: "04 / 06", from: b(7, 1),  to: b(9, 1),        bg: C.lilac,  dark: false },
+        { label: "05 — Formats",     n: "05 / 06", from: b(9, 1),  to: b(11, 1),       bg: C.violet, dark: true },
+        { label: "06 — Contact",     n: "06 / 06", from: b(11, 1), to: CUES.duration,  bg: C.navy,   dark: true },
+      ];
+      const FLOOD_LEN = 0.2, FLOOD_EASE = PF.bezier(0.75, 0, 0.15, 1);
+      const FLOODS = [ { at: b(3, 1), from: "up" }, { at: b(5, 1), from: "left" }, { at: b(7, 1), from: "up" }, { at: b(9, 1), from: "right" }, { at: b(11, 1), from: "up" } ];
+      let st, hud, S = {};
+
+      function makeScene(bg, fogNear, fogFar, key, envI) {
+        const THREE = st.THREE;
+        const s = st.newScene();
+        s.background = new THREE.Color(bg);
+        s.fog = new THREE.Fog(bg, fogNear, fogFar);
+        s.environmentIntensity = envI || 0.55;
+        PF.three.lights(st, { scene: s, ground: bg, fill: 0.5, key: key || 1.6, keyPos: [-4, 8, 6] });
+        return s;
+      }
+      function dust(scene, n, seed, spread, tone) {
+        return PF.three.particles(st, n, {
+          scene, size: 0.06, color: (i) => (i % 4 === 0 ? C.pink : i % 3 ? tone : C.lavender),
+          pos: (i, t, o) => { const r = PF.random(i * 13 + seed); const x0 = (r() - 0.5) * spread[0]; o.x = x0 - ((t * 0.5 + r() * spread[0]) % spread[0]) + spread[0] / 2; o.y = (r() - 0.5) * spread[1] + Math.sin(t * 0.9 + i) * 0.15; o.z = (r() - 0.5) * spread[2] - 1; },
+        });
+      }
+
+      function setup() {
+        hud = PF.hud($("#hud-layer"), { size: 22, top: CUES.safe.top - 90, bottom: CUES.safe.bottom - 120, font: '"Space Mono", monospace', color: "rgba(255,255,255,.75)" });
+        $("#vignette").style.background = PF.vignette(0.32, "10,6,30");
+
+        st = PF.three.stage($("#three"), { width: W, height: H, fov: 50, env: true, bloom: { strength: 0.85, radius: 0.6, threshold: 1.0 }, exposure: 0.95 });
+        const THREE = st.THREE;
+
+        // 01 Hook: a grape ribbon racing through navy fog, a pink glow head, dust.
+        S.s1 = makeScene(C.navy, 6, 28);
+        const pts = [];
+        for (let x = -18; x <= 26; x += 0.5) pts.push([x, 1.1 * Math.sin(x * 0.5) + 0.5 * Math.sin(x * 1.25 + 1) - 0.8, -1.8 * Math.sin(x * 0.2)]);
+        S.ribbon = PF.three.tube(st, pts, { radius: 0.16, segments: 900, material: PF.three.mat("gloss", C.grape), scene: S.s1 });
+        S.head = new THREE.Mesh(new THREE.SphereGeometry(0.3, 48, 32), PF.three.mat("glow", C.pink));
+        S.s1.add(S.head);
+        S.dust1 = dust(S.s1, 700, 1, [40, 10, 12], C.white);
+
+        // 02 SUBUL XP: the five slides as unlit cards in an arc, turning slowly.
+        S.s2 = makeScene(C.light, 9, 30, 1.2, 0.3);
+        S.cards = [];
+        const keys = ["s1", "s2", "s3", "s4", "s5"];
+        keys.forEach((k, i) => {
+          const img = PF.img[k];
+          if (!img) return;
+          const m = PF.three.photo(st, img, 2.1);
+          S.s2.add(m);
+          S.cards.push(m);
+        });
+        S.dust2 = dust(S.s2, 300, 2, [16, 10, 10], C.grape);
+
+        // 03 The drop: a field of glossy columns rising through the navy-magenta-pink ramp; a glow sphere above.
+        S.s3 = makeScene(C.plum, 8, 26);
+        S.ramp = PF.three.ramp([C.navy, C.magenta, C.pink]);
+        S.field = PF.three.field(st, { nx: 30, nz: 16, xRange: [-7, 7], zRange: [-6, 3], size: 0.3, depth: 3, scene: S.s3,
+          material: PF.three.mat("gloss", C.white),
+          height: (i, j, x, z, t) => S.fieldH(x, z, t),
+          color: (i, j, y, t) => S.ramp((y + 2.4) / 2.6) });
+        S.orb = new THREE.Mesh(new THREE.SphereGeometry(0.42, 48, 32), PF.three.mat("glow", C.pink));
+        S.s3.add(S.orb);
+        S.dust3 = dust(S.s3, 500, 3, [18, 9, 10], C.lavender);
+
+        // 04 Outcomes: three glossy spheres dropping onto a satin floor, on the beat.
+        S.s4 = makeScene(C.lilac, 12, 34, 2.0, 0.3);
+        S.balls = [C.pink, C.magenta, C.purple].map((hex, i) => {
+          const m = new THREE.Mesh(new THREE.SphereGeometry(0.78, 64, 48), PF.three.mat("gloss", hex, { roughness: 0.42, clearcoat: 0.6 }));
+          S.s4.add(m);
+          return m;
+        });
+        S.floor = new THREE.Mesh(new THREE.PlaneGeometry(40, 40), PF.three.mat("satin", C.lilac));
+        S.floor.rotation.x = -Math.PI / 2; S.floor.position.y = -0.78;
+        S.s4.add(S.floor);
+        S.dust4 = dust(S.s4, 250, 4, [14, 8, 8], C.grape);
+
+        // 05 Formats: a spiral ribbon in the accent, dust, under the white cards.
+        S.s5 = makeScene(C.violet, 6, 26);
+        const sp = [];
+        for (let k = 0; k <= 120; k++) { const a = k * 0.26, r = 1.6 + k * 0.03; sp.push([Math.cos(a) * r, -3 + k * 0.05, Math.sin(a) * r - 2]); }
+        S.spiral = PF.three.tube(st, sp, { radius: 0.13, segments: 900, material: PF.three.mat("gloss", C.rose), scene: S.s5 });
+        S.spiralHead = new THREE.Mesh(new THREE.SphereGeometry(0.24, 48, 32), PF.three.mat("glow", C.pink));
+        S.s5.add(S.spiralHead);
+        S.dust5 = dust(S.s5, 500, 5, [18, 10, 10], C.lavender);
+
+        // 06 Lockup: particles converging into the SUBUL XP wordmark (sampled from the brand's type).
+        S.s6 = makeScene(C.navy, 6, 28);
+        const targets = PF.three.samplePoints((c, w, h) => { c.font = '800 300px "Plus Jakarta Sans"'; c.textAlign = "center"; c.textBaseline = "middle"; c.fillText("SUBUL XP", w / 2, h / 2); }, 1800, { w: 1500, h: 600, seed: 11 });
+        const scatter = PF.random(21);
+        S.starts = targets.map(() => { const a = scatter() * 6.283, e = (scatter() - 0.5) * 3.1, r = 5 + scatter() * 6; return { x: Math.cos(a) * Math.cos(e) * r, y: Math.sin(e) * r, z: Math.sin(a) * Math.cos(e) * r - 2, d: scatter() }; });
+        S.converge = PF.three.particles(st, targets.length, {
+          scene: S.s6, size: 0.075, additive: true, color: (i) => (i % 5 === 0 ? C.white : i % 2 ? C.pink : C.lavender),
+          pos: (i, t, o) => {
+            const s0 = S.starts[i], tg = targets[i];
+            const u = PF.step(t - b(11, 1) - s0.d * 0.45, { stiffness: 60, damping: 13 });
+            o.x = PF.lerp(s0.x, tg.x * 1.94, u); o.y = PF.lerp(s0.y, tg.y * 1.94 + 1.44, u); o.z = PF.lerp(s0.z, 0, u);
+          },
+        });
+        S.dust6 = dust(S.s6, 300, 6, [16, 10, 10], C.grape);
+
+        PF.debug({ grid: b, safe: CUES.safe });
+      }
+
+      // Field height: a wave that rises on the drop, with a ring pulse on every beat.
+      S.fieldH = (x, z, t) => {
+        const rise = PF.step(t - b(5, 1), { stiffness: 40, damping: 9 });
+        const beat = Math.floor((t - b(5, 1)) / b.beat), dt = t - b(5, 1) - beat * b.beat;
+        const pulse = beat >= 0 ? Math.exp(-dt * 5) * Math.cos(Math.hypot(x, z + 1.5) * 1.6 - dt * 9) * 0.5 : 0;
+        return -2.4 + rise * (1.1 + 0.7 * Math.sin(x * 0.8 + t * 2.6) * Math.cos(z * 0.9 - t * 1.7) + pulse);
+      };
+
+      function slam(id, t, at, until, opts) {
+        const el = $(id);
+        const on = t >= at && t < until;
+        PF.css(el, { visibility: on ? "inherit" : "hidden" });
+        if (on) PF.slamStyle(el, PF.slam(t, at, Object.assign({ from: 1.25 }, opts || {})));
+      }
+      function pop(id, t, at, until, { from = 0.82, rise = 26 } = {}) {
+        const el = $(id);
+        const on = t >= at && t < until;
+        PF.css(el, { visibility: on ? "inherit" : "hidden" });
+        if (!on) return;
+        const u = PF.step(t - at, { stiffness: 260, damping: 19 });
+        PF.css(el, { transform: `translateY(${((1 - Math.min(u, 1)) * rise).toFixed(2)}px) scale(${PF.lerp(from, 1, u).toFixed(4)})`, opacity: PF.clamp01((t - at) * 8).toFixed(3) });
+      }
+      function chapterAt(t) { let k = 0; for (let i = 0; i < CH.length; i++) if (t >= CH[i].from) k = i; return k; }
+
+      function draw(t) {
+        const k = chapterAt(t), ch = CH[k];
+        const shake = PF.shake(t, [b(5, 1), b(9, 1), b(11, 3)], { amp: 12, decay: 0.32 });
+        PF.css($("#three"), { transform: `translate(${shake.x.toFixed(2)}px, ${shake.y.toFixed(2)}px) rotate(${shake.r.toFixed(3)}deg) scale(1.03)` });
+
+        if (k === 0) {
+          st.use(S.s1);
+          const p = PF.clamp01(PF.progress(t, 0, b(3, 1) + 0.3));
+          S.ribbon.draw(0.08 + p * 0.92);
+          const hd = S.ribbon.at(0.08 + p * 0.92);
+          S.head.position.set(hd.x, hd.y, hd.z);
+          S.dust1.update(t);
+          PF.three.shots(st.camera, t, [
+            { at: 0, azimuth: -34, elevation: 12, radius: 10, target: [hd.x, hd.y - 1.2, hd.z], drift: { azimuth: 12, radius: -1.2 } },
+            { at: b(1, 3), azimuth: 26, elevation: 5, radius: 4.6, target: [hd.x, hd.y, hd.z], drift: { azimuth: -10 } },
+            { at: b(2, 1), azimuth: -10, elevation: 14, radius: 12, target: [hd.x, hd.y + 2.6, hd.z], drift: { radius: -1.5 } },
+            { at: b(2, 3), azimuth: 18, elevation: 10, radius: 11, target: [hd.x, hd.y + 2.4, hd.z], drift: { azimuth: -8, radius: -1 } },
+          ]);
+        } else if (k === 1) {
+          st.use(S.s2);
+          const spin = (t - b(3, 1)) * 0.35;
+          S.cards.forEach((m, i) => {
+            const a = (i - 2) * 0.62 + spin;
+            m.position.set(Math.sin(a) * 4.2, -2.5 + Math.sin(t * 1.4 + i) * 0.08, Math.cos(a) * 4.2 - 4.2);
+            m.rotation.set(0, a, 0);
+          });
+          S.dust2.update(t);
+          PF.three.shots(st.camera, t, [
+            { at: b(3, 1), azimuth: 0, elevation: 14, radius: 7.5, target: [0, 0.5, 0], drift: { azimuth: 6, radius: -0.6 } },
+            { at: b(3, 3), azimuth: 24, elevation: 4, radius: 5.2, target: [0.4, -0.5, 0], drift: { azimuth: -10 } },
+            { at: b(4, 1), azimuth: -30, elevation: 10, radius: 8, target: [0, 0.7, 0], drift: { azimuth: 10, radius: -1 } },
+            { at: b(4, 3), azimuth: 8, elevation: -2, radius: 5.4, target: [-0.3, -0.6, 0], drift: { azimuth: 12 } },
+          ]);
+        } else if (k === 2) {
+          st.use(S.s3);
+          S.field.update(t);
+          const oa = (t - b(5, 1)) * 2.2;
+          S.orb.position.set(Math.cos(oa) * 2.2, 0.6 + Math.sin(oa * 1.7) * 0.5, -1.5 + Math.sin(oa) * 2.2);
+          S.dust3.update(t);
+          PF.three.shots(st.camera, t, [
+            { at: b(5, 1), azimuth: -22, elevation: 18, radius: 12, target: [0, -2.2, -1.5], drift: { azimuth: 10, radius: -1.5 } },
+            { at: b(5, 3), azimuth: 30, elevation: 10, radius: 9, target: [0, -1.6, -1.5], drift: { azimuth: -12 } },
+            { at: b(6, 1), azimuth: -8, elevation: 34, radius: 11, target: [0, -2.4, -1.5], drift: { radius: -1.8 } },
+            { at: b(6, 3), azimuth: 16, elevation: 8, radius: 7.5, target: [0, -1.8, -1.5], drift: { azimuth: 8 } },
+          ]);
+        } else if (k === 3) {
+          st.use(S.s4);
+          const drops = [b(7, 1), b(7, 3), b(8, 1)];
+          S.balls.forEach((m, i) => {
+            const u = PF.step(t - drops[i], { stiffness: 110, damping: 9 });
+            m.position.set((i - 1) * 1.9, t < drops[i] ? 9 : Math.abs(6 * (1 - u)), 0); // the overshoot reflects: a bounce, never below the floor
+            m.rotation.y = t * 0.8 + i;
+          });
+          S.dust4.update(t);
+          PF.three.shots(st.camera, t, [
+            { at: b(7, 1), azimuth: -18, elevation: 10, radius: 6.8, target: [0, 1.5, 0], drift: { azimuth: 8 } },
+            { at: b(7, 3), azimuth: 22, elevation: 6, radius: 6.2, target: [0.3, 1.4, 0], drift: { azimuth: -8, radius: -0.4 } },
+            { at: b(8, 1), azimuth: -8, elevation: 22, radius: 7, target: [0, 1.7, 0], drift: { radius: -0.8 } },
+            { at: b(8, 3), azimuth: 30, elevation: 4, radius: 6, target: [0, 1.4, 0], drift: { azimuth: -14 } },
+          ]);
+        } else if (k === 4) {
+          st.use(S.s5);
+          const p = PF.clamp01(PF.progress(t, b(9, 1) - 0.3, b(11, 1) - b(9, 1)));
+          S.spiral.draw(0.15 + p * 0.85);
+          const hd = S.spiral.at(0.15 + p * 0.85);
+          S.spiralHead.position.set(hd.x, hd.y, hd.z);
+          S.dust5.update(t);
+          PF.three.shots(st.camera, t, [
+            { at: b(9, 1), azimuth: -20, elevation: 12, radius: 11, target: [0, -0.6, -2], drift: { azimuth: 14 } },
+            { at: b(9, 3), azimuth: 26, elevation: 20, radius: 9, target: [0, -0.4, -2], drift: { azimuth: -10, radius: -1 } },
+            { at: b(10, 1), azimuth: -6, elevation: 8, radius: 10, target: [0, -1, -2], drift: { azimuth: 8 } },
+            { at: b(10, 3), azimuth: 10, elevation: 40, radius: 9.5, target: [0, -1.2, -2], drift: { radius: -1.4 } },
+          ]);
+        } else {
+          st.use(S.s6);
+          S.converge.update(t);
+          S.dust6.update(t);
+          PF.three.shots(st.camera, t, [
+            { at: b(11, 1), azimuth: -16, elevation: 8, radius: 9.5, target: [0, 0.35, 0], drift: { azimuth: 16, elevation: -8, radius: -1.9 } },
+            { at: b(11, 3), azimuth: 0, elevation: 0, radius: 7.6, target: [0, 0.35, 0] },
+          ]);
+        }
+        st.bloomPass.strength = ch.dark ? 0.85 : 0.18;
+        st.render();
+
+        // Words, pills and cards: DOM over the canvas, only inside their chapter.
+        slam("#w1a", t, b(2, 1), b(3, 1) - 0.1);
+        slam("#w1b", t, b(2, 2), b(3, 1) - 0.1);
+        slam("#w1c", t, b(2, 3), b(3, 1) - 0.1);
+        slam("#w2a", t, b(3, 1), b(5, 1) - 0.1, { from: 1.12 });
+        slam("#w2b", t, b(3, 1, 0.5), b(5, 1) - 0.1, { from: 1.3 });
+        slam("#w3a", t, b(5, 1), b(7, 1) - 0.1);
+        slam("#w3b", t, b(5, 3), b(7, 1) - 0.1);
+        pop("#p1", t, b(6, 1), b(7, 1) - 0.1);
+        pop("#p2", t, b(6, 2), b(7, 1) - 0.1);
+        pop("#p3", t, b(6, 3), b(7, 1) - 0.1);
+        pop("#p4", t, b(6, 4), b(7, 1) - 0.1);
+        pop("#r1", t, b(7, 1), b(9, 1) - 0.1, { from: 0.9, rise: 40 });
+        pop("#r2", t, b(7, 3), b(9, 1) - 0.1, { from: 0.9, rise: 40 });
+        pop("#r3", t, b(8, 1), b(9, 1) - 0.1, { from: 0.9, rise: 40 });
+        pop("#c1", t, b(9, 1), b(11, 1) - 0.1, { from: 0.86, rise: 30 });
+        pop("#c2", t, b(9, 3), b(11, 1) - 0.1, { from: 0.86, rise: 30 });
+        pop("#c3", t, b(10, 1), b(11, 1) - 0.1);
+        slam("#l1", t, b(11, 3), CUES.duration, { from: 1.3 });
+        pop("#l2", t, b(12, 1), CUES.duration);
+        pop("#l3", t, b(12, 1, 0.5), CUES.duration, { from: 0.9, rise: 20 });
+        pop("#l4", t, b(12, 3), CUES.duration, { from: 0.9, rise: 20 });
+
+        // Chapter cuts: a magenta flood covers the cut (in before, out after), one direction each.
+        let floodOn = false;
+        for (const f of FLOODS) {
+          if (t >= f.at - FLOOD_LEN && t < f.at + FLOOD_LEN) {
+            floodOn = true;
+            const el = $("#flood");
+            if (t < f.at) PF.flood(el, FLOOD_EASE(PF.progress(t, f.at - FLOOD_LEN, FLOOD_LEN)), f.from);
+            else {
+              const q = (FLOOD_EASE(PF.progress(t, f.at, FLOOD_LEN)) * 100).toFixed(3) + "%";
+              const inset = { up: `0 0 ${q} 0`, down: `${q} 0 0 0`, left: `0 ${q} 0 0`, right: `0 0 0 ${q}` }[f.from];
+              PF.css(el, { clipPath: `inset(${inset})` });
+            }
+          }
+        }
+        PF.css($("#flood"), { visibility: floodOn ? "inherit" : "hidden" });
+
+        hud.color(ch.dark ? "rgba(255,255,255,.75)" : "rgba(26,19,80,.72)");
+        hud.set({ tl: ch.label, tr: ch.n, bl: `${CUES.grid.bpm} BPM · ${W}×${H}`, br: PF.timecode(t, 30) }, t);
+        PF.css($("#vignette"), { opacity: ch.dark ? 1 : 0.35 });
+        PF.grain($("#grain"), t, { alpha: ch.dark ? 0.06 : 0.04 });
+      }
+
+      PF.film({
+        duration: CUES.duration,
+        setup,
+        draw,
+        waitFor: [PF.signal("three"), PF.loadImages({ s1: "assets/1.webp", s2: "assets/2.webp", s3: "assets/3.webp", s4: "assets/4.webp", s5: "assets/5.webp" })],
+        // Registered only after setup and the clock are built (fonts first).
+        register: (tl) => {
+          window.__timelines["main"] = tl;
+        },
+      });
+    </script>
+  </body>
+</html>
