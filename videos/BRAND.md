@@ -22,7 +22,7 @@ Sources: the 7-slide "Fais de ton PFE ton premier emploi" carousel (5 slides sup
 ## Films
 | Film | Type | Date | Owner's reaction, what changed |
 |---|---|---|---|
-| subul-xp-reel | launch / promo Reel, 20.57 s | 2026-09-28 | first cut, awaiting notes |
+| subul-xp-reel | launch / promo Reel, 20.57 s | 2026-09-28 | v1 draft, then "make the motion more pro" (masked reveals, eased exits, count-ups, two-tone wipe); URL changed to app.subul.uk and the two WhatsApp numbers added to the lockup. Final v2: 60 fps, motion blur, -15.7 LUFS, peak -1.9 dBTP. Deliverable in `subul-xp-reel/deliverables/`. |
 
 ## Assets on file (reusable across films)
 | Asset | Path | Notes (size, rights, consent) |
