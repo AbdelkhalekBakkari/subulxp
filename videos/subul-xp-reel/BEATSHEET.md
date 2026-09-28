@@ -37,10 +37,10 @@
 | 10.1.00 | 15.43 | 926 | event + tick | chip 'Sans engagement · Réponse sous 48 h' |
 | 10.3.00 | 16.29 | 977 | event + tick | camera cut: the spiral from above |
 | 10.4.50 | 16.93 | 1016 | event + whoosh | magenta flood up |
-| 11.1.00 | 17.14 to 20.57 | 1029 | scene | **06 Lockup**: navy; particles converge into SUBUL XP; wordmark, logo pill, xp.subul.uk, Contacte-nous sur WhatsApp |
+| 11.1.00 | 17.14 to 20.57 | 1029 | scene | **06 Lockup**: navy; particles converge into SUBUL XP; wordmark, logo pill, app.subul.uk, Contacte-nous sur WhatsApp, +32 49 249 38 52 · +44 74 512 68 070 |
 | 11.1.00 | 17.14 | 1029 | event + chime | navy; particles converge into SUBUL XP |
 | 11.3.00 | 18.00 | 1080 | event + thud | the crisp SUBUL XP wordmark lands |
-| 12.1.00 | 18.86 | 1131 | event + pop | logo pill + xp.subul.uk |
-| 12.3.00 | 19.71 | 1183 | event + tick | 'Contacte-nous sur WhatsApp' |
+| 12.1.00 | 18.86 | 1131 | event + pop | logo pill + app.subul.uk |
+| 12.3.00 | 19.71 | 1183 | event + tick | 'Contacte-nous sur WhatsApp' + the two numbers |
 
 Every bar has at least one event.

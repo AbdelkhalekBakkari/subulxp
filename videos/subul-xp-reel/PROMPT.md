@@ -5,7 +5,7 @@ Read `videos/BRAND.md` first. This prompt only adds the story.
 
 <inputs>
 Type: product launch / promo hybrid.
-Facts from the owner, word for word (carousel + landing page): "Fais de ton PFE ton premier emploi." · "Pendant ton PFE avec SUBUL XP" · "Un expert qui t'encadre chaque semaine" · "Jira Premium et un Project Manager" · "Un Product Owner" · "Formation certifiée par SUBUL selon ton sujet" · "Formation soft skills" · "01 CV, LinkedIn et portfolio" · "02 Entretiens RH et techniques" · "03 Visibilité auprès des entreprises" · "Ingénieur & Master · 6 mois — 600 TND" · "Licence · 4 mois — 400 TND" · "Contacte-nous sur WhatsApp" · "Sans engagement · Réponse sous 48 h" · xp.subul.uk.
+Facts from the owner, word for word (carousel + landing page): "Fais de ton PFE ton premier emploi." · "Pendant ton PFE avec SUBUL XP" · "Un expert qui t'encadre chaque semaine" · "Jira Premium et un Project Manager" · "Un Product Owner" · "Formation certifiée par SUBUL selon ton sujet" · "Formation soft skills" · "01 CV, LinkedIn et portfolio" · "02 Entretiens RH et techniques" · "03 Visibilité auprès des entreprises" · "Ingénieur & Master · 6 mois — 600 TND" · "Licence · 4 mois — 400 TND" · "Contacte-nous sur WhatsApp" · "Sans engagement · Réponse sous 48 h" · app.subul.uk (the owner's URL).
 Assets used: slides 1 to 5 as unlit 3D cards (chapter 2); logo-pill.png at the lockup. Missing: SVG logo (replaced by the crop), a licensed track (replaced by a generated trap bed), the reference LinkedIn video (unreachable; the slides are the reference look).
 Decided: 1080x1920, 60 fps, alternating dark/light chapters, 12 bars at 140 BPM, 20.5714 s. Music: generated with synth.py, F minor, i VI VII v, energy 123333333321, hits on bars 3 5 9 11, riser into 5, gap before 5, in `assets/audio/bed.wav`.
 </inputs>
@@ -31,7 +31,7 @@ Bars 3 and 4, the name (light). The five slides fan as unlit cards in an arc, sl
 Bars 5 and 6, the drop (plum). A field of glossy columns rises in a wave through the navy-magenta-pink ramp, a pink glow sphere rides above, one shake; "Un expert" / "chaque semaine" slam on beats 1 and 3 of bar 5; the four feature pills of slide 6 pop in on the four beats of bar 6. Flood up.
 Bars 7 and 8, the outcomes (lilac). Three glossy spheres (pink, magenta, purple) drop and bounce on beats 7.1, 7.3, 8.1 while the three numbered lines of slides 3 to 5 land in the top band: 01 CV, LinkedIn et portfolio; 02 Entretiens RH et techniques; 03 Visibilité auprès des entreprises. Flood right.
 Bars 9 and 10, the two formats (violet). A spiral ribbon and dust behind; the two white price cards of slide 7 pop in on 9.1 and 9.3, "Sans engagement · Réponse sous 48 h" on 10.1. Flood up.
-Bars 11 and 12, the lockup (navy). Particles converge into "SUBUL XP"; the crisp gradient wordmark lands on 11.3; the logo pill and xp.subul.uk on 12.1; "Contacte-nous sur WhatsApp" on 12.3; hold to the downbeat after bar 12 so the Reel loops on the beat.
+Bars 11 and 12, the lockup (navy). Particles converge into "SUBUL XP"; the crisp gradient wordmark lands on 11.3; the logo pill and app.subul.uk on 12.1; "Contacte-nous sur WhatsApp" on 12.3 and the two WhatsApp numbers (+32 49 249 38 52 · +44 74 512 68 070) right after; hold to the downbeat after bar 12 so the Reel loops on the beat.
 </structure>
 
 <build>

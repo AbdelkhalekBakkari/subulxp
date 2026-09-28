@@ -7,8 +7,8 @@ Sources: the 7-slide "Fais de ton PFE ton premier emploi" carousel (5 slides sup
 - Where films play: Instagram Reel 9:16 (1080x1920). Usual length: 20 s. Language: fr (tutoiement, "ton PFE"). Audience: Tunisian students finishing their studies (PFE = projet de fin d'études), licence, master, engineering.
 - Music: no track supplied; generated trap bed (synth.py), F minor, 140 BPM. The owner may swap in-app audio when posting.
 - Tone: confident, direct, young. The brand's loop in three statements: 1. "Fais de ton PFE ton premier emploi." 2. "Un expert t'encadre chaque semaine." 3. "CV, entretiens, visibilité auprès des entreprises."
-- Ending: SUBUL XP wordmark, the SUBUL | Smartovate logo pill, `xp.subul.uk`, "Contacte-nous sur WhatsApp".
-- Notes from past films that apply to all: none yet.
+- Ending: SUBUL XP wordmark, the SUBUL | Smartovate logo pill, `app.subul.uk`, "Contacte-nous sur WhatsApp", +32 49 249 38 52 · +44 74 512 68 070 (owner, 2026-09-28).
+- Notes from past films that apply to all: "make the motion more pro" (2026-09-28): masked line reveals with tracking-in, eased exits before every cut, count-ups on numbers, staggered glides for UI, a two-tone wipe, a slow drift on every hold.
 
 ## Chosen by Claude (the owner can overrule)
 - 2026-09-28: video type = product launch / promo hybrid (hook, name, what you get, outcomes, the two formats, lockup); 12 bars at 140 BPM; generated trap bed with hits on bars 3, 5, 9, 11; a magenta flood on every chapter cut; the HUD counters in Space Mono echo the "07 / 07" counters of the carousel.

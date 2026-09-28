@@ -23,30 +23,36 @@
       html, body { width: 1080px; height: 1920px; overflow: hidden; background: #1A1350; }
       #root { position: relative; width: 100%; height: 100%; overflow: hidden; background: #1A1350; color: #FFFFFF; font-family: "Plus Jakarta Sans", system-ui, sans-serif; }
       .full { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; overflow: hidden; }
-      /* Headlines: the carousel's sentence case, tight leading, Plus Jakarta Sans 800. */
-      .head { position: absolute; left: 90px; font-weight: 800; line-height: 1; letter-spacing: -0.03em; white-space: nowrap; visibility: hidden; transform-origin: 0% 60%; }
+      /* Masked line reveals: the line rises out of its own box (overflow hidden), tracking tightens as it lands. */
+      .mask { position: absolute; left: 90px; right: 0; overflow: hidden; visibility: hidden; }
+      .mask.center { left: 0; right: 0; text-align: center; }
+      .head { position: relative; display: inline-block; font-weight: 800; line-height: 1.34; letter-spacing: -0.03em; white-space: nowrap; padding-right: 24px; transform-origin: 0% 55%; }
+      .center .head { transform-origin: 50% 55%; padding-right: 0; }
+      /* Impact words: absolute, slammed from 1.25x blurred to sharp on the beat. */
+      .big { position: absolute; left: 90px; font-weight: 800; line-height: 1; letter-spacing: -0.03em; white-space: nowrap; visibility: hidden; transform-origin: 0% 60%; }
       .grad { background: linear-gradient(90deg, #DB1E8D 0%, #F0409E 40%, #CA7AF9 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
       .grad2 { background: linear-gradient(90deg, #DB1E8D 0%, #751D86 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
       .hide { visibility: hidden; }
       /* Feature pill (slide 6): white, 28 px radius, lilac border, pink dot. */
-      .pill { position: absolute; left: 90px; width: 870px; padding: 26px 40px 26px 84px; background: #FFFFFF; border: 1px solid #EAE4F0; border-radius: 28px; color: #1A0E2E; font-size: 40px; font-weight: 700; line-height: 1.2; visibility: hidden; transform-origin: 50% 50%; }
+      .pill { position: absolute; left: 90px; width: 870px; padding: 26px 40px 26px 84px; background: #FFFFFF; border: 1px solid #EAE4F0; border-radius: 28px; color: #1A0E2E; font-size: 40px; font-weight: 700; line-height: 1.2; visibility: hidden; transform-origin: 0% 50%; }
       .pill::before { content: ""; position: absolute; left: 40px; top: 50%; width: 18px; height: 18px; margin-top: -9px; border-radius: 50%; background: #E11D8C; }
       /* Price card (slide 7). */
       .card { position: absolute; left: 90px; width: 870px; height: 250px; padding: 44px 46px; background: #FFFFFF; border-radius: 28px; color: #6C6880; font-size: 40px; font-weight: 600; line-height: 1.15; visibility: hidden; transform-origin: 50% 50%; }
-      .card .price { display: block; margin-top: 16px; color: #D6006E; font-size: 116px; font-weight: 800; letter-spacing: -0.03em; line-height: 1; }
+      .card .price { display: block; margin-top: 16px; color: #D6006E; font-size: 116px; font-weight: 800; letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums; }
       /* Outcome rows (slides 3 to 5): a pink mono number, then the line in ink. */
-      .row { position: absolute; left: 90px; width: 870px; visibility: hidden; transform-origin: 0% 50%; }
+      .row { position: relative; display: inline-block; width: 870px; transform-origin: 0% 50%; }
       .row .num { display: block; font-family: "Space Mono", monospace; font-weight: 700; font-size: 84px; line-height: 1; color: #FD51AF; letter-spacing: -0.02em; }
-      .row .txt { display: block; margin-top: 10px; font-size: 64px; font-weight: 800; line-height: 1.05; letter-spacing: -0.03em; color: #1A0E2E; }
+      .row .txt { display: block; margin-top: 10px; padding-bottom: 8px; font-size: 64px; font-weight: 800; line-height: 1.08; letter-spacing: -0.03em; color: #1A0E2E; }
       .mono { font-family: "Space Mono", monospace; }
-      #topbar { position: absolute; left: 0; top: 0; width: 1080px; height: 8px; background: linear-gradient(90deg, #D31B89, #AA1780, #721D85); }
+      .line { position: relative; display: inline-block; transform-origin: 50% 50%; }
+      #topbar { position: absolute; left: 0; top: 0; width: 1080px; height: 8px; background: linear-gradient(90deg, #D31B89, #AA1780, #721D85, #D31B89); background-size: 300% 100%; }
     </style>
   </head>
   <body>
     <div id="root" data-composition-id="main" data-start="0" data-duration="20.5714" data-width="1080" data-height="1920">
       <!--
-        Layers, bottom to top: the 3D canvas (shaken) > words, pills and cards
-        (DOM, crisp, measurable) > the flood layer for chapter cuts > vignette,
+        Layers, bottom to top: the 3D canvas (shaken) > the drop scrim > words, pills and cards
+        (DOM, crisp, measurable) > the two-tone flood for chapter cuts > vignette,
         grain > the HUD and the brand's top gradient bar.
       -->
       <canvas id="three" data-layout-allow-overflow width="1080" height="1920" class="full"></canvas>
@@ -54,34 +60,36 @@
 
       <div id="words" class="full">
         <!-- 01 Hook -->
-        <div id="w1a" class="head" style="top:520px;font-size:112px;color:#FFFFFF">Fais de ton PFE</div>
-        <div id="w1b" class="head" style="top:660px;font-size:150px;color:#FFFFFF">ton premier</div>
-        <div id="w1c" class="head grad" style="top:830px;font-size:150px">emploi.</div>
+        <div class="mask" style="top:512px"><div id="w1a" class="head" data-layout-allow-overflow style="font-size:112px;color:#FFFFFF">Fais de ton PFE</div></div>
+        <div class="mask" style="top:648px"><div id="w1b" class="head" data-layout-allow-overflow style="font-size:150px;color:#FFFFFF">ton premier</div></div>
+        <div class="mask" style="top:822px"><div id="w1c" class="head grad" data-layout-allow-overflow style="font-size:150px">emploi.</div></div>
         <!-- 02 SUBUL XP -->
-        <div id="w2a" class="head" style="top:470px;font-size:64px;color:#1A0E2E;letter-spacing:-0.01em">Pendant ton PFE avec</div>
-        <div id="w2b" class="head grad2" style="top:560px;font-size:210px">SUBUL XP</div>
+        <div class="mask" style="top:462px"><div id="w2a" class="head" data-layout-allow-overflow style="font-size:64px;color:#1A0E2E;letter-spacing:-0.01em">Pendant ton PFE avec</div></div>
+        <div id="w2b" class="big grad2" style="top:560px;font-size:210px;transform-origin:35% 60%">SUBUL XP</div>
         <!-- 03 Encadrement -->
-        <div id="w3a" class="head" style="top:440px;font-size:150px;color:#FFFFFF">Un expert</div>
-        <div id="w3b" class="head" style="top:610px;font-size:110px;color:#FD51AF">chaque semaine</div>
+        <div id="w3a" class="big" style="top:440px;font-size:150px;color:#FFFFFF">Un expert</div>
+        <div class="mask" style="top:604px"><div id="w3b" class="head" data-layout-allow-overflow style="font-size:110px;color:#FD51AF">chaque semaine</div></div>
         <div id="p1" class="pill" style="top:860px">Jira Premium et un Project Manager</div>
         <div id="p2" class="pill" style="top:990px">Un Product Owner</div>
         <div id="p3" class="pill" style="top:1120px">Formation certifiée par SUBUL selon ton sujet</div>
         <div id="p4" class="pill" style="top:1298px">Formation soft skills</div>
         <!-- 04 Résultats -->
-        <div id="r1" class="row" style="top:300px"><span class="num">01</span><span class="txt">CV, LinkedIn<br>et portfolio</span></div>
-        <div id="r2" class="row" style="top:590px"><span class="num">02</span><span class="txt">Entretiens RH<br>et techniques</span></div>
-        <div id="r3" class="row" style="top:880px"><span class="num">03</span><span class="txt">Visibilité auprès<br>des entreprises</span></div>
+        <div class="mask" style="top:300px"><div id="r1" class="row" data-layout-allow-overflow><span class="num">01</span><span class="txt">CV, LinkedIn<br>et portfolio</span></div></div>
+        <div class="mask" style="top:590px"><div id="r2" class="row" data-layout-allow-overflow><span class="num">02</span><span class="txt">Entretiens RH<br>et techniques</span></div></div>
+        <div class="mask" style="top:880px"><div id="r3" class="row" data-layout-allow-overflow><span class="num">03</span><span class="txt">Visibilité auprès<br>des entreprises</span></div></div>
         <!-- 05 Formats -->
-        <div id="c1" class="card" style="top:500px">Ingénieur &amp; Master · 6 mois<span class="price">600 TND</span></div>
-        <div id="c2" class="card" style="top:800px">Licence · 4 mois<span class="price">400 TND</span></div>
+        <div id="c1" class="card" style="top:500px">Ingénieur &amp; Master · 6 mois<span class="price" id="c1p">600 TND</span></div>
+        <div id="c2" class="card" style="top:800px">Licence · 4 mois<span class="price" id="c2p">400 TND</span></div>
         <div id="c3" class="pill" style="top:1130px;width:auto;padding-right:44px">Sans engagement · Réponse sous 48 h</div>
         <!-- 06 Lockup -->
-        <div id="l1" class="head grad" style="top:560px;left:0;width:1080px;text-align:center;font-size:210px;transform-origin:50% 60%">SUBUL XP</div>
+        <div id="l1" class="big grad" style="top:560px;left:0;width:1080px;text-align:center;font-size:210px;transform-origin:50% 60%">SUBUL XP</div>
         <div id="l2" class="hide" style="position:absolute;left:140px;width:800px;top:830px;text-align:center;transform-origin:50% 50%"><img src="assets/logo-pill.png" width="387" height="118" alt="SUBUL | Smartovate" style="display:inline-block;border-radius:40px"></div>
-        <div id="l3" class="hide mono" style="position:absolute;left:140px;width:800px;top:1010px;text-align:center;font-size:60px;font-weight:700;color:#FD51AF;letter-spacing:0.02em">xp.subul.uk</div>
-        <div id="l4" class="hide" style="position:absolute;left:140px;width:800px;top:1110px;text-align:center;font-size:46px;font-weight:600;color:#E3D9EF">Contacte-nous sur WhatsApp</div>
+        <div class="mask center" style="top:996px"><div id="l3" class="head mono" data-layout-allow-overflow style="font-size:60px;font-weight:700;color:#FD51AF;letter-spacing:0.02em">app.subul.uk</div></div>
+        <div class="mask center" style="top:1098px"><div id="l4" class="head" data-layout-allow-overflow style="font-size:46px;font-weight:700;color:#FFFFFF;letter-spacing:-0.01em">Contacte-nous sur WhatsApp</div></div>
+        <div class="mask center" style="top:1166px"><div id="l5" class="head" data-layout-allow-overflow style="font-size:40px;font-weight:500;color:#E3D9EF;letter-spacing:0">+32 49 249 38 52 · +44 74 512 68 070</div></div>
       </div>
 
+      <div id="flood2" class="full" data-layout-ignore style="background:#FD51AF;visibility:hidden"></div>
       <div id="flood" class="full" data-layout-ignore style="background:#D6006E;visibility:hidden"></div>
       <div id="vignette" class="full" data-layout-ignore></div>
       <canvas id="grain" class="full" width="540" height="960" data-layout-ignore style="width:100%;height:100%"></canvas>
@@ -154,6 +162,9 @@
         { label: "05 — Formats",     n: "05 / 06", from: b(9, 1),  to: b(11, 1),       bg: C.violet, dark: true },
         { label: "06 — Contact",     n: "06 / 06", from: b(11, 1), to: CUES.duration,  bg: C.navy,   dark: true },
       ];
+      // Motion language: expo-out entrances, expo-in exits, a slow drift on every hold so no frame is still.
+      const IN = PF.bezier(0.16, 1, 0.3, 1), OUT = PF.bezier(0.7, 0, 0.84, 0);
+      const EXIT = 0.26; // seconds before a chapter cut that its words leave (the flood arrives 0.2 s before)
       const FLOOD_LEN = 0.2, FLOOD_EASE = PF.bezier(0.75, 0, 0.15, 1);
       const FLOODS = [ { at: b(3, 1), from: "up" }, { at: b(5, 1), from: "left" }, { at: b(7, 1), from: "up" }, { at: b(9, 1), from: "right" }, { at: b(11, 1), from: "up" } ];
       let st, hud, S = {};
@@ -190,11 +201,10 @@
         S.s1.add(S.head);
         S.dust1 = dust(S.s1, 700, 1, [40, 10, 12], C.white);
 
-        // 02 SUBUL XP: the five slides as unlit cards in an arc, turning slowly.
+        // 02 SUBUL XP: the five slides as unlit cards in an arc, rising into place on the downbeat, turning slowly.
         S.s2 = makeScene(C.light, 9, 30, 1.2, 0.3);
         S.cards = [];
-        const keys = ["s1", "s2", "s3", "s4", "s5"];
-        keys.forEach((k, i) => {
+        ["s1", "s2", "s3", "s4", "s5"].forEach((k) => {
           const img = PF.img[k];
           if (!img) return;
           const m = PF.three.photo(st, img, 2.1);
@@ -216,7 +226,7 @@
 
         // 04 Outcomes: three glossy spheres dropping onto a satin floor, on the beat.
         S.s4 = makeScene(C.lilac, 12, 34, 2.0, 0.3);
-        S.balls = [C.pink, C.magenta, C.purple].map((hex, i) => {
+        S.balls = [C.pink, C.magenta, C.purple].map((hex) => {
           const m = new THREE.Mesh(new THREE.SphereGeometry(0.78, 64, 48), PF.three.mat("gloss", hex, { roughness: 0.42, clearcoat: 0.6 }));
           S.s4.add(m);
           return m;
@@ -235,7 +245,7 @@
         S.s5.add(S.spiralHead);
         S.dust5 = dust(S.s5, 500, 5, [18, 10, 10], C.lavender);
 
-        // 06 Lockup: particles converging into the SUBUL XP wordmark (sampled from the brand's type).
+        // 06 Lockup: particles converging into the SUBUL XP wordmark (sampled from the brand's type), exactly under the crisp one.
         S.s6 = makeScene(C.navy, 6, 28);
         const targets = PF.three.samplePoints((c, w, h) => { c.font = '800 300px "Plus Jakarta Sans"'; c.textAlign = "center"; c.textBaseline = "middle"; c.fillText("SUBUL XP", w / 2, h / 2); }, 1800, { w: 1500, h: 600, seed: 11 });
         const scatter = PF.random(21);
@@ -261,25 +271,65 @@
         return -3.4 + rise * (1.1 + 0.7 * Math.sin(x * 0.8 + t * 2.6) * Math.cos(z * 0.9 - t * 1.7) + pulse);
       };
 
-      function slam(id, t, at, until, opts) {
-        const el = $(id);
+      /* ---------- the motion vocabulary (every value from t) ---------- */
+      const vis = (el, on) => PF.css(el, { visibility: on ? "inherit" : "hidden" });
+      // A masked line: rises out of its box on an expo-out, tracking tightens as it lands, drifts on the hold, leaves upward on an expo-in.
+      function reveal(id, t, at, until, { inLen = 0.5, track = true, drift = 0.03 } = {}) {
+        const el = $(id), mask = el.parentElement;
         const on = t >= at && t < until;
-        PF.css(el, { visibility: on ? "inherit" : "hidden" });
-        if (on) PF.slamStyle(el, PF.slam(t, at, Object.assign({ from: 1.25 }, opts || {})));
-      }
-      function pop(id, t, at, until, { from = 0.82, rise = 26 } = {}) {
-        const el = $(id);
-        const on = t >= at && t < until;
-        PF.css(el, { visibility: on ? "inherit" : "hidden" });
+        vis(mask, on);
         if (!on) return;
-        const u = PF.step(t - at, { stiffness: 260, damping: 19 });
-        PF.css(el, { transform: `translateY(${((1 - Math.min(u, 1)) * rise).toFixed(2)}px) scale(${PF.lerp(from, 1, u).toFixed(4)})`, opacity: PF.clamp01((t - at) * 8).toFixed(3) });
+        const u = IN(PF.progress(t, at, inLen));
+        const v = OUT(PF.progress(t, until - EXIT, EXIT));
+        const hold = PF.clamp01((t - at) / Math.max(0.001, until - at));
+        const y = (1 - u) * 112 - v * 70;
+        const st = { transform: `translateY(${y.toFixed(3)}%) scale(${(1 + drift * hold).toFixed(4)})`, opacity: (1 - v).toFixed(3), filter: v > 0.01 ? `blur(${(v * 6).toFixed(2)}px)` : "none" };
+        if (track) st.letterSpacing = `${PF.lerp(0.06, -0.03, u).toFixed(4)}em`;
+        PF.css(el, st);
+      }
+      // An impact word: slammed on the beat (1.25x blurred to sharp), tracking-in, drift, then a soft rise-out.
+      function impact(id, t, at, until, { from = 1.25, drift = 0.035, track = true } = {}) {
+        const el = $(id);
+        const on = t >= at && t < until;
+        vis(el, on);
+        if (!on) return;
+        const s = PF.slam(t, at, { from });
+        const v = OUT(PF.progress(t, until - EXIT, EXIT));
+        const hold = PF.clamp01((t - at) / Math.max(0.001, until - at));
+        const st = { transform: `translateY(${(-v * 60).toFixed(2)}px) scale(${(s.scale * (1 + drift * hold)).toFixed(4)})`, opacity: (s.opacity * (1 - v)).toFixed(3), filter: s.blur > 0.05 || v > 0.01 ? `blur(${(s.blur + v * 8).toFixed(2)}px)` : "none" };
+        if (track) st.letterSpacing = `${PF.lerp(0.05, -0.03, PF.clamp01(s.u * 1.4)).toFixed(4)}em`;
+        PF.css(el, st);
+      }
+      // A UI piece (pill, card, logo): glides in from an offset on an expo-out, settles, leaves the other way.
+      function glide(id, t, at, until, { dx = 0, dy = 0, inLen = 0.55, from = 0.94 } = {}) {
+        const el = $(id);
+        const on = t >= at && t < until;
+        vis(el, on);
+        if (!on) return;
+        const u = IN(PF.progress(t, at, inLen));
+        const v = OUT(PF.progress(t, until - EXIT, EXIT));
+        PF.css(el, { transform: `translate(${(dx * (1 - u) - dx * 0.5 * v).toFixed(2)}px, ${(dy * (1 - u) + 28 * v).toFixed(2)}px) scale(${PF.lerp(from, 1, u).toFixed(4)})`, opacity: (PF.clamp01((t - at) * 6) * (1 - v)).toFixed(3) });
+      }
+      // A number counting up to its value on an expo-out, tabular so the card never reflows.
+      function count(id, t, at, value, unit, len = 0.7) {
+        const el = $(id), n = Math.round(value * IN(PF.progress(t, at, len)));
+        const s = `${n} ${unit}`;
+        if (el._pfText !== s) { el.textContent = s; el._pfText = s; }
       }
       function chapterAt(t) { let k = 0; for (let i = 0; i < CH.length; i++) if (t >= CH[i].from) k = i; return k; }
+      function floodAt(el, t, f, lead) {
+        const tt = t + lead;
+        if (tt < f.at) PF.flood(el, FLOOD_EASE(PF.progress(tt, f.at - FLOOD_LEN, FLOOD_LEN)), f.from);
+        else {
+          const q = (FLOOD_EASE(PF.progress(tt, f.at, FLOOD_LEN)) * 100).toFixed(3) + "%";
+          const inset = { up: `0 0 ${q} 0`, down: `${q} 0 0 0`, left: `0 ${q} 0 0`, right: `0 0 0 ${q}` }[f.from];
+          PF.css(el, { clipPath: `inset(${inset})` });
+        }
+      }
 
       function draw(t) {
         const k = chapterAt(t), ch = CH[k];
-        const shake = PF.shake(t, [b(5, 1), b(9, 1), b(11, 3)], { amp: 12, decay: 0.32 });
+        const shake = PF.shake(t, [b(5, 1), b(9, 1), b(11, 3)], { amp: 11, decay: 0.32 });
         PF.css($("#three"), { transform: `translate(${shake.x.toFixed(2)}px, ${shake.y.toFixed(2)}px) rotate(${shake.r.toFixed(3)}deg) scale(1.03)` });
 
         if (k === 0) {
@@ -300,8 +350,9 @@
           const spin = (t - b(3, 1)) * 0.35;
           S.cards.forEach((m, i) => {
             const a = (i - 2) * 0.62 + spin;
-            m.position.set(Math.sin(a) * 4.2, -2.5 + Math.sin(t * 1.4 + i) * 0.08, Math.cos(a) * 4.2 - 4.2);
-            m.rotation.set(0, a, 0);
+            const rise = PF.step(t - b(3, 1) + 0.12 - i * 0.05, { stiffness: 150, damping: 19 });
+            m.position.set(Math.sin(a) * 4.2, PF.lerp(-9, -2.5, rise) + Math.sin(t * 1.4 + i) * 0.08, Math.cos(a) * 4.2 - 4.2);
+            m.rotation.set(0, a, (1 - Math.min(rise, 1)) * 0.3);
           });
           S.dust2.update(t);
           PF.three.shots(st.camera, t, [
@@ -361,49 +412,49 @@
         }
         st.bloomPass.strength = ch.dark ? 0.85 : 0.18;
         st.render();
+        PF.css($("#scrim3"), { visibility: k === 2 ? "inherit" : "hidden", opacity: PF.clamp01((t - b(5, 1)) * 6).toFixed(3) });
 
-        // Words, pills and cards: DOM over the canvas, only inside their chapter.
-        slam("#w1a", t, b(2, 1), b(3, 1) - 0.1);
-        slam("#w1b", t, b(2, 2), b(3, 1) - 0.1);
-        slam("#w1c", t, b(2, 3), b(3, 1) - 0.1);
-        slam("#w2a", t, b(3, 1), b(5, 1) - 0.1, { from: 1.12 });
-        slam("#w2b", t, b(3, 1, 0.5), b(5, 1) - 0.1, { from: 1.3 });
-        slam("#w3a", t, b(5, 1), b(7, 1) - 0.1);
-        slam("#w3b", t, b(5, 3), b(7, 1) - 0.1);
-        pop("#p1", t, b(6, 1), b(7, 1) - 0.1);
-        pop("#p2", t, b(6, 2), b(7, 1) - 0.1);
-        pop("#p3", t, b(6, 3), b(7, 1) - 0.1);
-        pop("#p4", t, b(6, 4), b(7, 1) - 0.1);
-        pop("#r1", t, b(7, 1), b(9, 1) - 0.1, { from: 0.9, rise: 40 });
-        pop("#r2", t, b(7, 3), b(9, 1) - 0.1, { from: 0.9, rise: 40 });
-        pop("#r3", t, b(8, 1), b(9, 1) - 0.1, { from: 0.9, rise: 40 });
-        pop("#c1", t, b(9, 1), b(11, 1) - 0.1, { from: 0.86, rise: 30 });
-        pop("#c2", t, b(9, 3), b(11, 1) - 0.1, { from: 0.86, rise: 30 });
-        pop("#c3", t, b(10, 1), b(11, 1) - 0.1);
-        slam("#l1", t, b(11, 3), CUES.duration, { from: 1.3 });
-        pop("#l2", t, b(12, 1), CUES.duration);
-        pop("#l3", t, b(12, 1, 0.5), CUES.duration, { from: 0.9, rise: 20 });
-        pop("#l4", t, b(12, 3), CUES.duration, { from: 0.9, rise: 20 });
+        // Words, pills and cards: DOM over the canvas, only inside their chapter; every hold drifts, every exit is eased.
+        reveal("#w1a", t, b(2, 1), b(3, 1));
+        reveal("#w1b", t, b(2, 2), b(3, 1));
+        reveal("#w1c", t, b(2, 3), b(3, 1));
+        reveal("#w2a", t, b(3, 1), b(5, 1), { inLen: 0.45, drift: 0.02 });
+        impact("#w2b", t, b(3, 1, 0.5), b(5, 1), { from: 1.14 });
+        impact("#w3a", t, b(5, 1), b(7, 1));
+        reveal("#w3b", t, b(5, 3), b(7, 1));
+        glide("#p1", t, b(6, 1), b(7, 1), { dx: 90 });
+        glide("#p2", t, b(6, 2), b(7, 1), { dx: 90 });
+        glide("#p3", t, b(6, 3), b(7, 1), { dx: 90 });
+        glide("#p4", t, b(6, 4), b(7, 1), { dx: 90 });
+        reveal("#r1", t, b(7, 1), b(9, 1), { track: false, drift: 0.015 });
+        reveal("#r2", t, b(7, 3), b(9, 1), { track: false, drift: 0.015 });
+        reveal("#r3", t, b(8, 1), b(9, 1), { track: false, drift: 0.015 });
+        glide("#c1", t, b(9, 1), b(11, 1), { dy: 70, from: 0.9 });
+        glide("#c2", t, b(9, 3), b(11, 1), { dy: 70, from: 0.9 });
+        glide("#c3", t, b(10, 1), b(11, 1), { dx: 90 });
+        count("#c1p", t, b(9, 1), 600, "TND");
+        count("#c2p", t, b(9, 3), 400, "TND");
+        impact("#l1", t, b(11, 3), CUES.duration + 1, { from: 1.3 });
+        glide("#l2", t, b(12, 1), CUES.duration + 1, { dy: 40, from: 0.9 });
+        reveal("#l3", t, b(12, 1, 0.5), CUES.duration + 1, { drift: 0.01 });
+        reveal("#l4", t, b(12, 3), CUES.duration + 1, { drift: 0.01 });
+        reveal("#l5", t, b(12, 3, 0.5), CUES.duration + 1, { track: false, drift: 0.01 });
 
-        // Chapter cuts: a magenta flood covers the cut (in before, out after), one direction each.
+        // Chapter cuts: a two-tone wipe covers the cut (the pink edge leads the magenta by 60 ms), one direction each.
         let floodOn = false;
         for (const f of FLOODS) {
-          if (t >= f.at - FLOOD_LEN && t < f.at + FLOOD_LEN) {
+          if (t >= f.at - FLOOD_LEN - 0.06 && t < f.at + FLOOD_LEN) {
             floodOn = true;
-            const el = $("#flood");
-            if (t < f.at) PF.flood(el, FLOOD_EASE(PF.progress(t, f.at - FLOOD_LEN, FLOOD_LEN)), f.from);
-            else {
-              const q = (FLOOD_EASE(PF.progress(t, f.at, FLOOD_LEN)) * 100).toFixed(3) + "%";
-              const inset = { up: `0 0 ${q} 0`, down: `${q} 0 0 0`, left: `0 ${q} 0 0`, right: `0 0 0 ${q}` }[f.from];
-              PF.css(el, { clipPath: `inset(${inset})` });
-            }
+            floodAt($("#flood2"), t, f, 0.06);
+            floodAt($("#flood"), t, f, 0);
           }
         }
-        PF.css($("#flood"), { visibility: floodOn ? "inherit" : "hidden" });
-        PF.css($("#scrim3"), { visibility: k === 2 ? "inherit" : "hidden", opacity: PF.clamp01((t - b(5, 1)) * 6).toFixed(3) });
+        vis($("#flood"), floodOn);
+        vis($("#flood2"), floodOn);
 
         hud.color(ch.dark ? "rgba(255,255,255,.75)" : "rgba(26,19,80,.72)");
         hud.set({ tl: ch.label, tr: ch.n, bl: `${CUES.grid.bpm} BPM · ${W}×${H}`, br: PF.timecode(t, 30) }, t);
+        PF.css($("#topbar"), { backgroundPosition: `${((t / CUES.duration) * 200).toFixed(2)}% 0` });
         PF.css($("#vignette"), { opacity: ch.dark ? 1 : 0.35 });
         PF.grain($("#grain"), t, { alpha: ch.dark ? 0.06 : 0.04 });
       }

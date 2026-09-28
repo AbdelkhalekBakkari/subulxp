@@ -20,7 +20,7 @@ window.CUES = {
     { name: "03 Encadrement", from: [5, 1], to: [7, 1], what: "plum; the drop: a field of glossy columns rises, glow sphere, shake; 'Un expert / chaque semaine'; four feature pills" },
     { name: "04 Résultats", from: [7, 1], to: [9, 1], what: "lilac; three glossy spheres bounce in; 01 CV, LinkedIn et portfolio / 02 Entretiens RH et techniques / 03 Visibilité auprès des entreprises" },
     { name: "05 Formats", from: [9, 1], to: [11, 1], what: "violet; spiral ribbon; the two white price cards (600 TND, 400 TND); 'Sans engagement · Réponse sous 48 h'" },
-    { name: "06 Lockup", from: [11, 1], to: 20.5714, what: "navy; particles converge into SUBUL XP; wordmark, logo pill, xp.subul.uk, Contacte-nous sur WhatsApp" },
+    { name: "06 Lockup", from: [11, 1], to: 20.5714, what: "navy; particles converge into SUBUL XP; wordmark, logo pill, app.subul.uk, Contacte-nous sur WhatsApp, +32 49 249 38 52 · +44 74 512 68 070" },
   ],
   events: [
     { at: [1, 1], what: "ribbon already racing, dust drifting" },
@@ -53,7 +53,7 @@ window.CUES = {
     { at: [10, 4, 0.5], what: "magenta flood up", sfx: "whoosh", volume: 0.28 },
     { at: [11, 1], what: "navy; particles converge into SUBUL XP", sfx: "chime", volume: 0.35 },
     { at: [11, 3], what: "the crisp SUBUL XP wordmark lands", sfx: "thud", volume: 0.4 },
-    { at: [12, 1], what: "logo pill + xp.subul.uk", sfx: "pop", volume: 0.35 },
-    { at: [12, 3], what: "'Contacte-nous sur WhatsApp'", sfx: "tick", volume: 0.2 },
+    { at: [12, 1], what: "logo pill + app.subul.uk", sfx: "pop", volume: 0.35 },
+    { at: [12, 3], what: "'Contacte-nous sur WhatsApp' + the two numbers", sfx: "tick", volume: 0.2 },
   ],
 };
