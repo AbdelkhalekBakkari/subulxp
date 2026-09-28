@@ -50,6 +50,7 @@
         grain > the HUD and the brand's top gradient bar.
       -->
       <canvas id="three" data-layout-allow-overflow width="1080" height="1920" class="full"></canvas>
+      <div id="scrim3" class="full" data-layout-ignore style="height:900px;background:linear-gradient(180deg, rgba(41,18,64,.92) 0%, rgba(41,18,64,.85) 55%, rgba(41,18,64,0) 100%);visibility:hidden"></div>
 
       <div id="words" class="full">
         <!-- 01 Hook -->
@@ -103,34 +104,34 @@
         PF.signal("three").resolve();
       </script>
       <!-- pf:audio -->
-      <audio id="pf-music" data-timeline-role="music" src="assets/audio/bed.wav" data-start="0" data-duration="20.5714" data-track-index="20" data-volume="0.9"></audio>
+      <audio id="pf-music" data-timeline-role="music" src="assets/audio/bed.wav" data-start="0" data-duration="20.5714" data-track-index="20" data-volume="0.8"></audio>
       <audio id="pf-sfx-01-tick" src="assets/audio/sfx/tick.wav" data-start="0.8570" data-duration="0.0500" data-track-index="21" data-volume="0.2"></audio>
       <audio id="pf-sfx-02-thud" src="assets/audio/sfx/thud.wav" data-start="1.7120" data-duration="0.4000" data-track-index="21" data-volume="0.4"></audio>
       <audio id="pf-sfx-03-thud" src="assets/audio/sfx/thud.wav" data-start="2.1406" data-duration="0.4000" data-track-index="21" data-volume="0.3"></audio>
       <audio id="pf-sfx-04-thud" src="assets/audio/sfx/thud.wav" data-start="2.5691" data-duration="0.4000" data-track-index="21" data-volume="0.4"></audio>
-      <audio id="pf-sfx-05-whoosh" src="assets/audio/sfx/whoosh.wav" data-start="2.8908" data-duration="0.6000" data-track-index="22" data-volume="0.35"></audio>
+      <audio id="pf-sfx-05-whoosh" src="assets/audio/sfx/whoosh.wav" data-start="2.8908" data-duration="0.6000" data-track-index="22" data-volume="0.28"></audio>
       <audio id="pf-sfx-06-thud" src="assets/audio/sfx/thud.wav" data-start="3.4263" data-duration="0.4000" data-track-index="21" data-volume="0.45"></audio>
       <audio id="pf-sfx-07-tick" src="assets/audio/sfx/tick.wav" data-start="4.2856" data-duration="0.0500" data-track-index="21" data-volume="0.2"></audio>
       <audio id="pf-sfx-08-tick" src="assets/audio/sfx/tick.wav" data-start="5.1428" data-duration="0.0500" data-track-index="21" data-volume="0.2"></audio>
       <audio id="pf-sfx-09-tick" src="assets/audio/sfx/tick.wav" data-start="5.9999" data-duration="0.0500" data-track-index="21" data-volume="0.2"></audio>
-      <audio id="pf-sfx-10-whoosh" src="assets/audio/sfx/whoosh.wav" data-start="6.3194" data-duration="0.6000" data-track-index="21" data-volume="0.35"></audio>
+      <audio id="pf-sfx-10-whoosh" src="assets/audio/sfx/whoosh.wav" data-start="6.3194" data-duration="0.6000" data-track-index="21" data-volume="0.28"></audio>
       <audio id="pf-sfx-11-thud" src="assets/audio/sfx/thud.wav" data-start="6.8548" data-duration="0.4000" data-track-index="22" data-volume="0.5"></audio>
       <audio id="pf-sfx-12-thud" src="assets/audio/sfx/thud.wav" data-start="7.7120" data-duration="0.4000" data-track-index="21" data-volume="0.4"></audio>
       <audio id="pf-sfx-13-pop" src="assets/audio/sfx/pop.wav" data-start="8.5711" data-duration="0.0900" data-track-index="21" data-volume="0.35"></audio>
       <audio id="pf-sfx-14-pop" src="assets/audio/sfx/pop.wav" data-start="8.9997" data-duration="0.0900" data-track-index="21" data-volume="0.3"></audio>
       <audio id="pf-sfx-15-pop" src="assets/audio/sfx/pop.wav" data-start="9.4283" data-duration="0.0900" data-track-index="21" data-volume="0.3"></audio>
       <audio id="pf-sfx-16-pop" src="assets/audio/sfx/pop.wav" data-start="9.8568" data-duration="0.0900" data-track-index="21" data-volume="0.3"></audio>
-      <audio id="pf-sfx-17-whoosh" src="assets/audio/sfx/whoosh.wav" data-start="9.7479" data-duration="0.6000" data-track-index="22" data-volume="0.35"></audio>
+      <audio id="pf-sfx-17-whoosh" src="assets/audio/sfx/whoosh.wav" data-start="9.7479" data-duration="0.6000" data-track-index="22" data-volume="0.28"></audio>
       <audio id="pf-sfx-18-ping" src="assets/audio/sfx/ping.wav" data-start="10.2833" data-duration="0.9000" data-track-index="21" data-volume="0.35"></audio>
       <audio id="pf-sfx-19-ping" src="assets/audio/sfx/ping.wav" data-start="11.1405" data-duration="0.9000" data-track-index="22" data-volume="0.35"></audio>
       <audio id="pf-sfx-20-ping" src="assets/audio/sfx/ping.wav" data-start="11.9976" data-duration="0.9000" data-track-index="21" data-volume="0.35"></audio>
       <audio id="pf-sfx-21-tick" src="assets/audio/sfx/tick.wav" data-start="12.8570" data-duration="0.0500" data-track-index="22" data-volume="0.2"></audio>
-      <audio id="pf-sfx-22-whoosh" src="assets/audio/sfx/whoosh.wav" data-start="13.1765" data-duration="0.6000" data-track-index="21" data-volume="0.35"></audio>
+      <audio id="pf-sfx-22-whoosh" src="assets/audio/sfx/whoosh.wav" data-start="13.1765" data-duration="0.6000" data-track-index="21" data-volume="0.28"></audio>
       <audio id="pf-sfx-23-pop" src="assets/audio/sfx/pop.wav" data-start="13.7140" data-duration="0.0900" data-track-index="22" data-volume="0.4"></audio>
       <audio id="pf-sfx-24-pop" src="assets/audio/sfx/pop.wav" data-start="14.5711" data-duration="0.0900" data-track-index="21" data-volume="0.4"></audio>
       <audio id="pf-sfx-25-tick" src="assets/audio/sfx/tick.wav" data-start="15.4285" data-duration="0.0500" data-track-index="21" data-volume="0.25"></audio>
       <audio id="pf-sfx-26-tick" src="assets/audio/sfx/tick.wav" data-start="16.2856" data-duration="0.0500" data-track-index="21" data-volume="0.2"></audio>
-      <audio id="pf-sfx-27-whoosh" src="assets/audio/sfx/whoosh.wav" data-start="16.6051" data-duration="0.6000" data-track-index="21" data-volume="0.35"></audio>
+      <audio id="pf-sfx-27-whoosh" src="assets/audio/sfx/whoosh.wav" data-start="16.6051" data-duration="0.6000" data-track-index="21" data-volume="0.28"></audio>
       <audio id="pf-sfx-28-chime" src="assets/audio/sfx/chime.wav" data-start="17.1382" data-duration="1.4000" data-track-index="22" data-volume="0.35"></audio>
       <audio id="pf-sfx-29-thud" src="assets/audio/sfx/thud.wav" data-start="17.9977" data-duration="0.4000" data-track-index="21" data-volume="0.4"></audio>
       <audio id="pf-sfx-30-pop" src="assets/audio/sfx/pop.wav" data-start="18.8568" data-duration="0.0900" data-track-index="21" data-volume="0.35"></audio>
@@ -208,7 +209,7 @@
         S.field = PF.three.field(st, { nx: 30, nz: 16, xRange: [-7, 7], zRange: [-6, 3], size: 0.3, depth: 3, scene: S.s3,
           material: PF.three.mat("gloss", C.white),
           height: (i, j, x, z, t) => S.fieldH(x, z, t),
-          color: (i, j, y, t) => S.ramp((y + 2.4) / 2.6) });
+          color: (i, j, y, t) => S.ramp((y + 3.4) / 2.6) });
         S.orb = new THREE.Mesh(new THREE.SphereGeometry(0.42, 48, 32), PF.three.mat("glow", C.pink));
         S.s3.add(S.orb);
         S.dust3 = dust(S.s3, 500, 3, [18, 9, 10], C.lavender);
@@ -257,7 +258,7 @@
         const rise = PF.step(t - b(5, 1), { stiffness: 40, damping: 9 });
         const beat = Math.floor((t - b(5, 1)) / b.beat), dt = t - b(5, 1) - beat * b.beat;
         const pulse = beat >= 0 ? Math.exp(-dt * 5) * Math.cos(Math.hypot(x, z + 1.5) * 1.6 - dt * 9) * 0.5 : 0;
-        return -2.4 + rise * (1.1 + 0.7 * Math.sin(x * 0.8 + t * 2.6) * Math.cos(z * 0.9 - t * 1.7) + pulse);
+        return -3.4 + rise * (1.1 + 0.7 * Math.sin(x * 0.8 + t * 2.6) * Math.cos(z * 0.9 - t * 1.7) + pulse);
       };
 
       function slam(id, t, at, until, opts) {
@@ -313,13 +314,13 @@
           st.use(S.s3);
           S.field.update(t);
           const oa = (t - b(5, 1)) * 2.2;
-          S.orb.position.set(Math.cos(oa) * 2.2, 0.6 + Math.sin(oa * 1.7) * 0.5, -1.5 + Math.sin(oa) * 2.2);
+          S.orb.position.set(Math.cos(oa) * 2.2, -0.6 + Math.sin(oa * 1.7) * 0.5, -1.5 + Math.sin(oa) * 2.2);
           S.dust3.update(t);
           PF.three.shots(st.camera, t, [
-            { at: b(5, 1), azimuth: -22, elevation: 18, radius: 12, target: [0, -2.2, -1.5], drift: { azimuth: 10, radius: -1.5 } },
-            { at: b(5, 3), azimuth: 30, elevation: 10, radius: 9, target: [0, -1.6, -1.5], drift: { azimuth: -12 } },
-            { at: b(6, 1), azimuth: -8, elevation: 34, radius: 11, target: [0, -2.4, -1.5], drift: { radius: -1.8 } },
-            { at: b(6, 3), azimuth: 16, elevation: 8, radius: 7.5, target: [0, -1.8, -1.5], drift: { azimuth: 8 } },
+            { at: b(5, 1), azimuth: -22, elevation: 30, radius: 12, target: [0, -3.2, -1.5], drift: { azimuth: 10, radius: -1.5 } },
+            { at: b(5, 3), azimuth: 30, elevation: 24, radius: 9.5, target: [0, -3.0, -1.5], drift: { azimuth: -12 } },
+            { at: b(6, 1), azimuth: -8, elevation: 42, radius: 11, target: [0, -3.4, -1.5], drift: { radius: -1.8 } },
+            { at: b(6, 3), azimuth: 16, elevation: 26, radius: 8.5, target: [0, -3.2, -1.5], drift: { azimuth: 8 } },
           ]);
         } else if (k === 3) {
           st.use(S.s4);
@@ -399,6 +400,7 @@
           }
         }
         PF.css($("#flood"), { visibility: floodOn ? "inherit" : "hidden" });
+        PF.css($("#scrim3"), { visibility: k === 2 ? "inherit" : "hidden", opacity: PF.clamp01((t - b(5, 1)) * 6).toFixed(3) });
 
         hud.color(ch.dark ? "rgba(255,255,255,.75)" : "rgba(26,19,80,.72)");
         hud.set({ tl: ch.label, tr: ch.n, bl: `${CUES.grid.bpm} BPM · ${W}×${H}`, br: PF.timecode(t, 30) }, t);
