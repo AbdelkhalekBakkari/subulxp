@@ -53,7 +53,9 @@ window.CUES = {
     { at: [10, 4, 0.5], what: "magenta flood up", sfx: "whoosh", volume: 0.28 },
     { at: [11, 1], what: "navy; particles converge into SUBUL XP", sfx: "chime", volume: 0.35 },
     { at: [11, 3], what: "the crisp SUBUL XP wordmark lands", sfx: "thud", volume: 0.4 },
-    { at: [12, 1], what: "logo pill + app.subul.uk", sfx: "pop", volume: 0.35 },
-    { at: [12, 3], what: "'Contacte-nous sur WhatsApp' + the two numbers", sfx: "tick", volume: 0.2 },
+    { at: [11, 4], what: "logo pill pops in", sfx: "pop", volume: 0.35 },
+    { at: [12, 1], what: "app.subul.uk", sfx: "tick", volume: 0.2 },
+    { at: [12, 1, 0.5], what: "'Contacte-nous sur WhatsApp'" },
+    { at: [12, 2], what: "+32 49 249 38 52 · +44 74 512 68 070, held to the end", sfx: "tick", volume: 0.2 },
   ],
 };

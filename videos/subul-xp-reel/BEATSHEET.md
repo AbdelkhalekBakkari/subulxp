@@ -40,7 +40,9 @@
 | 11.1.00 | 17.14 to 20.57 | 1029 | scene | **06 Lockup**: navy; particles converge into SUBUL XP; wordmark, logo pill, app.subul.uk, Contacte-nous sur WhatsApp, +32 49 249 38 52 · +44 74 512 68 070 |
 | 11.1.00 | 17.14 | 1029 | event + chime | navy; particles converge into SUBUL XP |
 | 11.3.00 | 18.00 | 1080 | event + thud | the crisp SUBUL XP wordmark lands |
-| 12.1.00 | 18.86 | 1131 | event + pop | logo pill + app.subul.uk |
-| 12.3.00 | 19.71 | 1183 | event + tick | 'Contacte-nous sur WhatsApp' + the two numbers |
+| 11.4.00 | 18.43 | 1106 | event + pop | logo pill pops in |
+| 12.1.00 | 18.86 | 1131 | event + tick | app.subul.uk |
+| 12.1.50 | 19.07 | 1144 | event | 'Contacte-nous sur WhatsApp' |
+| 12.2.00 | 19.29 | 1157 | event + tick | +32 49 249 38 52 · +44 74 512 68 070, held to the end |
 
 Every bar has at least one event.
