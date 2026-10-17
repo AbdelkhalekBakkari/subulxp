@@ -1,0 +1,16 @@
+{
+  "bpm": 140.0,
+  "firstBeat": 0,
+  "pickupBeats": 0,
+  "beatsPerBar": 4,
+  "bars": 12,
+  "duration": 20.5714,
+  "fileDuration": 20.5714,
+  "energy": "123333333321",
+  "key": "F minor",
+  "progression": "i VI VII v",
+  "style": "trap",
+  "hits": "3 5 9 11",
+  "risers": "5",
+  "gaps": "5"
+}
