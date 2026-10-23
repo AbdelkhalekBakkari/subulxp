@@ -1,4 +1,4 @@
-Sitemap: https://dev4caustaza.com/sitemap.xml
+Sitemap: https://xp.subul.uk/sitemap.xml
 
 User-agent: *
 Allow: /
