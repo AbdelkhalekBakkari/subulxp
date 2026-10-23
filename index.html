@@ -195,6 +195,38 @@
   .about-stat h3{ font-size:26px; font-weight:800; margin:0 0 4px; color:var(--purple-dk); letter-spacing:-.02em; }
   .about-stat p{ margin:0; font-size:13.5px; color:var(--body); font-weight:600; }
 
+  /* ---------------- TEAM ---------------- */
+  .team{ padding:96px 0; background:#fff; border-top:1px solid var(--line); }
+  .team-filters{ display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin:0 0 40px; }
+  .team-filter{
+    font-family:inherit; font-size:12.5px; font-weight:700; letter-spacing:.02em;
+    padding:9px 18px; border-radius:999px; border:1.5px solid var(--line); background:#fff; color:var(--label);
+    cursor:pointer; transition:background .18s, border-color .18s, color .18s;
+  }
+  .team-filter:hover{ border-color:var(--purple); color:var(--purple-dk); }
+  .team-filter.active{ background:var(--purple-dk); border-color:var(--purple-dk); color:#fff; }
+  .team-filter:focus-visible{ outline:2px solid var(--purple); outline-offset:2px; }
+  .team-count{ text-align:center; font-size:12.5px; font-weight:700; color:var(--label); letter-spacing:.02em; margin:0 0 18px; }
+  .team-list{ max-width:720px; margin:0 auto; border-top:1px solid var(--line); }
+  .team-row-wrap{
+    display:grid; grid-template-rows:1fr; border-bottom:1px solid var(--line);
+    transition:grid-template-rows .4s cubic-bezier(.4,0,.2,1), opacity .3s ease, border-color .3s ease;
+  }
+  .team-row-wrap.out{ grid-template-rows:0fr; opacity:0; border-color:transparent; }
+  .team-row{
+    display:flex; align-items:baseline; justify-content:space-between; gap:16px;
+    padding:22px 6px; overflow:hidden; min-height:0; transition:padding-left .2s;
+  }
+  .team-row:hover{ padding-left:14px; }
+  .team-name{ font-size:17px; font-weight:700; letter-spacing:-.01em; color:var(--title); }
+  .team-role{
+    font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:12.5px; font-weight:700;
+    letter-spacing:.03em; text-transform:uppercase; color:var(--label); white-space:nowrap;
+  }
+  .team-row-lead .team-name{ font-size:19px; }
+  .team-row-lead .team-role{ color:var(--magenta); }
+  @media (max-width:560px){ .team-row{ flex-direction:column; align-items:flex-start; gap:4px; } }
+
   /* ---------------- SERVICES ---------------- */
   .services{ padding:96px 0; background:var(--bg); color:#fff; }
   .service-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:22px; }
@@ -339,6 +371,7 @@
     </button>
     <ul class="nav-links" id="navLinks">
       <li><a href="#about">À propos</a></li>
+      <li><a href="#team">Équipe</a></li>
       <li><a href="#services">Expertises</a></li>
       <li><a href="#subul">SUBUL</a></li>
       <li><a href="#xp">SUBUL XP</a></li>
@@ -403,6 +436,69 @@
           <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D6006E" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Une plateforme SaaS propriétaire (SUBUL) pour développer l'écosystème tech tunisien</li>
           <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D6006E" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Des labs pratiques et une résidence tech (SUBUL XP) pour apprendre en construisant</li>
         </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TEAM ============ -->
+  <section class="team" id="team">
+    <div class="container">
+      <div class="sec-head">
+        <span class="eyebrow">L'équipe</span>
+        <h2>Les personnes qui construisent Dev4Caustaza.</h2>
+        <p>Une équipe restreinte et pluridisciplinaire, en direction technique, logiciel, IA et DevOps.</p>
+      </div>
+      <div class="team-filters" role="group" aria-label="Filtrer l'équipe par domaine">
+        <button type="button" class="team-filter active" data-dept="all" aria-pressed="true">Toutes</button>
+        <button type="button" class="team-filter" data-dept="leadership" aria-pressed="false">Direction</button>
+        <button type="button" class="team-filter" data-dept="software" aria-pressed="false">Logiciel</button>
+        <button type="button" class="team-filter" data-dept="devops" aria-pressed="false">DevOps</button>
+        <button type="button" class="team-filter" data-dept="ai" aria-pressed="false">IA</button>
+      </div>
+      <p class="team-count" id="teamCount" aria-live="polite"></p>
+      <div class="team-list" id="teamList">
+        <div class="team-row-wrap" data-dept="leadership">
+          <div class="team-row team-row-lead">
+            <span class="team-name">Abdelkhalek Bakkari</span>
+            <span class="team-role">CEO &amp; Fondateur</span>
+          </div>
+        </div>
+        <div class="team-row-wrap" data-dept="leadership">
+          <div class="team-row team-row-lead">
+            <span class="team-name">Hedi Ben Abdallah</span>
+            <span class="team-role">CTO</span>
+          </div>
+        </div>
+        <div class="team-row-wrap" data-dept="software">
+          <div class="team-row">
+            <span class="team-name">Anas Baccari</span>
+            <span class="team-role">Ingénieur Logiciel</span>
+          </div>
+        </div>
+        <div class="team-row-wrap" data-dept="devops">
+          <div class="team-row">
+            <span class="team-name">Ons Gharbi</span>
+            <span class="team-role">Ingénieure DevOps</span>
+          </div>
+        </div>
+        <div class="team-row-wrap" data-dept="devops">
+          <div class="team-row">
+            <span class="team-name">Nour Allani</span>
+            <span class="team-role">Ingénieure DevOps</span>
+          </div>
+        </div>
+        <div class="team-row-wrap" data-dept="ai">
+          <div class="team-row">
+            <span class="team-name">Maha Allani</span>
+            <span class="team-role">Ingénieure IA</span>
+          </div>
+        </div>
+        <div class="team-row-wrap" data-dept="ai">
+          <div class="team-row">
+            <span class="team-name">Mariem Negra</span>
+            <span class="team-role">Ingénieure IA</span>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -587,6 +683,7 @@
       <a href="#top" class="brand" style="color:#fff;text-decoration:none;"><span class="brand-mark">D4</span>Dev4Caustaza</a>
       <nav>
         <a href="#about">À propos</a>
+        <a href="#team">Équipe</a>
         <a href="#services">Expertises</a>
         <a href="#subul">SUBUL</a>
         <a href="#xp">SUBUL XP</a>
@@ -624,6 +721,30 @@ navLinks.querySelectorAll("a").forEach(a => a.addEventListener("click", () => {
   navLinks.classList.remove("open");
   navToggle.setAttribute("aria-expanded", "false");
 }));
+
+/* filtre équipe par domaine */
+const teamFilters = document.querySelectorAll(".team-filter");
+const teamRows    = document.querySelectorAll(".team-row-wrap");
+const teamCount   = document.getElementById("teamCount");
+
+function applyTeamFilter(dept){
+  let visible = 0;
+  teamRows.forEach(row => {
+    const match = dept === "all" || row.dataset.dept === dept;
+    row.classList.toggle("out", !match);
+    if (match) visible++;
+  });
+  teamCount.textContent = visible + (visible === 1 ? " personne" : " personnes");
+}
+
+teamFilters.forEach(btn => btn.addEventListener("click", () => {
+  teamFilters.forEach(b => { b.classList.remove("active"); b.setAttribute("aria-pressed", "false"); });
+  btn.classList.add("active");
+  btn.setAttribute("aria-pressed", "true");
+  applyTeamFilter(btn.dataset.dept);
+}));
+
+applyTeamFilter("all");
 
 /* formulaire de contact -> WhatsApp */
 document.getElementById("cf").addEventListener("submit", e => {
