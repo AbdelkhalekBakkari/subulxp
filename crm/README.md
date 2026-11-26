@@ -28,6 +28,17 @@ npm test
 
 ## Déploiement sur crm.smartovate.com
 
+### Installation en une commande (VPS Ubuntu/Debian vierge)
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/AbdelkhalekBakkari/subulxp/main/crm/deploy/install.sh | sudo ADMIN_EMAIL=admin@smartovate.com bash
+```
+
+Le script installe Docker, clone le dépôt dans `/opt/subulxp`, génère `.env` (secret de session et mot de passe admin
+aléatoires, affichés en fin d'installation) et lance Caddy + le CRM. Mise à jour ultérieure : `sudo /opt/subulxp/crm/deploy/update.sh`.
+
+### Installation manuelle
+
 1. Créer l'enregistrement DNS `A` (ou `AAAA`) `crm.smartovate.com` vers le serveur.
 2. Sur le serveur (Docker + Compose installés) :
 
