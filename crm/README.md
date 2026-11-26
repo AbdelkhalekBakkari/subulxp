@@ -52,6 +52,12 @@ ADMIN_EMAIL=admin@smartovate.com bash <(curl -fsSL $SCRIPT) deploy
 Le script affiche l'URL provisoire, le mot de passe admin généré et les deux enregistrements DNS à créer (`CNAME crm` et `TXT asuid.crm`).
 Une fois le DNS propagé : `bash <(curl -fsSL $SCRIPT) bind-domain` émet le certificat HTTPS géré par Azure.
 Autres commandes : `status`, `backup` (télécharge la base), `update` (redéploie la dernière image).
+
+**CI/CD** : `bash <(curl -fsSL $SCRIPT) cicd` crée une identité managée fédérée avec GitHub (OIDC, aucun secret stocké),
+limitée au resource group du CRM, et affiche trois variables à créer dans GitHub (Settings → Secrets and variables → Actions →
+Variables) : `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID`. Dès qu'elles existent, le workflow « CRM CI/CD »
+enchaîne à chaque push sur `main` : tests → image `ghcr.io` taguée par commit → `az containerapp update` → contrôle de santé
+sur `https://crm.smartovate.com`. Les pull requests ne lancent que les tests.
 Si l'image ghcr.io est privée, rendez le package public (GitHub → Packages → Package settings → Change visibility)
 ou passez `GHCR_USER` et `GHCR_TOKEN` (token `read:packages`) au script.
 

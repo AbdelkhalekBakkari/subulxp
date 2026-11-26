@@ -5,6 +5,7 @@
 #   SCRIPT=https://raw.githubusercontent.com/AbdelkhalekBakkari/subulxp/main/crm/deploy/azure.sh
 #   bash <(curl -fsSL $SCRIPT) deploy          # 1) crée tout et affiche les enregistrements DNS à créer
 #   bash <(curl -fsSL $SCRIPT) bind-domain     # 2) après propagation DNS : certificat HTTPS géré par Azure
+#   bash <(curl -fsSL $SCRIPT) cicd           # 3) identité OIDC pour GitHub Actions : déploiement automatique à chaque push
 #   bash <(curl -fsSL $SCRIPT) status          # URL, réplicas, logs récents
 #   bash <(curl -fsSL $SCRIPT) backup          # télécharge la base SQLite (crm-AAAA-MM-JJ.db)
 #   bash <(curl -fsSL $SCRIPT) update          # redéploie la dernière image ghcr.io
@@ -190,11 +191,48 @@ cmd_update() {
   log "Image mise à jour."
 }
 
+cmd_cicd() {
+  # Identité managée + fédération OIDC : GitHub Actions déploie sans aucun secret Azure stocké.
+  REPO_FULL="${GITHUB_REPO:-AbdelkhalekBakkari/subulxp}"
+  IDENTITY="id-${APP}-github"
+  log "Identité managée ${IDENTITY} pour GitHub Actions (${REPO_FULL}, branche main)"
+  az identity create -n "${IDENTITY}" -g "${RG}" -l "${LOCATION}" -o none
+  CLIENT_ID="$(az identity show -n "${IDENTITY}" -g "${RG}" --query clientId -o tsv)"
+  PRINCIPAL_ID="$(az identity show -n "${IDENTITY}" -g "${RG}" --query principalId -o tsv)"
+  TENANT_ID="$(az account show --query tenantId -o tsv)"
+  az identity federated-credential create --identity-name "${IDENTITY}" -g "${RG}" -n github-main \
+    --issuer https://token.actions.githubusercontent.com \
+    --subject "repo:${REPO_FULL}:ref:refs/heads/main" --audiences api://AzureADTokenExchange -o none 2>/dev/null || true
+  az identity federated-credential create --identity-name "${IDENTITY}" -g "${RG}" -n github-production \
+    --issuer https://token.actions.githubusercontent.com \
+    --subject "repo:${REPO_FULL}:environment:production" --audiences api://AzureADTokenExchange -o none 2>/dev/null || true
+  RG_ID="$(az group show -n "${RG}" --query id -o tsv)"
+  # Contributor limité au resource group du CRM : l'identité ne peut rien toucher d'autre.
+  az role assignment create --assignee-object-id "${PRINCIPAL_ID}" --assignee-principal-type ServicePrincipal \
+    --role Contributor --scope "${RG_ID}" -o none 2>/dev/null || true
+
+  cat <<VARS
+
+Variables à créer dans GitHub : dépôt ${REPO_FULL} → Settings → Secrets and variables → Actions → onglet Variables
+  AZURE_CLIENT_ID        = ${CLIENT_ID}
+  AZURE_TENANT_ID        = ${TENANT_ID}
+  AZURE_SUBSCRIPTION_ID  = ${SUB_ID}
+
+Ou, avec GitHub CLI connecté (gh auth login) :
+  gh variable set AZURE_CLIENT_ID -R ${REPO_FULL} -b "${CLIENT_ID}"
+  gh variable set AZURE_TENANT_ID -R ${REPO_FULL} -b "${TENANT_ID}"
+  gh variable set AZURE_SUBSCRIPTION_ID -R ${REPO_FULL} -b "${SUB_ID}"
+
+Ensuite, chaque push sur main déploie automatiquement (workflow « CRM CI/CD »).
+VARS
+}
+
 case "${1:-}" in
   deploy) cmd_deploy ;;
   bind-domain) cmd_bind_domain ;;
   status) cmd_status ;;
   backup) cmd_backup ;;
   update) cmd_update ;;
-  *) echo "Usage : $0 deploy | bind-domain | status | backup | update"; exit 1 ;;
+  cicd) cmd_cicd ;;
+  *) echo "Usage : $0 deploy | bind-domain | cicd | status | backup | update"; exit 1 ;;
 esac
