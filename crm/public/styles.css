@@ -29,7 +29,9 @@ h1{font-size:24px;font-weight:800}h2{font-size:17px;font-weight:700}h3{font-size
 .avatar{width:34px;height:34px;border-radius:50%;background:var(--magenta);display:grid;place-items:center;font-weight:800;font-size:13px;color:#fff;flex:none}
 .sidebar .me .who{min-width:0}.sidebar .me .who b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:13.5px}
 .sidebar .me .who span{font-size:11.5px;color:#B9A7D6}
-.sidebar .me button{margin-left:auto;background:none;border:0;color:#C9B8E6;cursor:pointer;padding:6px;border-radius:6px}.sidebar .me button:hover{background:rgba(255,255,255,.1);color:#fff}
+.sidebar .me:hover{text-decoration:none;background:#160824}
+.logout-btn{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:8px;padding:10px 12px;border-radius:8px;border:1px solid rgba(255,255,255,.14);background:transparent;color:#D9CCEE;font-weight:600;cursor:pointer}
+.logout-btn:hover{background:rgba(255,255,255,.1);color:#fff}.logout-btn svg{width:16px;height:16px}
 .main{padding:28px 32px 60px;min-width:0}
 .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:22px;flex-wrap:wrap}
 .topbar .crumbs{color:var(--label);font-size:13px;margin-bottom:4px}

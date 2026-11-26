@@ -196,15 +196,16 @@ function layout(content) {
         ${link('sessions', '/sessions', I.cal, 'Séances & présences', ['sessions', 'session'])}
         ${isAdmin() ? `<div class="sep">Administration</div>${link('users', '/users', I.shield, 'Utilisateurs')}${link('audit', '/audit', I.list, 'Journal d\'audit')}${link('settings', '/settings', I.cog, 'Paramètres')}` : ''}
       </nav>
-      <a class="me" href="#/profile" title="Mon profil"><span class="avatar">${esc(initials(u.name))}</span><span class="who"><b>${esc(u.name)}</b><span>${esc(state.meta.role_labels[u.role])}</span></span><button type="button" id="logout" title="Se déconnecter">${I.out}</button></a>
+      <a class="me" href="#/profile" title="Mon profil"><span class="avatar">${esc(initials(u.name))}</span><span class="who"><b>${esc(u.name)}</b><span>${esc(state.meta.role_labels[u.role])}</span></span></a>
+      <button type="button" class="logout-btn" data-logout>${I.out} Se déconnecter</button>
     </aside>
     <main class="main">${content}</main>
   </div>`;
 }
 document.addEventListener('click', async (e) => {
-  if (e.target.closest('#logout')) { e.preventDefault(); await POST('/auth/logout'); state.user = null; state.meta = null; go('/'); render(); }
+  if (e.target.closest("[data-logout]")) { e.preventDefault(); await POST('/auth/logout'); state.user = null; state.meta = null; go('/'); render(); }
   if (e.target.closest('.burger')) $('#sidebar').classList.toggle('open');
-  if (e.target.closest('#sidebar a') && !e.target.closest('#logout')) $('#sidebar')?.classList.remove('open');
+  if (e.target.closest('#sidebar a') && !e.target.closest("[data-logout]")) $('#sidebar')?.classList.remove('open');
 });
 const topbar = (title, actionsHtml = '', crumbs = '') => `<div class="topbar"><div><button class="btn ghost burger" type="button" aria-label="Menu">${I.menu}</button>${crumbs ? `<div class="crumbs">${crumbs}</div>` : ''}<h1>${title}</h1></div><div class="actions">${actionsHtml}</div></div>`;
 
@@ -628,7 +629,7 @@ VIEWS.settings = { roles: ['admin'],
 VIEWS.profile = {
   async render() {
     const u = state.user;
-    return topbar('Mon profil') + `<div class="grid c2"><div class="card"><div class="hd"><h2>Compte</h2></div><div class="bd"><dl class="kv"><dt>Nom</dt><dd>${esc(u.name)}</dd><dt>Email</dt><dd>${esc(u.email)}</dd><dt>Rôle</dt><dd>${badge(state.meta.role_labels[u.role], 'role-' + u.role)}</dd><dt>WhatsApp</dt><dd>${esc(u.whatsapp || '—')}</dd><dt>Entreprise</dt><dd>${esc(u.company || '—')}</dd></dl></div></div>
+    return topbar('Mon profil') + `<div class="grid c2"><div class="card"><div class="hd"><h2>Compte</h2></div><div class="bd"><dl class="kv"><dt>Nom</dt><dd>${esc(u.name)}</dd><dt>Email</dt><dd>${esc(u.email)}</dd><dt>Rôle</dt><dd>${badge(state.meta.role_labels[u.role], 'role-' + u.role)}</dd><dt>WhatsApp</dt><dd>${esc(u.whatsapp || '—')}</dd><dt>Entreprise</dt><dd>${esc(u.company || '—')}</dd></dl><p style="margin:18px 0 0"><button type="button" class="btn danger" data-logout>${I.out} Se déconnecter</button></p></div></div>
       <div class="card"><div class="hd"><h2>Changer le mot de passe</h2></div><div class="bd"><form id="pw" novalidate>${field('current_password', 'Mot de passe actuel', input('current_password', '', 'password', 'autocomplete="current-password" required'))}${field('new_password', 'Nouveau mot de passe', input('new_password', '', 'password', 'autocomplete="new-password" required'), '10 caractères minimum, lettres et chiffres')}<button class="btn primary" type="submit">Mettre à jour</button></form></div></div></div>`;
   },
   mount() { $('#pw').addEventListener('submit', async (e) => { e.preventDefault(); try { await POST('/auth/password', formData(e.target)); toast('Mot de passe mis à jour', 'ok'); e.target.reset(); } catch (err) { showErrors(e.target, err); } }); },
