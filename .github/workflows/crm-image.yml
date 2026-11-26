@@ -1,28 +1,44 @@
-name: CRM image
+name: CRM CI/CD
 
 on:
   push:
     branches: [main]
+    paths: ["crm/**", ".github/workflows/crm-image.yml"]
+  pull_request:
     paths: ["crm/**", ".github/workflows/crm-image.yml"]
   workflow_dispatch:
 
 permissions:
   contents: read
   packages: write
+  id-token: write
+
+concurrency:
+  group: crm-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  IMAGE: ghcr.io/abdelkhalekbakkari/subulxp-crm
+  AZURE_RG: rg-subulxp-crm
+  AZURE_APP: subulxp-crm
+  CRM_URL: https://crm.smartovate.com
 
 jobs:
   test:
+    name: Tests
     runs-on: ubuntu-latest
     defaults: { run: { working-directory: crm } }
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with: { node-version: "22" }
+        with: { node-version: "22", cache: npm, cache-dependency-path: crm/package-lock.json }
       - run: npm ci
       - run: npm test
 
   build:
+    name: Image
     needs: test
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -31,12 +47,42 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - id: meta
-        run: echo "image=ghcr.io/$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')/subulxp-crm" >> "$GITHUB_OUTPUT"
       - uses: docker/build-push-action@v6
         with:
           context: crm
           push: true
           tags: |
-            ${{ steps.meta.outputs.image }}:latest
-            ${{ steps.meta.outputs.image }}:${{ github.sha }}
+            ${{ env.IMAGE }}:latest
+            ${{ env.IMAGE }}:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy:
+    name: Déploiement Azure
+    needs: build
+    if: github.event_name != 'pull_request' && vars.AZURE_CLIENT_ID != ''
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: ${{ env.CRM_URL }}
+    steps:
+      - name: Connexion Azure (OIDC, sans secret)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      - name: Mise à jour du Container App
+        run: |
+          az containerapp update -n "$AZURE_APP" -g "$AZURE_RG" \
+            --image "$IMAGE:${{ github.sha }}" \
+            --revision-suffix "g${GITHUB_SHA::7}" -o none
+      - name: Contrôle de santé
+        run: |
+          for i in $(seq 1 20); do
+            code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$CRM_URL/api/meta" || true)
+            # /api/meta exige une session : 401 prouve que la nouvelle révision répond.
+            if [ "$code" = "401" ]; then echo "OK ($code)"; exit 0; fi
+            echo "tentative $i : $code"; sleep 10
+          done
+          echo "Le CRM ne répond pas après le déploiement" >&2; exit 1
