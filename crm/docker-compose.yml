@@ -1,0 +1,35 @@
+# Déploiement sur crm.smartovate.com : Caddy termine le HTTPS (certificat Let's Encrypt automatique)
+# et proxifie vers l'application Node. La base SQLite vit dans le volume "crm-data".
+services:
+  crm:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      NODE_ENV: production
+      TRUST_PROXY: "true"
+      DATABASE_PATH: /data/crm.db
+    volumes:
+      - crm-data:/data
+    expose:
+      - "3000"
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      CRM_DOMAIN: ${CRM_DOMAIN:-crm.smartovate.com}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      - crm
+
+volumes:
+  crm-data:
+  caddy-data:
+  caddy-config:
