@@ -28,6 +28,48 @@ npm test
 
 ## Déploiement sur crm.smartovate.com
 
+### Installation en une commande (VPS Ubuntu/Debian vierge)
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/AbdelkhalekBakkari/subulxp/main/crm/deploy/install.sh | sudo ADMIN_EMAIL=admin@smartovate.com bash
+```
+
+Le script installe Docker, clone le dépôt dans `/opt/subulxp`, génère `.env` (secret de session et mot de passe admin
+aléatoires, affichés en fin d'installation) et lance Caddy + le CRM. Mise à jour ultérieure : `sudo /opt/subulxp/crm/deploy/update.sh`.
+
+### Azure Container Apps (recommandé, quasi gratuit avec l'abonnement existant)
+
+L'image est construite par GitHub Actions (`.github/workflows/crm-image.yml`) et publiée sur `ghcr.io/abdelkhalekbakkari/subulxp-crm`
+à chaque push sur `main` touchant `crm/`. Le script `crm/deploy/azure.sh` crée un **nouveau resource group** (`rg-subulxp-crm`,
+France Central) avec un environnement Container Apps en mode consommation (échelle à zéro), un partage Azure Files pour la base
+SQLite (monté avec `nobrl`, journal `DELETE`, une seule réplique) et le Container App. À lancer dans [Azure Cloud Shell](https://shell.azure.com) :
+
+```bash
+SCRIPT=https://raw.githubusercontent.com/AbdelkhalekBakkari/subulxp/main/crm/deploy/azure.sh
+ADMIN_EMAIL=admin@smartovate.com bash <(curl -fsSL $SCRIPT) deploy
+```
+
+Le script affiche l'URL provisoire, le mot de passe admin généré et les deux enregistrements DNS à créer (`CNAME crm` et `TXT asuid.crm`).
+Une fois le DNS propagé : `bash <(curl -fsSL $SCRIPT) bind-domain` émet le certificat HTTPS géré par Azure.
+Autres commandes : `status`, `backup` (télécharge la base), `update` (redéploie la dernière image).
+Si l'image ghcr.io est privée, rendez le package public (GitHub → Packages → Package settings → Change visibility)
+ou passez `GHCR_USER` et `GHCR_TOKEN` (token `read:packages`) au script.
+
+### Plateforme branchée sur GitHub (sans serveur à gérer)
+
+Le dépôt contient la configuration pour trois plateformes qui redéploient à chaque push sur `main` :
+
+| Plateforme | Fichier | Démarche |
+|---|---|---|
+| Railway | `crm/railway.json` | New Project → Deploy from GitHub repo → Root directory `crm` → Volume monté sur `/data` → variables d'environnement → Settings → Custom domain `crm.smartovate.com` (CNAME fourni). |
+| Fly.io | `crm/fly.toml` | `fly launch --copy-config --no-deploy`, `fly volumes create crm_data --size 1`, `fly secrets set SESSION_SECRET=… ADMIN_EMAIL=… ADMIN_PASSWORD=…`, `fly deploy`, `fly certs add crm.smartovate.com`. |
+| Render | `crm/render.yaml` | New → Blueprint → dépôt GitHub → renseigner `ADMIN_EMAIL` / `ADMIN_PASSWORD` → Custom domain (CNAME fourni). |
+
+Variables à définir sur la plateforme : `SESSION_SECRET` (32+ caractères), `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `TRUST_PROXY=true`, `DATABASE_PATH=/data/crm.db`.
+La base SQLite doit être sur un **volume persistant** monté sur `/data`, sinon les données disparaissent à chaque redéploiement.
+
+### Installation manuelle
+
 1. Créer l'enregistrement DNS `A` (ou `AAAA`) `crm.smartovate.com` vers le serveur.
 2. Sur le serveur (Docker + Compose installés) :
 

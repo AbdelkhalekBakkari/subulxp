@@ -1,0 +1,29 @@
+# Fly.io — déploiement depuis le dépôt GitHub (dossier crm/).
+#   fly launch --copy-config --no-deploy && fly volumes create crm_data --size 1 && fly secrets set SESSION_SECRET=... ADMIN_EMAIL=... ADMIN_PASSWORD=... && fly deploy
+app = "subulxp-crm"
+primary_region = "cdg"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  PORT = "3000"
+  DATABASE_PATH = "/data/crm.db"
+  TRUST_PROXY = "true"
+  NODE_ENV = "production"
+  INTAKE_ALLOWED_ORIGINS = "https://xp.subul.uk"
+
+[[mounts]]
+  source = "crm_data"
+  destination = "/data"
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "256mb"
