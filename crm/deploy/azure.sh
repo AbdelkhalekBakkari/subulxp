@@ -34,8 +34,10 @@ STORAGE="st$(printf '%s' "${SUB_ID}${RG}" | sha1sum | cut -c1-18)"
 cmd_deploy() {
   log "Abonnement : $(az account show --query name -o tsv) · resource group : ${RG} (${LOCATION})"
   az extension add --name containerapp --upgrade --only-show-errors >/dev/null
-  az provider register --namespace Microsoft.App --wait >/dev/null
-  az provider register --namespace Microsoft.OperationalInsights --wait >/dev/null
+  log "Enregistrement des fournisseurs de ressources (nécessaire sur un abonnement neuf)"
+  for ns in Microsoft.App Microsoft.OperationalInsights Microsoft.Storage; do
+    az provider register --namespace "$ns" --wait >/dev/null
+  done
 
   ADMIN_EMAIL="${ADMIN_EMAIL:-}"
   while [ -z "${ADMIN_EMAIL}" ]; do read -rp "Email de l'admin initial du CRM : " ADMIN_EMAIL; done
