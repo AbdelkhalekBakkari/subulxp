@@ -60,24 +60,39 @@ jobs:
   deploy:
     name: Déploiement Azure
     needs: build
-    if: github.event_name != 'pull_request' && vars.AZURE_CLIENT_ID != ''
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     environment:
       name: production
       url: ${{ env.CRM_URL }}
     steps:
+      - name: Lecture de la configuration Azure (variables ou secrets, dépôt ou environnement)
+        id: cfg
+        env:
+          CID: ${{ vars.AZURE_CLIENT_ID || secrets.AZURE_CLIENT_ID }}
+          TID: ${{ vars.AZURE_TENANT_ID || secrets.AZURE_TENANT_ID }}
+          SID: ${{ vars.AZURE_SUBSCRIPTION_ID || secrets.AZURE_SUBSCRIPTION_ID }}
+        run: |
+          if [ -z "$CID" ] || [ -z "$TID" ] || [ -z "$SID" ]; then
+            echo "::warning::AZURE_CLIENT_ID / AZURE_TENANT_ID / AZURE_SUBSCRIPTION_ID absents : déploiement ignoré."
+            echo "configured=false" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          { echo "configured=true"; echo "client_id=$CID"; echo "tenant_id=$TID"; echo "subscription_id=$SID"; } >> "$GITHUB_OUTPUT"
       - name: Connexion Azure (OIDC, sans secret)
+        if: steps.cfg.outputs.configured == 'true'
         uses: azure/login@v2
         with:
-          client-id: ${{ vars.AZURE_CLIENT_ID }}
-          tenant-id: ${{ vars.AZURE_TENANT_ID }}
-          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+          client-id: ${{ steps.cfg.outputs.client_id }}
+          tenant-id: ${{ steps.cfg.outputs.tenant_id }}
+          subscription-id: ${{ steps.cfg.outputs.subscription_id }}
       - name: Mise à jour du Container App
+        if: steps.cfg.outputs.configured == 'true'
         run: |
           az containerapp update -n "$AZURE_APP" -g "$AZURE_RG" \
             --image "$IMAGE:${{ github.sha }}" \
             --revision-suffix "g${GITHUB_SHA::7}" -o none
       - name: Contrôle de santé
+        if: steps.cfg.outputs.configured == 'true'
         run: |
           for i in $(seq 1 20); do
             code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$CRM_URL/api/meta" || true)
