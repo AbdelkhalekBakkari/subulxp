@@ -5,10 +5,18 @@ const { DatabaseSync } = require('node:sqlite');
 
 const SCHEMA = fs.readFileSync(path.join(__dirname, 'schema.sql'), 'utf8');
 
-function openDatabase(dbPath) {
+const JOURNAL_MODES = ['WAL', 'DELETE', 'TRUNCATE', 'PERSIST'];
+
+/**
+ * @param {string} dbPath chemin du fichier (ou ':memory:')
+ * @param {{journalMode?: string}} [opts] journalMode: WAL (défaut, disque local) ou DELETE
+ *        pour un partage réseau (Azure Files, NFS, SMB) où WAL n'est pas fiable.
+ */
+function openDatabase(dbPath, opts = {}) {
   if (dbPath !== ':memory:') fs.mkdirSync(path.dirname(dbPath), { recursive: true });
   const db = new DatabaseSync(dbPath);
-  db.exec('PRAGMA journal_mode = WAL;');
+  const journal = String(opts.journalMode || 'WAL').toUpperCase();
+  db.exec(`PRAGMA journal_mode = ${JOURNAL_MODES.includes(journal) ? journal : 'WAL'};`);
   db.exec('PRAGMA busy_timeout = 5000;');
   db.exec(SCHEMA);
   return wrap(db);

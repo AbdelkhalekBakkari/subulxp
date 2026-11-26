@@ -11,6 +11,7 @@ function loadConfig(env = process.env) {
   return {
     port: Number(env.PORT) || 3000,
     databasePath: env.DATABASE_PATH || path.join(__dirname, '..', 'data', 'crm.db'),
+    sqliteJournalMode: env.SQLITE_JOURNAL_MODE || 'WAL',
     trustProxy: env.TRUST_PROXY === 'true',
     secureCookies: env.TRUST_PROXY === 'true' || env.NODE_ENV === 'production',
     sessionSecret: secret || 'dev-only-secret-change-me-0123456789',
@@ -34,7 +35,7 @@ function bootstrapAdmin(db, config, log = console) {
 }
 
 function createApp(config, { log = console } = {}) {
-  const db = openDatabase(config.databasePath);
+  const db = openDatabase(config.databasePath, { journalMode: config.sqliteJournalMode });
   bootstrapAdmin(db, config, log);
 
   const app = express();

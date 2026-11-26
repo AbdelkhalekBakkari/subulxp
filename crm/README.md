@@ -37,6 +37,24 @@ curl -fsSL https://raw.githubusercontent.com/AbdelkhalekBakkari/subulxp/main/crm
 Le script installe Docker, clone le dépôt dans `/opt/subulxp`, génère `.env` (secret de session et mot de passe admin
 aléatoires, affichés en fin d'installation) et lance Caddy + le CRM. Mise à jour ultérieure : `sudo /opt/subulxp/crm/deploy/update.sh`.
 
+### Azure Container Apps (recommandé, quasi gratuit avec l'abonnement existant)
+
+L'image est construite par GitHub Actions (`.github/workflows/crm-image.yml`) et publiée sur `ghcr.io/abdelkhalekbakkari/subulxp-crm`
+à chaque push sur `main` touchant `crm/`. Le script `crm/deploy/azure.sh` crée un **nouveau resource group** (`rg-subulxp-crm`,
+France Central) avec un environnement Container Apps en mode consommation (échelle à zéro), un partage Azure Files pour la base
+SQLite (monté avec `nobrl`, journal `DELETE`, une seule réplique) et le Container App. À lancer dans [Azure Cloud Shell](https://shell.azure.com) :
+
+```bash
+SCRIPT=https://raw.githubusercontent.com/AbdelkhalekBakkari/subulxp/main/crm/deploy/azure.sh
+ADMIN_EMAIL=admin@smartovate.com bash <(curl -fsSL $SCRIPT) deploy
+```
+
+Le script affiche l'URL provisoire, le mot de passe admin généré et les deux enregistrements DNS à créer (`CNAME crm` et `TXT asuid.crm`).
+Une fois le DNS propagé : `bash <(curl -fsSL $SCRIPT) bind-domain` émet le certificat HTTPS géré par Azure.
+Autres commandes : `status`, `backup` (télécharge la base), `update` (redéploie la dernière image).
+Si l'image ghcr.io est privée, rendez le package public (GitHub → Packages → Package settings → Change visibility)
+ou passez `GHCR_USER` et `GHCR_TOKEN` (token `read:packages`) au script.
+
 ### Plateforme branchée sur GitHub (sans serveur à gérer)
 
 Le dépôt contient la configuration pour trois plateformes qui redéploient à chaque push sur `main` :
