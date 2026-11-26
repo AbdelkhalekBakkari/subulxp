@@ -37,6 +37,19 @@ curl -fsSL https://raw.githubusercontent.com/AbdelkhalekBakkari/subulxp/main/crm
 Le script installe Docker, clone le dépôt dans `/opt/subulxp`, génère `.env` (secret de session et mot de passe admin
 aléatoires, affichés en fin d'installation) et lance Caddy + le CRM. Mise à jour ultérieure : `sudo /opt/subulxp/crm/deploy/update.sh`.
 
+### Plateforme branchée sur GitHub (sans serveur à gérer)
+
+Le dépôt contient la configuration pour trois plateformes qui redéploient à chaque push sur `main` :
+
+| Plateforme | Fichier | Démarche |
+|---|---|---|
+| Railway | `crm/railway.json` | New Project → Deploy from GitHub repo → Root directory `crm` → Volume monté sur `/data` → variables d'environnement → Settings → Custom domain `crm.smartovate.com` (CNAME fourni). |
+| Fly.io | `crm/fly.toml` | `fly launch --copy-config --no-deploy`, `fly volumes create crm_data --size 1`, `fly secrets set SESSION_SECRET=… ADMIN_EMAIL=… ADMIN_PASSWORD=…`, `fly deploy`, `fly certs add crm.smartovate.com`. |
+| Render | `crm/render.yaml` | New → Blueprint → dépôt GitHub → renseigner `ADMIN_EMAIL` / `ADMIN_PASSWORD` → Custom domain (CNAME fourni). |
+
+Variables à définir sur la plateforme : `SESSION_SECRET` (32+ caractères), `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `TRUST_PROXY=true`, `DATABASE_PATH=/data/crm.db`.
+La base SQLite doit être sur un **volume persistant** monté sur `/data`, sinon les données disparaissent à chaque redéploiement.
+
 ### Installation manuelle
 
 1. Créer l'enregistrement DNS `A` (ou `AAAA`) `crm.smartovate.com` vers le serveur.

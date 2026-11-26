@@ -1,0 +1,30 @@
+# Render — Blueprint (déploiement depuis GitHub). Le disque persistant nécessite une instance payante.
+services:
+  - type: web
+    name: subulxp-crm
+    runtime: docker
+    rootDir: crm
+    plan: starter
+    region: frankfurt
+    healthCheckPath: /
+    disk:
+      name: crm-data
+      mountPath: /data
+      sizeGB: 1
+    envVars:
+      - key: PORT
+        value: "3000"
+      - key: DATABASE_PATH
+        value: /data/crm.db
+      - key: TRUST_PROXY
+        value: "true"
+      - key: NODE_ENV
+        value: production
+      - key: INTAKE_ALLOWED_ORIGINS
+        value: https://xp.subul.uk
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
