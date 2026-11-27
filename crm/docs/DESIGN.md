@@ -47,3 +47,18 @@ Le périmètre est appliqué **côté serveur** (`src/scope.js`) dans chaque req
 - Validation serveur de chaque champ (schémas dans chaque route, clés inconnues ignorées), réponses sans champs sensibles.
 - En-têtes : CSP, HSTS, nosniff, frame-ancestors none ; export CSV protégé contre l'injection de formules.
 - Journal d'audit : connexions (réussies/échouées), créations, modifications, exports, pointages.
+
+## Design system (interface)
+Tout est dans `public/styles.css`, organisé en tokens, base, layout, composants, utilitaires, responsive.
+
+- **Tokens** (`:root`) : couleurs de marque et sémantiques, `--font-xs … --font-2xl`, `--space-1 … --space-10` (pas de 4 px),
+  `--radius-sm/md/lg/xl/pill`, `--shadow-sm/lg`, `--duration-fast/base`. Aucune valeur de couleur, taille, espacement ou durée
+  n'est écrite en dur dans les composants ; seules les largeurs calculées (barres, taux) restent en style inline.
+- **Nommage** : `composant` puis `composant-variante` ou `composant-partie` (`btn btn-primary`, `card-header`, `badge badge-active`,
+  `timeline-entry timeline-call`, `segmented-present`). Les états sont des pseudo-classes ou des classes `is-*` (`is-loading`).
+- **États obligatoires** : hover, `:focus-visible` (anneau violet commun à tous les contrôles), `:disabled` (champs et boutons),
+  `aria-invalid` (champs), `is-loading` + `aria-busy` (boutons de soumission via `setLoading()`), `aria-sort` (en-têtes triables),
+  `aria-current="page"` (navigation), `aria-labelledby` (modales), `aria-expanded` (menu mobile).
+- **Utilitaires** : `.u-nowrap`, `.u-prewrap`, `.u-truncate`, `.u-center`, `.u-self-center`, `.flex-row`, `.mt-*`, `.mb-*`, `.scroll-list`.
+  Ils remplacent les styles inline dans `app.js`.
+- **Mouvement** : réduit automatiquement avec `prefers-reduced-motion`.
