@@ -17,8 +17,10 @@ const SESSION_MODES = ['onsite', 'online'];
 const ATTENDANCE_STATUSES = ['present', 'absent', 'late', 'excused'];
 const ACTIVITY_TYPES = ['note', 'call', 'whatsapp', 'email', 'meeting'];
 const SOURCES = ['landing', 'whatsapp', 'referral', 'school', 'linkedin', 'import', 'other'];
+const DOCUMENT_TYPES = ['cahier_des_charges', 'demande_de_stage', 'convention_de_stage', 'autre'];
+const DOCUMENT_LABELS = { cahier_des_charges: 'Cahier des charges', demande_de_stage: 'Demande de stage', convention_de_stage: 'Convention de stage', autre: 'Autre document' };
 
 module.exports = {
   ROLES, ROLE_LABELS, DOMAINS, LEVELS, STUDENT_STATUSES, STAGES, STAGE_LABELS,
-  SUBJECT_STATUSES, SESSION_STATUSES, SESSION_MODES, ATTENDANCE_STATUSES, ACTIVITY_TYPES, SOURCES,
+  SUBJECT_STATUSES, SESSION_STATUSES, SESSION_MODES, ATTENDANCE_STATUSES, ACTIVITY_TYPES, SOURCES, DOCUMENT_TYPES, DOCUMENT_LABELS,
 };

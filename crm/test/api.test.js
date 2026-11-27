@@ -163,6 +163,32 @@ describe('Subul XP CRM API', () => {
     assert.equal(other.headers.get('access-control-allow-origin'), null);
   });
 
+  test('documents: upload with validation, scope, download and delete', async () => {
+    const pdf = Buffer.from('%PDF-1.4\n1 0 obj << >> endobj\n%%EOF');
+    const q = (type, name) => `/api/students/${studentA.id}/documents?type=${type}&name=${encodeURIComponent(name)}`;
+    const up = await pm.upload(q('convention_de_stage', 'Convention Sara.pdf'), pdf, 'application/pdf');
+    assert.equal(up.status, 201, JSON.stringify(up.body));
+    assert.equal(up.body.document.type, 'convention_de_stage'); assert.equal(up.body.document.mime, 'application/pdf'); assert.equal(up.body.document.size, pdf.length);
+    assert.equal((await pm.upload(q('convention_de_stage', 'virus.exe'), pdf)).status, 400, 'extension refusée');
+    assert.equal((await pm.upload(q('convention_de_stage', 'fake.pdf'), Buffer.from('not a pdf'))).status, 400, 'signature refusée');
+    assert.equal((await pm.upload(q('passeport', 'x.pdf'), pdf)).status, 400, 'type refusé');
+    assert.equal((await pm.upload(q('autre', 'empty.pdf'), Buffer.alloc(0))).status, 400, 'fichier vide refusé');
+    const sup = await sup1.upload(q('cahier_des_charges', 'CDC.pdf'), pdf, 'application/pdf');
+    assert.equal(sup.status, 201, 'supervisor can upload for own student');
+    assert.equal((await sup2.get(`/api/students/${studentA.id}/documents`)).status, 404, 'out-of-scope supervisor cannot see documents');
+    const lst = await pm.get(`/api/students/${studentA.id}/documents`);
+    assert.equal(lst.body.documents.length, 2);
+    const inList = (await pm.get('/api/students?q=Amri')).body.students[0];
+    assert.deepEqual(inList.document_types.sort(), ['cahier_des_charges', 'convention_de_stage']);
+    const dl = await pm.raw(`/api/students/${studentA.id}/documents/${up.body.document.id}/download`);
+    assert.equal(dl.status, 200); assert.ok(dl.buffer.equals(pdf)); assert.match(dl.headers.get('content-disposition'), /attachment/); assert.equal(dl.headers.get('content-type'), 'application/pdf');
+    assert.equal((await sup1.del(`/api/students/${studentA.id}/documents/${up.body.document.id}`)).status, 403, 'supervisor cannot delete a PM upload');
+    assert.equal((await sup1.del(`/api/students/${studentA.id}/documents/${sup.body.document.id}`)).status, 200, 'supervisor deletes own upload');
+    assert.equal((await pm.del(`/api/students/${studentA.id}/documents/${up.body.document.id}`)).status, 200);
+    assert.equal((await pm.raw(`/api/students/${studentA.id}/documents/${up.body.document.id}/download`)).status, 404);
+    assert.equal((await pm.get(`/api/students/${studentA.id}/documents`)).body.documents.length, 0);
+  });
+
   test('archive, audit log and password change', async () => {
     assert.equal((await sup1.post(`/api/students/${studentB.id}/archive`, {})).status, 403);
     assert.equal((await pm.post(`/api/students/${studentB.id}/archive`, {})).status, 200);

@@ -22,6 +22,7 @@ et organiser la collaboration entre l'**admin global**, les **project managers**
 | `lab_sessions` | séances / labs : sujet, encadrant, date, durée, mode, lieu, statut |
 | `attendance` | présence par séance et étudiant : `present`, `late`, `absent`, `excused` + note |
 | `activities` | timeline par étudiant : note, appel, WhatsApp, email, réunion, changement d'étape, système |
+| `documents` | pièces du dossier par étudiant : `cahier_des_charges`, `demande_de_stage`, `convention_de_stage`, `autre` ; fichier stocké sous `UPLOAD_DIR` (volume persistant), nom aléatoire, type MIME et taille |
 | `audit_log` | journal de sécurité et de modifications |
 | `settings` | clé d'intégration du formulaire landing |
 
@@ -46,7 +47,10 @@ Le périmètre est appliqué **côté serveur** (`src/scope.js`) dans chaque req
 - CSRF : SameSite=Strict + en-tête `X-Requested-With` obligatoire sur toute mutation.
 - Validation serveur de chaque champ (schémas dans chaque route, clés inconnues ignorées), réponses sans champs sensibles.
 - En-têtes : CSP, HSTS, nosniff, frame-ancestors none ; export CSV protégé contre l'injection de formules.
-- Journal d'audit : connexions (réussies/échouées), créations, modifications, exports, pointages.
+- Journal d'audit : connexions (réussies/échouées), créations, modifications, exports, pointages, dépôts/téléchargements/suppressions de documents.
+- Documents : extensions limitées (pdf, doc, docx, png, jpg), signature binaire vérifiée, 15 Mo max, nom de fichier assaini, stockage hors
+  du répertoire public sous un nom aléatoire, téléchargement en `attachment` avec le type MIME enregistré, suppression réservée à l'auteur,
+  aux PM et aux admins.
 
 ## Design system (interface)
 Tout est dans `public/styles.css`, organisé en tokens, base, layout, composants, utilitaires, responsive.
