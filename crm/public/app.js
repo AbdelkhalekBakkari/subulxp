@@ -22,9 +22,15 @@ const toLocalInput = (iso) => { if (!iso) return ''; const d = new Date(iso); d.
 
 function toast(msg, kind = '') {
   const el = document.createElement('div');
-  el.className = 'toast ' + kind; el.textContent = msg;
+  el.className = 'toast' + (kind ? ' toast-' + (kind === 'err' ? 'error' : kind) : ''); el.textContent = msg;
   $('#toasts').appendChild(el);
   setTimeout(() => el.remove(), 3800);
+}
+
+/** État de chargement d'un bouton : désactivé + spinner, annoncé aux lecteurs d'écran. */
+function setLoading(btn, on) {
+  if (!btn) return;
+  btn.disabled = on; btn.classList.toggle('is-loading', on); btn.setAttribute('aria-busy', on ? 'true' : 'false');
 }
 
 /* ---------- API ---------- */
@@ -83,17 +89,17 @@ const MODE_LABEL = { onsite: 'Sur site', online: 'En ligne' };
 const SOURCE_LABEL = { landing: 'Formulaire landing', whatsapp: 'WhatsApp', referral: 'Recommandation', school: 'École', linkedin: 'LinkedIn', import: 'Import CSV', other: 'Autre' };
 
 /* ---------- Composants ---------- */
-const badge = (text, cls = '') => `<span class="badge ${attr(cls)}">${esc(text)}</span>`;
+const badge = (text, cls = '') => `<span class="badge badge-${attr(cls)}">${esc(text)}</span>`;
 const stageBadge = (s) => badge(state.meta?.stage_labels[s] || s, s);
-const rateBar = (rate) => rate == null ? '<span class="muted">—</span>' : `<span class="rate ${rate < 60 ? 'low' : rate < 80 ? 'mid' : ''}"><i><b style="width:${rate}%"></b></i>${rate}%</span>`;
-const contactIcons = (s) => `${s.whatsapp ? `<a class="ic wa" href="${attr(waLink(s.whatsapp))}" target="_blank" rel="noopener" title="WhatsApp ${attr(s.whatsapp)}">${I.wa}</a>` : ''}
-  ${s.email ? `<a class="ic" href="mailto:${attr(s.email)}" title="${attr(s.email)}">${I.mail}</a>` : ''}`;
+const rateBar = (rate) => rate == null ? '<span class="muted">—</span>' : `<span class="rate ${rate < 60 ? 'rate-low' : rate < 80 ? 'rate-mid' : ''}"><span class="rate-track"><span class="rate-fill" style="width:${rate}%"></span></span>${rate}%</span>`;
+const contactIcons = (s) => `${s.whatsapp ? `<a class="icon-link icon-link-whatsapp" href="${attr(waLink(s.whatsapp))}" target="_blank" rel="noopener" title="WhatsApp ${attr(s.whatsapp)}">${I.wa}</a>` : ''}
+  ${s.email ? `<a class="icon-link" href="mailto:${attr(s.email)}" title="${attr(s.email)}">${I.mail}</a>` : ''}`;
 const options = (list, selected, labelFn = (x) => x, valueFn = (x) => x, placeholder = '— Aucun —') =>
   `<option value="">${esc(placeholder)}</option>` + list.map((x) => `<option value="${attr(valueFn(x))}" ${String(valueFn(x)) === String(selected ?? '') ? 'selected' : ''}>${esc(labelFn(x))}</option>`).join('');
 const userOptions = (list, selected) => options(list, selected, (u) => u.name, (u) => u.id);
 
 function field(name, label, inputHtml, hint) {
-  return `<div class="field" data-field="${attr(name)}"><label for="f-${attr(name)}">${esc(label)}</label>${inputHtml}${hint ? `<span class="small muted">${esc(hint)}</span>` : ''}<span class="err" hidden></span></div>`;
+  return `<div class="field" data-field="${attr(name)}"><label for="f-${attr(name)}">${esc(label)}</label>${inputHtml}${hint ? `<span class="small muted">${esc(hint)}</span>` : ''}<span class="field-error" hidden></span></div>`;
 }
 const input = (name, value = '', type = 'text', extra = '') => `<input type="${type}" id="f-${attr(name)}" name="${attr(name)}" value="${attr(value)}" ${extra}>`;
 const select = (name, opts, extra = '') => `<select id="f-${attr(name)}" name="${attr(name)}" ${extra}>${opts}</select>`;
@@ -112,38 +118,40 @@ function formData(form) {
   return out;
 }
 function showErrors(form, err) {
-  $$('.err', form).forEach((e) => { e.hidden = true; e.textContent = ''; });
+  $$('.field-error', form).forEach((e) => { e.hidden = true; e.textContent = ''; });
   $$('[aria-invalid]', form).forEach((e) => e.removeAttribute('aria-invalid'));
   const box = $('.form-error', form); if (box) box.remove();
   if (err.details && typeof err.details === 'object') {
     for (const [k, msg] of Object.entries(err.details)) {
       const f = form.querySelector(`[data-field="${CSS.escape(k)}"]`);
-      if (f) { const e = $('.err', f); e.textContent = msg; e.hidden = false; const inp = $('input,select,textarea', f); if (inp) inp.setAttribute('aria-invalid', 'true'); }
+      if (f) { const e = $('.field-error', f); e.textContent = msg; e.hidden = false; const inp = $('input,select,textarea', f); if (inp) inp.setAttribute('aria-invalid', 'true'); }
     }
   }
-  ($('.bd', form) || form).insertAdjacentHTML('afterbegin', `<div class="form-error" role="alert">${esc(err.message)}</div>`);
+  ($('.card-body', form) || form).insertAdjacentHTML('afterbegin', `<div class="form-error" role="alert">${esc(err.message)}</div>`);
 }
 
 /** Modal générique avec formulaire. onSubmit(data, form) → renvoie une promesse ; une erreur affiche les champs. */
 function modal({ title, body, submitLabel = 'Enregistrer', onSubmit, wide = false, danger = false }) {
   const d = document.createElement('dialog');
-  if (wide) d.style.width = 'min(900px,94vw)';
+  if (wide) d.classList.add('dialog-wide');
+  const titleId = 'dlg-' + Math.random().toString(36).slice(2, 8);
+  d.setAttribute('aria-labelledby', titleId);
   d.innerHTML = `<form method="dialog" novalidate>
-    <div class="hd"><h2>${esc(title)}</h2><button type="button" class="close" aria-label="Fermer">×</button></div>
-    <div class="bd">${body}</div>
-    <div class="ft"><button type="button" class="btn cancel">Annuler</button>${onSubmit ? `<button type="submit" class="btn ${danger ? 'danger' : 'primary'}">${esc(submitLabel)}</button>` : ''}</div>
+    <div class="card-header"><h2 id="${titleId}">${esc(title)}</h2><button type="button" class="dialog-close" aria-label="Fermer">×</button></div>
+    <div class="card-body">${body}</div>
+    <div class="card-footer"><button type="button" class="btn cancel">Annuler</button>${onSubmit ? `<button type="submit" class="btn ${danger ? 'btn-danger' : 'btn-primary'}">${esc(submitLabel)}</button>` : ''}</div>
   </form>`;
   document.body.appendChild(d);
   const close = () => { d.close(); d.remove(); };
-  $('.close', d).onclick = close; $('.cancel', d).onclick = close;
+  $('.dialog-close', d).onclick = close; $('.cancel', d).onclick = close;
   d.addEventListener('cancel', (e) => { e.preventDefault(); close(); });
   const form = $('form', d);
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     if (!onSubmit) return close();
-    const btn = $('button[type=submit]', form); btn.disabled = true;
+    const btn = $('button[type=submit]', form); setLoading(btn, true);
     try { await onSubmit(formData(form), form); close(); }
-    catch (err) { showErrors(form, err); btn.disabled = false; }
+    catch (err) { showErrors(form, err); setLoading(btn, false); }
   });
   d.showModal();
   const first = $('input:not([type=hidden]),select,textarea', d); if (first) first.focus();
@@ -185,18 +193,18 @@ async function render() {
 }
 function layout(content) {
   const u = state.user; const r = state.route.name;
-  const link = (name, path, icon, label, active = [name]) => `<a href="#${path}" class="${active.includes(r) ? 'active' : ''}">${icon}${esc(label)}</a>`;
+  const link = (name, path, icon, label, active = [name]) => `<a href="#${path}" class="${active.includes(r) ? 'active' : ''}" ${active.includes(r) ? 'aria-current="page"' : ''}>${icon}${esc(label)}</a>`;
   return `<div class="shell">
     <aside class="sidebar" id="sidebar">
-      <div class="brand"><span class="logo">XP</span><span>Subul XP<small>CRM résidence</small></span></div>
+      <div class="brand"><span class="brand-logo">XP</span><span>Subul XP<small>CRM résidence</small></span></div>
       <nav class="nav">
         ${link('dashboard', '/', I.home, 'Tableau de bord')}
         ${link('students', '/students', I.users, 'Étudiants', ['students', 'student'])}
         ${link('subjects', '/subjects', I.book, 'Sujets', ['subjects', 'subject'])}
         ${link('sessions', '/sessions', I.cal, 'Séances & présences', ['sessions', 'session'])}
-        ${isAdmin() ? `<div class="sep">Administration</div>${link('users', '/users', I.shield, 'Utilisateurs')}${link('audit', '/audit', I.list, 'Journal d\'audit')}${link('settings', '/settings', I.cog, 'Paramètres')}` : ''}
+        ${isAdmin() ? `<div class="nav-section">Administration</div>${link('users', '/users', I.shield, 'Utilisateurs')}${link('audit', '/audit', I.list, 'Journal d\'audit')}${link('settings', '/settings', I.cog, 'Paramètres')}` : ''}
       </nav>
-      <a class="me" href="#/profile" title="Mon profil"><span class="avatar">${esc(initials(u.name))}</span><span class="who"><b>${esc(u.name)}</b><span>${esc(state.meta.role_labels[u.role])}</span></span></a>
+      <a class="profile-card" href="#/profile" title="Mon profil"><span class="avatar">${esc(initials(u.name))}</span><span class="profile-card-who"><b>${esc(u.name)}</b><span>${esc(state.meta.role_labels[u.role])}</span></span></a>
       <button type="button" class="logout-btn" data-logout>${I.out} Se déconnecter</button>
     </aside>
     <main class="main">${content}</main>
@@ -204,27 +212,27 @@ function layout(content) {
 }
 document.addEventListener('click', async (e) => {
   if (e.target.closest("[data-logout]")) { e.preventDefault(); await POST('/auth/logout'); state.user = null; state.meta = null; go('/'); render(); }
-  if (e.target.closest('.burger')) $('#sidebar').classList.toggle('open');
+  if (e.target.closest('.burger')) { const open = $('#sidebar').classList.toggle('open'); $('.burger').setAttribute('aria-expanded', String(open)); }
   if (e.target.closest('#sidebar a') && !e.target.closest("[data-logout]")) $('#sidebar')?.classList.remove('open');
 });
-const topbar = (title, actionsHtml = '', crumbs = '') => `<div class="topbar"><div><button class="btn ghost burger" type="button" aria-label="Menu">${I.menu}</button>${crumbs ? `<div class="crumbs">${crumbs}</div>` : ''}<h1>${title}</h1></div><div class="actions">${actionsHtml}</div></div>`;
+const topbar = (title, actionsHtml = '', crumbs = '') => `<div class="topbar"><div><button class="btn btn-ghost burger" type="button" aria-label="Menu" aria-expanded="false" aria-controls="sidebar">${I.menu}</button>${crumbs ? `<div class="crumbs">${crumbs}</div>` : ''}<h1>${title}</h1></div><div class="actions">${actionsHtml}</div></div>`;
 
 /* ---------- Connexion ---------- */
 function renderLogin() {
   app.innerHTML = `<div class="login"><div class="card">
-    <h1>Subul XP</h1><p class="muted" style="margin:0 0 24px">CRM de la résidence technique — connexion</p>
+    <h1>Subul XP</h1><p class="muted mb-6">CRM de la résidence technique — connexion</p>
     <form id="login" novalidate>
       ${field('email', 'Email', input('email', '', 'email', 'autocomplete="username" required'))}
       ${field('password', 'Mot de passe', input('password', '', 'password', 'autocomplete="current-password" required'))}
-      <button class="btn primary" type="submit">Se connecter</button>
+      <button class="btn btn-primary" type="submit">Se connecter</button>
     </form>
-    <p class="small muted" style="text-align:center;margin:18px 0 0">Accès réservé aux encadrants, project managers et administrateurs.</p>
+    <p class="small muted u-center mt-5 mb-0">Accès réservé aux encadrants, project managers et administrateurs.</p>
   </div></div>`;
   $('#login').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const form = e.target; const btn = $('button', form); btn.disabled = true;
+    const form = e.target; const btn = $('button', form); setLoading(btn, true);
     try { const r = await POST('/auth/login', formData(form)); state.user = r.user; render(); }
-    catch (err) { showErrors(form, err); btn.disabled = false; }
+    catch (err) { showErrors(form, err); setLoading(btn, false); }
   });
 }
 
@@ -235,32 +243,32 @@ VIEWS.dashboard = {
     const d = await GET('/dashboard');
     const k = d.kpis; const sl = state.meta.stage_labels;
     const maxStage = Math.max(1, ...Object.values(d.by_stage)); const maxDom = Math.max(1, ...Object.values(d.by_domain));
-    const bars = (obj, labels, max) => `<div class="bars">${Object.entries(obj).map(([key, n]) => `<div class="bar"><span>${esc(labels?.[key] || key)}</span><span class="track"><span class="fill" style="width:${Math.round((n / max) * 100)}%"></span></span><b>${n}</b></div>`).join('')}</div>`;
-    return topbar('Tableau de bord', `<a class="btn" href="#/sessions">${I.cal} Séances</a>${isManager() ? `<button class="btn primary" id="new-student">${I.plus} Nouvel étudiant</button>` : ''}`) + `
-    <div class="grid c4" style="margin-bottom:18px">
-      <div class="card kpi accent"><div class="l">Étudiants suivis</div><div class="v">${k.students_total}</div><div class="d">${k.students_active} en résidence active</div></div>
-      <div class="card kpi"><div class="l">Nouveaux leads ce mois</div><div class="v">${k.new_leads_month}</div><div class="d">${k.unassigned} sans encadrant affecté</div></div>
-      <div class="card kpi"><div class="l">Taux de présence (30 j)</div><div class="v">${k.attendance_rate_30d == null ? '—' : k.attendance_rate_30d + '%'}</div><div class="d">${k.absences_30d} absence(s) enregistrée(s)</div></div>
-      <div class="card kpi"><div class="l">Sujets ouverts</div><div class="v">${k.subjects_open}</div><div class="d">${k.upcoming_sessions} séance(s) à venir</div></div>
+    const bars = (obj, labels, max) => `<div class="bars">${Object.entries(obj).map(([key, n]) => `<div class="bar"><span>${esc(labels?.[key] || key)}</span><span class="bar-track"><span class="bar-fill" style="width:${Math.round((n / max) * 100)}%"></span></span><b>${n}</b></div>`).join('')}</div>`;
+    return topbar('Tableau de bord', `<a class="btn" href="#/sessions">${I.cal} Séances</a>${isManager() ? `<button class="btn btn-primary" id="new-student">${I.plus} Nouvel étudiant</button>` : ''}`) + `
+    <div class="grid grid-4 mb-5">
+      <div class="card kpi kpi-accent"><div class="kpi-label">Étudiants suivis</div><div class="kpi-value">${k.students_total}</div><div class="kpi-detail">${k.students_active} en résidence active</div></div>
+      <div class="card kpi"><div class="kpi-label">Nouveaux leads ce mois</div><div class="kpi-value">${k.new_leads_month}</div><div class="kpi-detail">${k.unassigned} sans encadrant affecté</div></div>
+      <div class="card kpi"><div class="kpi-label">Taux de présence (30 j)</div><div class="kpi-value">${k.attendance_rate_30d == null ? '—' : k.attendance_rate_30d + '%'}</div><div class="kpi-detail">${k.absences_30d} absence(s) enregistrée(s)</div></div>
+      <div class="card kpi"><div class="kpi-label">Sujets ouverts</div><div class="kpi-value">${k.subjects_open}</div><div class="kpi-detail">${k.upcoming_sessions} séance(s) à venir</div></div>
     </div>
-    <div class="grid main-side">
+    <div class="grid grid-main-side">
       <div class="grid">
-        <div class="grid c2">
-          <div class="card"><div class="hd"><h2>Pipeline par étape</h2></div><div class="bd">${bars(d.by_stage, sl, maxStage)}</div></div>
-          <div class="card"><div class="hd"><h2>Par domaine</h2></div><div class="bd">${bars(d.by_domain, null, maxDom)}</div></div>
+        <div class="grid grid-2">
+          <div class="card"><div class="card-header"><h2>Pipeline par étape</h2></div><div class="card-body">${bars(d.by_stage, sl, maxStage)}</div></div>
+          <div class="card"><div class="card-header"><h2>Par domaine</h2></div><div class="card-body">${bars(d.by_domain, null, maxDom)}</div></div>
         </div>
-        <div class="card"><div class="hd"><h2>Activité récente</h2><a href="#/students" class="small">Tous les étudiants</a></div><div class="bd">
-          ${d.recent.length ? `<div class="timeline">${d.recent.map((a) => `<div class="tl ${attr(a.type)}"><span class="dot">${ACT_ICON[a.type] || I.note}</span><div><div class="meta"><a href="#/students/${a.student_id}"><b>${esc(a.first_name + ' ' + a.last_name)}</b></a> · ${esc(ACT_LABEL[a.type] || a.type)} · ${esc(a.user_name || 'Système')} · ${esc(fmtRel(a.created_at))}</div><p>${esc(a.content)}</p></div></div>`).join('')}</div>` : '<div class="empty">Aucune activité pour l\'instant.</div>'}
+        <div class="card"><div class="card-header"><h2>Activité récente</h2><a href="#/students" class="small">Tous les étudiants</a></div><div class="card-body">
+          ${d.recent.length ? `<div class="timeline">${d.recent.map((a) => `<div class="timeline-entry timeline-${attr(a.type)}"><span class="timeline-dot">${ACT_ICON[a.type] || I.note}</span><div><div class="timeline-meta"><a href="#/students/${a.student_id}"><b>${esc(a.first_name + ' ' + a.last_name)}</b></a> · ${esc(ACT_LABEL[a.type] || a.type)} · ${esc(a.user_name || 'Système')} · ${esc(fmtRel(a.created_at))}</div><p>${esc(a.content)}</p></div></div>`).join('')}</div>` : '<div class="empty">Aucune activité pour l\'instant.</div>'}
         </div></div>
       </div>
       <div class="grid">
-        <div class="card"><div class="hd"><h2>Prochaines séances</h2><a href="#/sessions" class="small">Toutes</a></div><div class="bd">
-          ${d.upcoming.length ? `<div class="list">${d.upcoming.map((s) => `<a class="it" href="#/sessions/${s.id}"><span class="when">${esc(fmtDateTime(s.scheduled_at))}</span><span class="what"><b>${esc(s.title)}</b><span>${esc(s.supervisor_name || '—')} · ${esc(MODE_LABEL[s.mode])}${s.location ? ' · ' + esc(s.location) : ''}</span></span></a>`).join('')}</div>` : '<div class="empty">Aucune séance planifiée.</div>'}
+        <div class="card"><div class="card-header"><h2>Prochaines séances</h2><a href="#/sessions" class="small">Toutes</a></div><div class="card-body">
+          ${d.upcoming.length ? `<div class="list">${d.upcoming.map((s) => `<a class="list-item" href="#/sessions/${s.id}"><span class="list-item-when">${esc(fmtDateTime(s.scheduled_at))}</span><span class="list-item-what"><b>${esc(s.title)}</b><span>${esc(s.supervisor_name || '—')} · ${esc(MODE_LABEL[s.mode])}${s.location ? ' · ' + esc(s.location) : ''}</span></span></a>`).join('')}</div>` : '<div class="empty">Aucune séance planifiée.</div>'}
         </div></div>
-        <div class="card"><div class="hd"><h2>Étudiants à risque</h2><span class="small muted">≥ 40 % d'absences</span></div><div class="bd">
-          ${d.at_risk.length ? `<div class="list">${d.at_risk.map((s) => `<a class="it" href="#/students/${s.id}"><span class="avatar" style="background:var(--red)">${esc(initials(s.first_name + ' ' + s.last_name))}</span><span class="what"><b>${esc(s.first_name + ' ' + s.last_name)}</b><span>${s.absent} absence(s) sur ${s.total} séance(s)</span></span></a>`).join('')}</div>` : '<div class="empty">Aucun étudiant à risque. 👏</div>'}
+        <div class="card"><div class="card-header"><h2>Étudiants à risque</h2><span class="small muted">≥ 40 % d'absences</span></div><div class="card-body">
+          ${d.at_risk.length ? `<div class="list">${d.at_risk.map((s) => `<a class="list-item" href="#/students/${s.id}"><span class="avatar avatar-danger">${esc(initials(s.first_name + ' ' + s.last_name))}</span><span class="list-item-what"><b>${esc(s.first_name + ' ' + s.last_name)}</b><span>${s.absent} absence(s) sur ${s.total} séance(s)</span></span></a>`).join('')}</div>` : '<div class="empty">Aucun étudiant à risque. 👏</div>'}
         </div></div>
-        <div class="card"><div class="hd"><h2>Par niveau</h2></div><div class="bd">${bars(d.by_level, null, Math.max(1, ...Object.values(d.by_level)))}</div></div>
+        <div class="card"><div class="card-header"><h2>Par niveau</h2></div><div class="card-body">${bars(d.by_level, null, Math.max(1, ...Object.values(d.by_level)))}</div></div>
       </div>
     </div>`;
   },
@@ -283,8 +291,8 @@ function studentForm(s = {}) {
     ${isManager() ? field('source', 'Source', select('source', options(m.sources, s.source || 'other', (x) => SOURCE_LABEL[x] || x, undefined, ''))) : ''}
     ${isManager() ? field('supervisor_id', 'Encadrant industriel', select('supervisor_id', userOptions(supervisors(), s.supervisor_id))) : ''}
     ${isManager() ? field('manager_id', 'Project manager', select('manager_id', userOptions(managers(), s.manager_id))) : ''}
-    <div class="full">${field('domains', 'Domaines', chips('domains', m.domains, s.domains || []))}</div>
-    <div class="full">${field('notes', 'Notes internes', textarea('notes', s.notes))}</div>
+    <div class="span-full">${field('domains', 'Domaines', chips('domains', m.domains, s.domains || []))}</div>
+    <div class="span-full">${field('notes', 'Notes internes', textarea('notes', s.notes))}</div>
   </div>`;
 }
 function cleanStudentPayload(data) {
@@ -327,7 +335,8 @@ VIEWS.students = {
     const r = await GET('/students?' + qs);
     const m = state.meta; const q = query;
     const sortBtn = (key, label) => `<button type="button" data-sort="${key}">${esc(label)}${q.sort === key ? (q.dir === 'asc' ? ' ↑' : ' ↓') : ''}</button>`;
-    return topbar('Étudiants', `${isManager() ? `<a class="btn" href="/api/students/export.csv?${attr(qs)}" download>${I.dl} Export CSV</a><button class="btn" id="import">${I.up} Importer</button><button class="btn primary" id="new-student">${I.plus} Nouvel étudiant</button>` : ''}`) + `
+    const sortTh = (key, label) => `<th aria-sort="${q.sort === key ? (q.dir === 'asc' ? 'ascending' : 'descending') : 'none'}">${sortBtn(key, label)}</th>`;
+    return topbar('Étudiants', `${isManager() ? `<a class="btn" href="/api/students/export.csv?${attr(qs)}" download>${I.dl} Export CSV</a><button class="btn" id="import">${I.up} Importer</button><button class="btn btn-primary" id="new-student">${I.plus} Nouvel étudiant</button>` : ''}`) + `
     <form class="filters" id="filters">
       <input type="search" name="q" value="${attr(q.q || '')}" placeholder="Rechercher nom, email, WhatsApp, école…" aria-label="Recherche">
       <select name="stage" aria-label="Étape">${options(m.stages, q.stage, (x) => m.stage_labels[x], undefined, 'Toutes les étapes')}</select>
@@ -336,23 +345,23 @@ VIEWS.students = {
       ${isManager() ? `<select name="supervisor_id" aria-label="Encadrant"><option value="">Tous les encadrants</option><option value="none" ${q.supervisor_id === 'none' ? 'selected' : ''}>Sans encadrant</option>${supervisors().map((u) => `<option value="${u.id}" ${String(u.id) === q.supervisor_id ? 'selected' : ''}>${esc(u.name)}</option>`).join('')}</select>
       <select name="manager_id" aria-label="Project manager">${userOptions(managers(), q.manager_id).replace('— Aucun —', 'Tous les PM')}</select>
       <select name="source" aria-label="Source">${options(m.sources, q.source, (x) => SOURCE_LABEL[x], undefined, 'Toutes les sources')}</select>` : ''}
-      <label class="small muted" style="display:flex;gap:6px;align-items:center"><input type="checkbox" name="archived" value="1" ${q.archived === '1' ? 'checked' : ''}> Archivés</label>
-      <button class="btn sm" type="submit">Filtrer</button><a class="btn sm ghost" href="#/students">Réinitialiser</a>
+      <label class="small muted flex-row-tight"><input type="checkbox" name="archived" value="1" ${q.archived === '1' ? 'checked' : ''}> Archivés</label>
+      <button class="btn btn-sm" type="submit">Filtrer</button><a class="btn btn-sm btn-ghost" href="#/students">Réinitialiser</a>
     </form>
     <div class="card"><div class="table-wrap"><table>
-      <thead><tr><th>${sortBtn('name', 'Étudiant')}</th><th>Contact</th><th>${sortBtn('level', 'Niveau')}</th><th>Domaines</th><th>${sortBtn('stage', 'Étape')}</th><th>Encadrant</th><th>PM</th><th>Présence</th><th>${sortBtn('last_activity', 'Dernière activité')}</th></tr></thead>
+      <thead><tr>${sortTh('name', 'Étudiant')}<th>Contact</th>${sortTh('level', 'Niveau')}<th>Domaines</th>${sortTh('stage', 'Étape')}<th>Encadrant</th><th>PM</th><th>Présence</th>${sortTh('last_activity', 'Dernière activité')}</tr></thead>
       <tbody>${r.students.length ? r.students.map((s) => `<tr class="row" data-href="#/students/${s.id}" tabindex="0">
-        <td><span class="name">${esc(s.first_name + ' ' + s.last_name)}</span><span class="sub">${esc(s.school || s.status || '')}${s.city ? ' · ' + esc(s.city) : ''}</span></td>
-        <td style="white-space:nowrap">${contactIcons(s)}</td>
-        <td>${s.level ? badge(s.level, 'lvl') : '<span class="muted">—</span>'}</td>
-        <td>${s.domains.map((d) => badge(d, 'dom')).join(' ') || '<span class="muted">—</span>'}</td>
+        <td><span class="cell-title">${esc(s.first_name + ' ' + s.last_name)}</span><span class="cell-sub">${esc(s.school || s.status || '')}${s.city ? ' · ' + esc(s.city) : ''}</span></td>
+        <td class="u-nowrap">${contactIcons(s)}</td>
+        <td>${s.level ? badge(s.level, 'level') : '<span class="muted">—</span>'}</td>
+        <td>${s.domains.map((d) => badge(d, 'domain')).join(' ') || '<span class="muted">—</span>'}</td>
         <td>${stageBadge(s.stage)}</td>
         <td>${esc(s.supervisor_name || '—')}</td><td>${esc(s.manager_name || '—')}</td>
         <td>${rateBar(s.attendance_rate)}</td>
         <td class="small muted">${esc(fmtRel(s.last_activity_at || s.created_at))}</td></tr>`).join('') : `<tr><td colspan="9"><div class="empty">Aucun étudiant ne correspond.</div></td></tr>`}</tbody>
     </table></div>
     <div class="pager"><span>${r.total} étudiant(s) · page ${r.page} / ${Math.max(1, Math.ceil(r.total / r.size))}</span><span class="actions">
-      <button class="btn sm" data-page="${r.page - 1}" ${r.page <= 1 ? 'disabled' : ''}>Précédent</button><button class="btn sm" data-page="${r.page + 1}" ${r.page * r.size >= r.total ? 'disabled' : ''}>Suivant</button></span></div></div>`;
+      <button class="btn btn-sm" data-page="${r.page - 1}" ${r.page <= 1 ? 'disabled' : ''}>Précédent</button><button class="btn btn-sm" data-page="${r.page + 1}" ${r.page * r.size >= r.total ? 'disabled' : ''}>Suivant</button></span></div></div>`;
   },
   mount({ query }) {
     const nav = (patch) => { const q = { ...query, ...patch }; go('/students?' + new URLSearchParams(Object.entries(q).filter(([, v]) => v)).toString()); };
@@ -369,33 +378,33 @@ VIEWS.student = {
   async render({ params }) {
     const d = await GET(`/students/${params.id}`); const s = d.student; const m = state.meta;
     const full = s.first_name + ' ' + s.last_name;
-    return topbar(esc(full), `${s.whatsapp ? `<a class="btn wa" href="${attr(waLink(s.whatsapp))}" target="_blank" rel="noopener">${I.wa} WhatsApp</a>` : ''}${s.email ? `<a class="btn" href="mailto:${attr(s.email)}">${I.mail} Email</a>` : ''}
+    return topbar(esc(full), `${s.whatsapp ? `<a class="btn btn-whatsapp" href="${attr(waLink(s.whatsapp))}" target="_blank" rel="noopener">${I.wa} WhatsApp</a>` : ''}${s.email ? `<a class="btn" href="mailto:${attr(s.email)}">${I.mail} Email</a>` : ''}
       <button class="btn" id="edit">${I.edit} Modifier</button>
-      ${isManager() ? (s.archived_at ? `<button class="btn" id="restore">Restaurer</button>` : `<button class="btn danger" id="archive">Archiver</button>`) : ''}
-      ${isAdmin() ? `<button class="btn danger" id="delete">Supprimer</button>` : ''}`, `<a href="#/students">${I.back} Étudiants</a>`) + `
-    <div class="detail-head"><div class="title"><span class="avatar">${esc(initials(full))}</span><div><div class="badges">${stageBadge(s.stage)}${s.level ? badge(s.level, 'lvl') : ''}${s.domains.map((x) => badge(x, 'dom')).join('')}${s.archived_at ? badge('Archivé', 'dropped') : ''}</div>
-      <div class="small muted" style="margin-top:6px">Créé le ${esc(fmtDate(s.created_at))} · Source : ${esc(SOURCE_LABEL[s.source] || s.source || '—')} · Mis à jour ${esc(fmtRel(s.updated_at))}</div></div></div>
+      ${isManager() ? (s.archived_at ? `<button class="btn" id="restore">Restaurer</button>` : `<button class="btn btn-danger" id="archive">Archiver</button>`) : ''}
+      ${isAdmin() ? `<button class="btn btn-danger" id="delete">Supprimer</button>` : ''}`, `<a href="#/students">${I.back} Étudiants</a>`) + `
+    <div class="detail-header"><div class="detail-title"><span class="avatar">${esc(initials(full))}</span><div><div class="badges">${stageBadge(s.stage)}${s.level ? badge(s.level, 'level') : ''}${s.domains.map((x) => badge(x, 'domain')).join('')}${s.archived_at ? badge('Archivé', 'dropped') : ''}</div>
+      <div class="small muted mt-1">Créé le ${esc(fmtDate(s.created_at))} · Source : ${esc(SOURCE_LABEL[s.source] || s.source || '—')} · Mis à jour ${esc(fmtRel(s.updated_at))}</div></div></div>
       <div class="actions"><label class="small muted">Étape</label><select id="stage-quick" aria-label="Changer l'étape">${options(m.stages, s.stage, (x) => m.stage_labels[x], undefined, '')}</select></div></div>
-    <div class="grid main-side">
+    <div class="grid grid-main-side">
       <div class="grid">
-        <div class="card"><div class="hd"><h2>Informations</h2></div><div class="bd"><dl class="kv">
+        <div class="card"><div class="card-header"><h2>Informations</h2></div><div class="card-body"><dl class="detail-list">
           <dt>Email</dt><dd>${s.email ? `<a href="mailto:${attr(s.email)}">${esc(s.email)}</a>` : '—'}</dd>
           <dt>WhatsApp</dt><dd>${s.whatsapp ? `<a href="${attr(waLink(s.whatsapp))}" target="_blank" rel="noopener">${esc(s.whatsapp)}</a>` : '—'}</dd>
           <dt>Statut</dt><dd>${esc(s.status || '—')}</dd><dt>Niveau</dt><dd>${esc(s.level || '—')}</dd>
           <dt>École</dt><dd>${esc(s.school || '—')}</dd><dt>Ville</dt><dd>${esc(s.city || '—')}</dd>
           <dt>Encadrant</dt><dd>${esc(s.supervisor_name || '—')}</dd><dt>Project manager</dt><dd>${esc(s.manager_name || '—')}</dd>
-          <dt>Notes internes</dt><dd style="white-space:pre-wrap">${esc(s.notes || '—')}</dd></dl></div></div>
-        <div class="card"><div class="hd"><h2>Sujets</h2><button class="btn sm" id="enroll">${I.plus} Affecter à un sujet</button></div><div class="bd">
-          ${d.subjects.length ? `<div class="list">${d.subjects.map((x) => `<div class="it"><a class="what" href="#/subjects/${x.id}"><b>${esc(x.title)}</b><span>${esc(x.domain)} · ${esc(x.supervisor_name || '—')} · ${badge(SUBJECT_LABEL[x.status], x.status)}</span></a><button class="btn sm ghost danger" data-unenroll="${x.id}" title="Retirer">×</button></div>`).join('')}</div>` : '<div class="empty">Aucun sujet affecté.</div>'}</div></div>
-        <div class="card"><div class="hd"><h2>Présences</h2><span>${rateBar(s.attendance_rate)} <span class="small muted">${s.att_present}/${s.att_total} séance(s)</span></span></div>
+          <dt>Notes internes</dt><dd class="u-prewrap">${esc(s.notes || '—')}</dd></dl></div></div>
+        <div class="card"><div class="card-header"><h2>Sujets</h2><button class="btn btn-sm" id="enroll">${I.plus} Affecter à un sujet</button></div><div class="card-body">
+          ${d.subjects.length ? `<div class="list">${d.subjects.map((x) => `<div class="list-item"><a class="list-item-what" href="#/subjects/${x.id}"><b>${esc(x.title)}</b><span>${esc(x.domain)} · ${esc(x.supervisor_name || '—')} · ${badge(SUBJECT_LABEL[x.status], x.status)}</span></a><button class="btn btn-sm btn-ghost btn-danger" data-unenroll="${x.id}" title="Retirer">×</button></div>`).join('')}</div>` : '<div class="empty">Aucun sujet affecté.</div>'}</div></div>
+        <div class="card"><div class="card-header"><h2>Présences</h2><span>${rateBar(s.attendance_rate)} <span class="small muted">${s.att_present}/${s.att_total} séance(s)</span></span></div>
           <div class="table-wrap">${d.attendance.length ? `<table><thead><tr><th>Séance</th><th>Date</th><th>Statut</th><th>Note</th><th>Par</th></tr></thead><tbody>${d.attendance.map((a) => `<tr><td><a href="#/sessions/${a.lab_session_id}">${esc(a.title)}</a></td><td>${esc(fmtDateTime(a.scheduled_at))}</td><td>${badge(ATT_LABEL[a.status], a.status)}</td><td>${esc(a.note || '')}</td><td class="small muted">${esc(a.marked_by_name || '—')}</td></tr>`).join('')}</tbody></table>` : '<div class="empty">Aucune présence enregistrée.</div>'}</div></div>
       </div>
-      <div class="card"><div class="hd"><h2>Suivi & interactions</h2></div><div class="bd">
-        <form id="act" style="margin-bottom:14px">
-          <div class="actions" style="margin-bottom:8px"><select name="type" aria-label="Type">${m.activity_types.map((t) => `<option value="${t}">${esc(ACT_LABEL[t])}</option>`).join('')}</select></div>
-          <textarea name="content" placeholder="Ajouter une note, un compte-rendu d'appel ou d'échange WhatsApp…" required style="min-height:70px"></textarea>
-          <button class="btn primary sm" type="submit" style="margin-top:8px">Ajouter</button></form>
-        <div class="timeline">${d.activities.map((a) => `<div class="tl ${attr(a.type)}"><span class="dot">${ACT_ICON[a.type] || I.note}</span><div><div class="meta">${esc(ACT_LABEL[a.type] || a.type)} · ${esc(a.user_name || 'Système')} · ${esc(fmtDateTime(a.created_at))}${['note', 'call', 'whatsapp', 'email', 'meeting'].includes(a.type) && (a.user_id === state.user.id || isAdmin()) ? ` · <button class="btn ghost sm" data-del-act="${a.id}" style="padding:0 4px">supprimer</button>` : ''}</div><p>${esc(a.content)}</p></div></div>`).join('') || '<div class="empty">Aucune interaction.</div>'}</div>
+      <div class="card"><div class="card-header"><h2>Suivi & interactions</h2></div><div class="card-body">
+        <form id="act" class="mb-4">
+          <div class="actions mb-2"><select name="type" aria-label="Type">${m.activity_types.map((t) => `<option value="${t}">${esc(ACT_LABEL[t])}</option>`).join('')}</select></div>
+          <textarea name="content" placeholder="Ajouter une note, un compte-rendu d'appel ou d'échange WhatsApp…" required class="textarea-sm"></textarea>
+          <button class="btn btn-primary btn-sm mt-2" type="submit">Ajouter</button></form>
+        <div class="timeline">${d.activities.map((a) => `<div class="timeline-entry timeline-${attr(a.type)}"><span class="timeline-dot">${ACT_ICON[a.type] || I.note}</span><div><div class="timeline-meta">${esc(ACT_LABEL[a.type] || a.type)} · ${esc(a.user_name || 'Système')} · ${esc(fmtDateTime(a.created_at))}${['note', 'call', 'whatsapp', 'email', 'meeting'].includes(a.type) && (a.user_id === state.user.id || isAdmin()) ? ` · <button class="btn btn-ghost btn-sm u-inline-btn" data-del-act="${a.id}">supprimer</button>` : ''}</div><p>${esc(a.content)}</p></div></div>`).join('') || '<div class="empty">Aucune interaction.</div>'}</div>
       </div></div>
     </div>`;
   },
@@ -422,14 +431,14 @@ VIEWS.student = {
 function subjectForm(s = {}) {
   const m = state.meta;
   return `<div class="form-grid">
-    <div class="full">${field('title', 'Titre du sujet', input('title', s.title, 'text', 'required'))}</div>
+    <div class="span-full">${field('title', 'Titre du sujet', input('title', s.title, 'text', 'required'))}</div>
     ${field('domain', 'Domaine', select('domain', options(m.domains, s.domain, undefined, undefined, 'Choisir un domaine')))}
     ${field('status', 'Statut', select('status', options(m.subject_statuses, s.status || 'open', (x) => SUBJECT_LABEL[x], undefined, '')))}
     ${isManager() ? field('supervisor_id', 'Encadrant industriel', select('supervisor_id', userOptions(supervisors(), s.supervisor_id ?? (state.user.role === 'supervisor' ? state.user.id : '')))) : ''}
     ${isManager() ? field('manager_id', 'Project manager', select('manager_id', userOptions(managers(), s.manager_id ?? (state.user.role === 'project_manager' ? state.user.id : '')))) : ''}
     ${field('capacity', 'Capacité (0 = illimitée)', input('capacity', s.capacity ?? 1, 'number', 'min="0" max="500"'))}
     ${field('start_date', 'Début', input('start_date', s.start_date, 'date'))}${field('end_date', 'Fin', input('end_date', s.end_date, 'date'))}
-    <div class="full">${field('description', 'Description', textarea('description', s.description))}</div></div>`;
+    <div class="span-full">${field('description', 'Description', textarea('description', s.description))}</div></div>`;
 }
 function subjectModal(existing) {
   modal({ title: existing ? 'Modifier le sujet' : 'Nouveau sujet', body: subjectForm(existing || {}), wide: true,
@@ -444,14 +453,14 @@ VIEWS.subjects = {
   async render({ query }) {
     const qs = new URLSearchParams(Object.entries(query).filter(([, v]) => v)).toString();
     const r = await GET('/subjects?' + qs); const m = state.meta;
-    return topbar('Sujets de résidence', `<button class="btn primary" id="new">${I.plus} Nouveau sujet</button>`) + `
+    return topbar('Sujets de résidence', `<button class="btn btn-primary" id="new">${I.plus} Nouveau sujet</button>`) + `
     <form class="filters" id="filters"><input type="search" name="q" value="${attr(query.q || '')}" placeholder="Rechercher un sujet…" aria-label="Recherche">
       <select name="domain" aria-label="Domaine">${options(m.domains, query.domain, undefined, undefined, 'Tous les domaines')}</select>
       <select name="status" aria-label="Statut">${options(m.subject_statuses, query.status, (x) => SUBJECT_LABEL[x], undefined, 'Tous les statuts')}</select>
       ${isManager() ? `<select name="supervisor_id" aria-label="Encadrant">${userOptions(supervisors(), query.supervisor_id).replace('— Aucun —', 'Tous les encadrants')}</select>` : ''}
-      <button class="btn sm" type="submit">Filtrer</button></form>
+      <button class="btn btn-sm" type="submit">Filtrer</button></form>
     <div class="card"><div class="table-wrap"><table><thead><tr><th>Sujet</th><th>Domaine</th><th>Statut</th><th>Encadrant</th><th>PM</th><th>Étudiants</th><th>Séances</th><th>Période</th></tr></thead>
-    <tbody>${r.subjects.length ? r.subjects.map((s) => `<tr class="row" data-href="#/subjects/${s.id}" tabindex="0"><td><span class="name">${esc(s.title)}</span></td><td>${badge(s.domain, 'dom')}</td><td>${badge(SUBJECT_LABEL[s.status], s.status)}</td><td>${esc(s.supervisor_name || '—')}</td><td>${esc(s.manager_name || '—')}</td><td>${s.students_count} / ${s.capacity || '∞'}</td><td>${s.sessions_count}</td><td class="small muted">${esc(fmtDate(s.start_date))} → ${esc(fmtDate(s.end_date))}</td></tr>`).join('') : '<tr><td colspan="8"><div class="empty">Aucun sujet.</div></td></tr>'}</tbody></table></div></div>`;
+    <tbody>${r.subjects.length ? r.subjects.map((s) => `<tr class="row" data-href="#/subjects/${s.id}" tabindex="0"><td><span class="cell-title">${esc(s.title)}</span></td><td>${badge(s.domain, 'domain')}</td><td>${badge(SUBJECT_LABEL[s.status], s.status)}</td><td>${esc(s.supervisor_name || '—')}</td><td>${esc(s.manager_name || '—')}</td><td>${s.students_count} / ${s.capacity || '∞'}</td><td>${s.sessions_count}</td><td class="small muted">${esc(fmtDate(s.start_date))} → ${esc(fmtDate(s.end_date))}</td></tr>`).join('') : '<tr><td colspan="8"><div class="empty">Aucun sujet.</div></td></tr>'}</tbody></table></div></div>`;
   },
   mount({ query }) {
     $('#new').onclick = () => subjectModal();
@@ -462,14 +471,14 @@ VIEWS.subjects = {
 VIEWS.subject = {
   async render({ params }) {
     const d = await GET(`/subjects/${params.id}`); const s = d.subject;
-    return topbar(esc(s.title), `<button class="btn" id="edit">${I.edit} Modifier</button><button class="btn primary" id="new-session">${I.plus} Planifier une séance</button>${isManager() ? `<button class="btn danger" id="delete">Supprimer</button>` : ''}`, `<a href="#/subjects">${I.back} Sujets</a>`) + `
-    <div class="detail-head"><div class="badges">${badge(s.domain, 'dom')}${badge(SUBJECT_LABEL[s.status], s.status)}<span class="small muted" style="align-self:center">Encadrant : <b>${esc(s.supervisor_name || '—')}</b> · PM : <b>${esc(s.manager_name || '—')}</b> · ${esc(fmtDate(s.start_date))} → ${esc(fmtDate(s.end_date))}</span></div></div>
-    <div class="grid main-side"><div class="grid">
-      <div class="card"><div class="hd"><h2>Étudiants inscrits (${d.students.length}/${s.capacity || '∞'})</h2><button class="btn sm" id="enroll">${I.plus} Inscrire</button></div><div class="table-wrap">
-        ${d.students.length ? `<table><thead><tr><th>Étudiant</th><th>Contact</th><th>Niveau</th><th>Étape</th><th>Inscrit le</th><th></th></tr></thead><tbody>${d.students.map((x) => `<tr><td><a href="#/students/${x.id}"><b>${esc(x.first_name + ' ' + x.last_name)}</b></a></td><td style="white-space:nowrap">${contactIcons(x)}</td><td>${x.level ? badge(x.level, 'lvl') : '—'}</td><td>${stageBadge(x.stage)}</td><td class="small muted">${esc(fmtDate(x.assigned_at))}</td><td><button class="btn sm ghost danger" data-unenroll="${x.id}" title="Retirer">×</button></td></tr>`).join('')}</tbody></table>` : '<div class="empty">Aucun étudiant inscrit.</div>'}</div></div>
-      <div class="card"><div class="hd"><h2>Séances</h2></div><div class="table-wrap">${d.sessions.length ? `<table><thead><tr><th>Séance</th><th>Date</th><th>Statut</th><th>Présents</th></tr></thead><tbody>${d.sessions.map((x) => `<tr class="row" data-href="#/sessions/${x.id}" tabindex="0"><td><span class="name">${esc(x.title)}</span></td><td>${esc(fmtDateTime(x.scheduled_at))}</td><td>${badge(SESSION_LABEL[x.status], x.status)}</td><td>${x.marked_count ? `${x.present_count}/${x.marked_count}` : '—'}</td></tr>`).join('')}</tbody></table>` : '<div class="empty">Aucune séance.</div>'}</div></div>
+    return topbar(esc(s.title), `<button class="btn" id="edit">${I.edit} Modifier</button><button class="btn btn-primary" id="new-session">${I.plus} Planifier une séance</button>${isManager() ? `<button class="btn btn-danger" id="delete">Supprimer</button>` : ''}`, `<a href="#/subjects">${I.back} Sujets</a>`) + `
+    <div class="detail-header"><div class="badges">${badge(s.domain, 'domain')}${badge(SUBJECT_LABEL[s.status], s.status)}<span class="small muted u-self-center">Encadrant : <b>${esc(s.supervisor_name || '—')}</b> · PM : <b>${esc(s.manager_name || '—')}</b> · ${esc(fmtDate(s.start_date))} → ${esc(fmtDate(s.end_date))}</span></div></div>
+    <div class="grid grid-main-side"><div class="grid">
+      <div class="card"><div class="card-header"><h2>Étudiants inscrits (${d.students.length}/${s.capacity || '∞'})</h2><button class="btn btn-sm" id="enroll">${I.plus} Inscrire</button></div><div class="table-wrap">
+        ${d.students.length ? `<table><thead><tr><th>Étudiant</th><th>Contact</th><th>Niveau</th><th>Étape</th><th>Inscrit le</th><th></th></tr></thead><tbody>${d.students.map((x) => `<tr><td><a href="#/students/${x.id}"><b>${esc(x.first_name + ' ' + x.last_name)}</b></a></td><td class="u-nowrap">${contactIcons(x)}</td><td>${x.level ? badge(x.level, 'level') : '—'}</td><td>${stageBadge(x.stage)}</td><td class="small muted">${esc(fmtDate(x.assigned_at))}</td><td><button class="btn btn-sm btn-ghost btn-danger" data-unenroll="${x.id}" title="Retirer">×</button></td></tr>`).join('')}</tbody></table>` : '<div class="empty">Aucun étudiant inscrit.</div>'}</div></div>
+      <div class="card"><div class="card-header"><h2>Séances</h2></div><div class="table-wrap">${d.sessions.length ? `<table><thead><tr><th>Séance</th><th>Date</th><th>Statut</th><th>Présents</th></tr></thead><tbody>${d.sessions.map((x) => `<tr class="row" data-href="#/sessions/${x.id}" tabindex="0"><td><span class="cell-title">${esc(x.title)}</span></td><td>${esc(fmtDateTime(x.scheduled_at))}</td><td>${badge(SESSION_LABEL[x.status], x.status)}</td><td>${x.marked_count ? `${x.present_count}/${x.marked_count}` : '—'}</td></tr>`).join('')}</tbody></table>` : '<div class="empty">Aucune séance.</div>'}</div></div>
     </div>
-    <div class="card"><div class="hd"><h2>Description</h2></div><div class="bd" style="white-space:pre-wrap">${esc(s.description || '—')}</div></div></div>`;
+    <div class="card"><div class="card-header"><h2>Description</h2></div><div class="card-body u-prewrap">${esc(s.description || '—')}</div></div></div>`;
   },
   mount({ params }) {
     const id = params.id;
@@ -483,11 +492,11 @@ VIEWS.subject = {
 };
 /** Sélecteur d'étudiant avec recherche. */
 function studentPicker(onPick, title = 'Inscrire un étudiant') {
-  const d = modal({ title, body: `<input type="search" id="pick-q" placeholder="Rechercher un étudiant…" aria-label="Recherche" autocomplete="off"><div id="pick-list" class="list" style="margin-top:10px;max-height:50vh;overflow:auto"></div>` });
+  const d = modal({ title, body: `<input type="search" id="pick-q" placeholder="Rechercher un étudiant…" aria-label="Recherche" autocomplete="off"><div id="pick-list" class="list scroll-list"></div>` });
   const list = $('#pick-list', d); const q = $('#pick-q', d);
   const load = async () => {
     const r = await GET('/students?size=30&q=' + encodeURIComponent(q.value));
-    list.innerHTML = r.students.map((s) => `<button type="button" class="it" data-id="${s.id}" style="background:none;border:0;border-bottom:1px solid var(--line);text-align:left;cursor:pointer;width:100%"><span class="avatar">${esc(initials(s.first_name + ' ' + s.last_name))}</span><span class="what"><b>${esc(s.first_name + ' ' + s.last_name)}</b><span>${esc(s.level || '—')} · ${s.domains.map(esc).join(', ') || '—'} · ${esc(state.meta.stage_labels[s.stage])}</span></span></button>`).join('') || '<div class="empty">Aucun résultat.</div>';
+    list.innerHTML = r.students.map((s) => `<button type="button" class="list-item" data-id="${s.id}"><span class="avatar">${esc(initials(s.first_name + ' ' + s.last_name))}</span><span class="list-item-what"><b>${esc(s.first_name + ' ' + s.last_name)}</b><span>${esc(s.level || '—')} · ${s.domains.map(esc).join(', ') || '—'} · ${esc(state.meta.stage_labels[s.stage])}</span></span></button>`).join('') || '<div class="empty">Aucun résultat.</div>';
     $$('[data-id]', list).forEach((b) => b.onclick = async () => { try { await onPick(Number(b.dataset.id)); d.close(); d.remove(); } catch (e) { toast(e.message, 'err'); } });
   };
   let t; q.oninput = () => { clearTimeout(t); t = setTimeout(load, 250); }; load();
@@ -498,7 +507,7 @@ async function sessionModal(existing, defaults = {}) {
   const m = state.meta; const s = existing || defaults;
   const subs = (await GET('/subjects')).subjects.filter((x) => x.status !== 'archived');
   modal({ title: existing ? 'Modifier la séance' : 'Planifier une séance', wide: true, body: `<div class="form-grid">
-    <div class="full">${field('title', 'Titre', input('title', s.title, 'text', 'required'))}</div>
+    <div class="span-full">${field('title', 'Titre', input('title', s.title, 'text', 'required'))}</div>
     ${field('subject_id', 'Sujet', select('subject_id', options(subs, s.subject_id, (x) => x.title, (x) => x.id, '— Sans sujet —')))}
     ${field('domain', 'Domaine', select('domain', options(m.domains, s.domain, undefined, undefined, '— Hérité du sujet —')))}
     ${field('scheduled_at', 'Date et heure', input('scheduled_at', toLocalInput(s.scheduled_at), 'datetime-local', 'required'))}
@@ -507,7 +516,7 @@ async function sessionModal(existing, defaults = {}) {
     ${field('location', 'Lieu / lien', input('location', s.location))}
     ${isManager() ? field('supervisor_id', 'Encadrant', select('supervisor_id', userOptions(supervisors(), s.supervisor_id))) : ''}
     ${field('status', 'Statut', select('status', options(m.session_statuses, s.status || 'planned', (x) => SESSION_LABEL[x], undefined, '')))}
-    <div class="full">${field('notes', 'Notes', textarea('notes', s.notes))}</div></div>`,
+    <div class="span-full">${field('notes', 'Notes', textarea('notes', s.notes))}</div></div>`,
     async onSubmit(data) {
       data.scheduled_at = data.scheduled_at ? new Date(data.scheduled_at).toISOString() : '';
       for (const k of ['subject_id', 'supervisor_id', 'duration_min']) if (k in data) data[k] = data[k] ? Number(data[k]) : null;
@@ -522,10 +531,10 @@ VIEWS.sessions = {
     const now = new Date().toISOString();
     const qs = new URLSearchParams(tab === 'upcoming' ? { from: now, dir: 'asc' } : tab === 'past' ? { to: now } : {}).toString();
     const r = await GET('/sessions?' + qs);
-    return topbar('Séances & présences', `<button class="btn primary" id="new">${I.plus} Planifier une séance</button>`) + `
+    return topbar('Séances & présences', `<button class="btn btn-primary" id="new">${I.plus} Planifier une séance</button>`) + `
     <div class="tabs">${[['upcoming', 'À venir'], ['past', 'Passées'], ['all', 'Toutes']].map(([k, l]) => `<button type="button" class="${tab === k ? 'active' : ''}" data-tab="${k}">${l}</button>`).join('')}</div>
     <div class="card"><div class="table-wrap"><table><thead><tr><th>Date</th><th>Séance</th><th>Sujet</th><th>Encadrant</th><th>Mode</th><th>Statut</th><th>Présence</th></tr></thead>
-    <tbody>${r.sessions.length ? r.sessions.map((s) => `<tr class="row" data-href="#/sessions/${s.id}" tabindex="0"><td style="white-space:nowrap"><b>${esc(fmtDateTime(s.scheduled_at))}</b><span class="sub">${s.duration_min} min</span></td><td><span class="name">${esc(s.title)}</span>${s.location ? `<span class="sub">${esc(s.location)}</span>` : ''}</td><td>${esc(s.subject_title || '—')}</td><td>${esc(s.supervisor_name || '—')}</td><td>${esc(MODE_LABEL[s.mode])}</td><td>${badge(SESSION_LABEL[s.status], s.status)}</td><td>${s.marked_count ? `${badge(s.present_count + ' présents', 'present')} ${s.absent_count ? badge(s.absent_count + ' absents', 'absent') : ''}` : '<span class="muted">Non pointée</span>'}</td></tr>`).join('') : '<tr><td colspan="7"><div class="empty">Aucune séance.</div></td></tr>'}</tbody></table></div></div>`;
+    <tbody>${r.sessions.length ? r.sessions.map((s) => `<tr class="row" data-href="#/sessions/${s.id}" tabindex="0"><td class="u-nowrap"><b>${esc(fmtDateTime(s.scheduled_at))}</b><span class="cell-sub">${s.duration_min} min</span></td><td><span class="cell-title">${esc(s.title)}</span>${s.location ? `<span class="cell-sub">${esc(s.location)}</span>` : ''}</td><td>${esc(s.subject_title || '—')}</td><td>${esc(s.supervisor_name || '—')}</td><td>${esc(MODE_LABEL[s.mode])}</td><td>${badge(SESSION_LABEL[s.status], s.status)}</td><td>${s.marked_count ? `${badge(s.present_count + ' présents', 'present')} ${s.absent_count ? badge(s.absent_count + ' absents', 'absent') : ''}` : '<span class="muted">Non pointée</span>'}</td></tr>`).join('') : '<tr><td colspan="7"><div class="empty">Aucune séance.</div></td></tr>'}</tbody></table></div></div>`;
   },
   mount() {
     $('#new').onclick = () => sessionModal();
@@ -536,13 +545,13 @@ VIEWS.sessions = {
 VIEWS.session = {
   async render({ params }) {
     const d = await GET(`/sessions/${params.id}`); const s = d.session; const m = state.meta;
-    return topbar(esc(s.title), `<button class="btn" id="edit">${I.edit} Modifier</button>${isManager() ? `<button class="btn danger" id="delete">Supprimer</button>` : ''}`, `<a href="#/sessions">${I.back} Séances</a>`) + `
-    <div class="detail-head"><div class="badges">${badge(SESSION_LABEL[s.status], s.status)}${s.domain ? badge(s.domain, 'dom') : ''}<span class="small muted" style="align-self:center"><b>${esc(fmtDateTime(s.scheduled_at))}</b> · ${s.duration_min} min · ${esc(MODE_LABEL[s.mode])}${s.location ? ' · ' + esc(s.location) : ''} · Encadrant : <b>${esc(s.supervisor_name || '—')}</b>${s.subject_title ? ` · Sujet : <a href="#/subjects/${s.subject_id}">${esc(s.subject_title)}</a>` : ''}</span></div></div>
-    ${s.notes ? `<div class="card" style="margin-bottom:18px"><div class="bd" style="white-space:pre-wrap">${esc(s.notes)}</div></div>` : ''}
-    <form class="card sheet" id="sheet"><div class="hd"><h2>Feuille de présence</h2><div class="actions"><button type="button" class="btn sm" id="all-present">${I.check} Tous présents</button><button type="button" class="btn sm" id="add-student">${I.plus} Ajouter un étudiant</button><button class="btn primary sm" type="submit">Enregistrer</button></div></div>
+    return topbar(esc(s.title), `<button class="btn" id="edit">${I.edit} Modifier</button>${isManager() ? `<button class="btn btn-danger" id="delete">Supprimer</button>` : ''}`, `<a href="#/sessions">${I.back} Séances</a>`) + `
+    <div class="detail-header"><div class="badges">${badge(SESSION_LABEL[s.status], s.status)}${s.domain ? badge(s.domain, 'domain') : ''}<span class="small muted u-self-center"><b>${esc(fmtDateTime(s.scheduled_at))}</b> · ${s.duration_min} min · ${esc(MODE_LABEL[s.mode])}${s.location ? ' · ' + esc(s.location) : ''} · Encadrant : <b>${esc(s.supervisor_name || '—')}</b>${s.subject_title ? ` · Sujet : <a href="#/subjects/${s.subject_id}">${esc(s.subject_title)}</a>` : ''}</span></div></div>
+    ${s.notes ? `<div class="card mb-5"><div class="card-body u-prewrap">${esc(s.notes)}</div></div>` : ''}
+    <form class="card sheet" id="sheet"><div class="card-header"><h2>Feuille de présence</h2><div class="actions"><button type="button" class="btn btn-sm" id="all-present">${I.check} Tous présents</button><button type="button" class="btn btn-sm" id="add-student">${I.plus} Ajouter un étudiant</button><button class="btn btn-primary btn-sm" type="submit">Enregistrer</button></div></div>
       <div class="table-wrap">${d.attendance.length ? `<table><thead><tr><th>Étudiant</th><th>Contact</th><th>Niveau</th><th>Présence</th><th>Note</th><th>Pointé</th></tr></thead><tbody>
-        ${d.attendance.map((a) => `<tr><td><a href="#/students/${a.student_id}"><b>${esc(a.first_name + ' ' + a.last_name)}</b></a></td><td style="white-space:nowrap">${contactIcons(a)}</td><td>${a.level ? badge(a.level, 'lvl') : '—'}</td>
-          <td><span class="seg">${m.attendance_statuses.map((st) => `<label class="${st}"><input type="radio" name="st-${a.student_id}" value="${st}" ${a.status === st ? 'checked' : ''}>${esc(ATT_LABEL[st])}</label>`).join('')}</span></td>
+        ${d.attendance.map((a) => `<tr><td><a href="#/students/${a.student_id}"><b>${esc(a.first_name + ' ' + a.last_name)}</b></a></td><td class="u-nowrap">${contactIcons(a)}</td><td>${a.level ? badge(a.level, 'level') : '—'}</td>
+          <td><span class="segmented">${m.attendance_statuses.map((st) => `<label class="segmented-${st}"><input type="radio" name="st-${a.student_id}" value="${st}" ${a.status === st ? 'checked' : ''}>${esc(ATT_LABEL[st])}</label>`).join('')}</span></td>
           <td><input type="text" name="note-${a.student_id}" value="${attr(a.note || '')}" placeholder="Note" maxlength="500" aria-label="Note"></td><td class="small muted">${a.marked_at ? esc(fmtRel(a.marked_at)) : '—'}</td></tr>`).join('')}</tbody></table>` : '<div class="empty">Aucun étudiant dans la liste. Inscrivez des étudiants au sujet ou ajoutez-les ici.</div>'}</div></form>`;
   },
   mount({ params }) {
@@ -567,14 +576,14 @@ function userForm(u = {}) {
   return `<div class="form-grid">${field('name', 'Nom complet', input('name', u.name, 'text', 'required'))}${field('email', 'Email', input('email', u.email, 'email', 'required autocomplete="off"'))}
     ${field('role', 'Rôle', select('role', options(m.roles, u.role || 'supervisor', (x) => m.role_labels[x], undefined, '')))}${field('company', 'Entreprise', input('company', u.company))}
     ${field('whatsapp', 'WhatsApp', input('whatsapp', u.whatsapp, 'tel'))}${field('password', u.id ? 'Nouveau mot de passe (optionnel)' : 'Mot de passe (vide = généré)', input('password', '', 'password', 'autocomplete="new-password"'), '10 caractères minimum, lettres et chiffres')}
-    ${u.id ? `<div class="full"><label class="small" style="display:flex;gap:8px;align-items:center"><input type="checkbox" name="active" value="1" ${u.active ? 'checked' : ''}> Compte actif</label></div>` : ''}</div>`;
+    ${u.id ? `<div class="span-full"><label class="small flex-row"><input type="checkbox" name="active" value="1" ${u.active ? 'checked' : ''}> Compte actif</label></div>` : ''}</div>`;
 }
 VIEWS.users = { roles: ['admin'],
   async render() {
     const r = await GET('/users'); const m = state.meta;
-    return topbar('Utilisateurs', `<button class="btn primary" id="new">${I.plus} Nouvel utilisateur</button>`) + `
+    return topbar('Utilisateurs', `<button class="btn btn-primary" id="new">${I.plus} Nouvel utilisateur</button>`) + `
     <div class="card"><div class="table-wrap"><table><thead><tr><th>Utilisateur</th><th>Rôle</th><th>Entreprise</th><th>WhatsApp</th><th>Étudiants</th><th>Sujets</th><th>Dernière connexion</th><th>Statut</th><th></th></tr></thead><tbody>
-      ${r.users.map((u) => `<tr><td><span class="name">${esc(u.name)}</span><span class="sub">${esc(u.email)}</span></td><td>${badge(m.role_labels[u.role], 'role-' + u.role)}</td><td>${esc(u.company || '—')}</td><td>${u.whatsapp ? `<a href="${attr(waLink(u.whatsapp))}" target="_blank" rel="noopener">${esc(u.whatsapp)}</a>` : '—'}</td><td>${u.role === 'supervisor' ? u.students_supervised + ' encadrés' : u.role === 'project_manager' ? u.students_managed + ' gérés' : '—'}</td><td>${u.subjects_count}</td><td class="small muted">${esc(u.last_login_at ? fmtRel(u.last_login_at) : 'Jamais')}</td><td>${u.active ? badge('Actif', 'active') : badge('Désactivé', 'dropped')}</td><td><button class="btn sm" data-edit="${u.id}">${I.edit} Modifier</button></td></tr>`).join('')}</tbody></table></div></div>`;
+      ${r.users.map((u) => `<tr><td><span class="cell-title">${esc(u.name)}</span><span class="cell-sub">${esc(u.email)}</span></td><td>${badge(m.role_labels[u.role], 'role-' + u.role)}</td><td>${esc(u.company || '—')}</td><td>${u.whatsapp ? `<a href="${attr(waLink(u.whatsapp))}" target="_blank" rel="noopener">${esc(u.whatsapp)}</a>` : '—'}</td><td>${u.role === 'supervisor' ? u.students_supervised + ' encadrés' : u.role === 'project_manager' ? u.students_managed + ' gérés' : '—'}</td><td>${u.subjects_count}</td><td class="small muted">${esc(u.last_login_at ? fmtRel(u.last_login_at) : 'Jamais')}</td><td>${u.active ? badge('Actif', 'active') : badge('Désactivé', 'dropped')}</td><td><button class="btn btn-sm" data-edit="${u.id}">${I.edit} Modifier</button></td></tr>`).join('')}</tbody></table></div></div>`;
   },
   mount() {
     const open = (u) => modal({ title: u ? 'Modifier l\'utilisateur' : 'Nouvel utilisateur', body: userForm(u || {}), wide: true,
@@ -593,10 +602,10 @@ VIEWS.audit = { roles: ['admin'],
   async render({ query }) {
     const page = Number(query.page) || 1;
     const r = await GET(`/audit?page=${page}${query.action ? '&action=' + encodeURIComponent(query.action) : ''}`);
-    return topbar('Journal d\'audit') + `<form class="filters" id="filters"><input type="search" name="action" value="${attr(query.action || '')}" placeholder="Filtrer par action (ex. login, student.)" aria-label="Action"><button class="btn sm" type="submit">Filtrer</button></form>
+    return topbar('Journal d\'audit') + `<form class="filters" id="filters"><input type="search" name="action" value="${attr(query.action || '')}" placeholder="Filtrer par action (ex. login, student.)" aria-label="Action"><button class="btn btn-sm" type="submit">Filtrer</button></form>
     <div class="card"><div class="table-wrap"><table><thead><tr><th>Date</th><th>Utilisateur</th><th>Action</th><th>Entité</th><th>Détails</th><th>IP</th></tr></thead><tbody>
-      ${r.entries.map((e) => `<tr><td class="small" style="white-space:nowrap">${esc(fmtDateTime(e.created_at))}</td><td>${esc(e.user_name || '—')}</td><td class="mono">${esc(e.action)}</td><td class="small">${esc(e.entity || '')} ${e.entity_id ? '#' + e.entity_id : ''}</td><td class="mono small" style="max-width:380px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${attr(e.details || '')}">${esc(e.details || '')}</td><td class="mono small">${esc(e.ip || '')}</td></tr>`).join('') || '<tr><td colspan="6"><div class="empty">Aucune entrée.</div></td></tr>'}</tbody></table></div>
-    <div class="pager"><span>${r.total} entrée(s)</span><span class="actions"><button class="btn sm" data-page="${page - 1}" ${page <= 1 ? 'disabled' : ''}>Précédent</button><button class="btn sm" data-page="${page + 1}" ${page * r.size >= r.total ? 'disabled' : ''}>Suivant</button></span></div></div>`;
+      ${r.entries.map((e) => `<tr><td class="small u-nowrap">${esc(fmtDateTime(e.created_at))}</td><td>${esc(e.user_name || '—')}</td><td class="mono">${esc(e.action)}</td><td class="small">${esc(e.entity || '')} ${e.entity_id ? '#' + e.entity_id : ''}</td><td class="mono small u-truncate" title="${attr(e.details || '')}">${esc(e.details || '')}</td><td class="mono small">${esc(e.ip || '')}</td></tr>`).join('') || '<tr><td colspan="6"><div class="empty">Aucune entrée.</div></td></tr>'}</tbody></table></div>
+    <div class="pager"><span>${r.total} entrée(s)</span><span class="actions"><button class="btn btn-sm" data-page="${page - 1}" ${page <= 1 ? 'disabled' : ''}>Précédent</button><button class="btn btn-sm" data-page="${page + 1}" ${page * r.size >= r.total ? 'disabled' : ''}>Suivant</button></span></div></div>`;
   },
   mount({ query }) {
     $('#filters').addEventListener('submit', (e) => { e.preventDefault(); go('/audit?action=' + encodeURIComponent(formData(e.target).action)); });
@@ -609,13 +618,13 @@ VIEWS.settings = { roles: ['admin'],
   async render() {
     const s = await GET('/settings');
     const endpoint = `${location.origin}/api/public/leads?key=${s.intake_key}`;
-    return topbar('Paramètres') + `<div class="grid c2">
-      <div class="card"><div class="hd"><h2>Intégration du formulaire landing</h2><button class="btn sm danger" id="rotate">Régénérer la clé</button></div><div class="bd">
+    return topbar('Paramètres') + `<div class="grid grid-2">
+      <div class="card"><div class="card-header"><h2>Intégration du formulaire landing</h2><button class="btn btn-sm btn-danger" id="rotate">Régénérer la clé</button></div><div class="card-body">
         <p class="small">Le formulaire <a href="${attr(s.landing_url)}" target="_blank" rel="noopener">${esc(s.landing_url)}</a> envoie une copie JSON de chaque demande. Dans son <code>index.html</code>, renseignez la constante <code>ENDPOINT</code> avec :</p>
         <code class="key" id="endpoint">${esc(endpoint)}</code>
         <p class="small muted">Origines autorisées (CORS) : ${s.intake_allowed_origins.map(esc).join(', ')} — modifiable via <code>INTAKE_ALLOWED_ORIGINS</code>. Chaque demande crée un lead à l'étape « Nouveau lead » avec la source « Formulaire landing ». Limite : 30 demandes / heure / IP.</p>
         <pre class="snip">const ENDPOINT = "${esc(endpoint)}";</pre></div></div>
-      <div class="card"><div class="hd"><h2>Rôles et permissions</h2></div><div class="bd"><dl class="kv">
+      <div class="card"><div class="card-header"><h2>Rôles et permissions</h2></div><div class="card-body"><dl class="detail-list">
         <dt>Admin global</dt><dd>Tout : utilisateurs, paramètres, journal d'audit, suppression définitive.</dd>
         <dt>Project manager</dt><dd>Crée et gère les étudiants, sujets et séances ; affecte les encadrants ; import/export CSV.</dd>
         <dt>Encadrant industriel</dt><dd>Voit uniquement ses étudiants (affectés ou inscrits à ses sujets), gère ses sujets et séances, pointe les présences, met à jour niveau/étape/notes.</dd></dl></div></div></div>`;
@@ -629,14 +638,15 @@ VIEWS.settings = { roles: ['admin'],
 VIEWS.profile = {
   async render() {
     const u = state.user;
-    return topbar('Mon profil') + `<div class="grid c2"><div class="card"><div class="hd"><h2>Compte</h2></div><div class="bd"><dl class="kv"><dt>Nom</dt><dd>${esc(u.name)}</dd><dt>Email</dt><dd>${esc(u.email)}</dd><dt>Rôle</dt><dd>${badge(state.meta.role_labels[u.role], 'role-' + u.role)}</dd><dt>WhatsApp</dt><dd>${esc(u.whatsapp || '—')}</dd><dt>Entreprise</dt><dd>${esc(u.company || '—')}</dd></dl><p style="margin:18px 0 0"><button type="button" class="btn danger" data-logout>${I.out} Se déconnecter</button></p></div></div>
-      <div class="card"><div class="hd"><h2>Changer le mot de passe</h2></div><div class="bd"><form id="pw" novalidate>${field('current_password', 'Mot de passe actuel', input('current_password', '', 'password', 'autocomplete="current-password" required'))}${field('new_password', 'Nouveau mot de passe', input('new_password', '', 'password', 'autocomplete="new-password" required'), '10 caractères minimum, lettres et chiffres')}<button class="btn primary" type="submit">Mettre à jour</button></form></div></div></div>`;
+    return topbar('Mon profil') + `<div class="grid grid-2"><div class="card"><div class="card-header"><h2>Compte</h2></div><div class="card-body"><dl class="detail-list"><dt>Nom</dt><dd>${esc(u.name)}</dd><dt>Email</dt><dd>${esc(u.email)}</dd><dt>Rôle</dt><dd>${badge(state.meta.role_labels[u.role], 'role-' + u.role)}</dd><dt>WhatsApp</dt><dd>${esc(u.whatsapp || '—')}</dd><dt>Entreprise</dt><dd>${esc(u.company || '—')}</dd></dl><p class="mt-5 mb-0"><button type="button" class="btn btn-danger" data-logout>${I.out} Se déconnecter</button></p></div></div>
+      <div class="card"><div class="card-header"><h2>Changer le mot de passe</h2></div><div class="card-body"><form id="pw" novalidate>${field('current_password', 'Mot de passe actuel', input('current_password', '', 'password', 'autocomplete="current-password" required'))}${field('new_password', 'Nouveau mot de passe', input('new_password', '', 'password', 'autocomplete="new-password" required'), '10 caractères minimum, lettres et chiffres')}<button class="btn btn-primary" type="submit">Mettre à jour</button></form></div></div></div>`;
   },
   mount() { $('#pw').addEventListener('submit', async (e) => { e.preventDefault(); try { await POST('/auth/password', formData(e.target)); toast('Mot de passe mis à jour', 'ok'); e.target.reset(); } catch (err) { showErrors(e.target, err); } }); },
 };
 
 /* ---------- Démarrage ---------- */
 window.addEventListener('hashchange', render);
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') $('#sidebar')?.classList.remove('open'); });
 (async () => {
   try { const r = await GET('/auth/me'); state.user = r.user; } catch { state.user = null; }
   render();
