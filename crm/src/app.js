@@ -12,6 +12,7 @@ function loadConfig(env = process.env) {
     port: Number(env.PORT) || 3000,
     databasePath: env.DATABASE_PATH || path.join(__dirname, '..', 'data', 'crm.db'),
     sqliteJournalMode: env.SQLITE_JOURNAL_MODE || 'WAL',
+    uploadDir: env.UPLOAD_DIR || path.join(path.dirname(env.DATABASE_PATH || path.join(__dirname, '..', 'data', 'crm.db')), 'uploads'),
     trustProxy: env.TRUST_PROXY === 'true',
     secureCookies: env.TRUST_PROXY === 'true' || env.NODE_ENV === 'production',
     sessionSecret: secret || 'dev-only-secret-change-me-0123456789',
@@ -60,6 +61,7 @@ function createApp(config, { log = console } = {}) {
   app.use('/api/auth', require('./routes/auth')(db));
   app.use('/api/meta', require('./routes/meta')());
   app.use('/api/users', require('./routes/users')(db));
+  app.use('/api/students/:id/documents', require('./routes/documents')(db, config));
   app.use('/api/students', require('./routes/students')(db));
   app.use('/api/subjects', require('./routes/subjects')(db));
   app.use('/api/sessions', require('./routes/sessions')(db));

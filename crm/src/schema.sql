@@ -138,3 +138,16 @@ CREATE TABLE IF NOT EXISTS settings (
   key   TEXT PRIMARY KEY,
   value TEXT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS documents (
+  id          INTEGER PRIMARY KEY AUTOINCREMENT,
+  student_id  INTEGER NOT NULL REFERENCES students(id) ON DELETE CASCADE,
+  type        TEXT NOT NULL CHECK (type IN ('cahier_des_charges','demande_de_stage','convention_de_stage','autre')),
+  label       TEXT NOT NULL,
+  stored_name TEXT NOT NULL UNIQUE,
+  mime        TEXT NOT NULL,
+  size        INTEGER NOT NULL,
+  uploaded_by INTEGER REFERENCES users(id) ON DELETE SET NULL,
+  created_at  TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
+);
+CREATE INDEX IF NOT EXISTS idx_documents_student ON documents(student_id);

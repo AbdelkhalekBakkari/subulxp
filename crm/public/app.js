@@ -23,6 +23,7 @@ const dayLabel = (iso) => {
   if (diff === 0) return 'Aujourd\'hui'; if (diff === 1) return 'Demain'; if (diff === -1) return 'Hier';
   return d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
 };
+const fmtSize = (n) => n < 1024 ? `${n} o` : n < 1048576 ? `${(n / 1024).toFixed(0)} Ko` : `${(n / 1048576).toFixed(1)} Mo`;
 const initials = (name) => String(name || '?').split(/\s+/).map((w) => w[0]).slice(0, 2).join('').toUpperCase();
 const waLink = (n) => n ? `https://wa.me/${String(n).replace(/\D/g, '')}` : null;
 const toLocalInput = (iso) => { if (!iso) return ''; const d = new Date(iso); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 16); };
@@ -79,6 +80,9 @@ const I = {
   clock: svg('<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>'),
   target: svg('<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>'),
   spark: svg('<path d="M12 2l1.8 5.5L19 9l-4.5 3.3L16 18l-4-3-4 3 1.5-5.7L5 9l5.2-1.5z"/>'),
+  file: svg('<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/>'),
+  upload: svg('<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>'),
+  trash: svg('<path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"/>'),
   key: svg('<path d="M21 2l-2 2m-7.6 7.6a5.5 5.5 0 1 1-7.8 7.8 5.5 5.5 0 0 1 7.8-7.8zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>'),
 };
 const ACT_ICON = { note: I.note, call: I.phone, whatsapp: I.wa, email: I.mail, meeting: I.meet, stage_change: I.flag, system: I.list };
@@ -170,6 +174,30 @@ const contactIcons = (s) => `${s.whatsapp ? `<a class="icon-link icon-link-whats
 const options = (list, selected, labelFn = (x) => x, valueFn = (x) => x, placeholder = '— Aucun —') =>
   `<option value="">${esc(placeholder)}</option>` + list.map((x) => `<option value="${attr(valueFn(x))}" ${String(valueFn(x)) === String(selected ?? '') ? 'selected' : ''}>${esc(labelFn(x))}</option>`).join('');
 const userOptions = (list, selected) => options(list, selected, (u) => u.name, (u) => u.id);
+const REQUIRED_DOCS = ['cahier_des_charges', 'demande_de_stage', 'convention_de_stage'];
+const docDots = (types = []) => `<span class="doc-dots" title="${attr(REQUIRED_DOCS.map((t) => `${state.meta.document_labels[t]} : ${types.includes(t) ? 'déposé' : 'manquant'}`).join(' · '))}">${REQUIRED_DOCS.map((t) => `<i class="${types.includes(t) ? 'is-on' : ''}"></i>`).join('')}</span>`;
+function documentsPanel(studentId, docs) {
+  const m = state.meta; const byType = (t) => docs.filter((d) => d.type === t);
+  const slot = (t) => { const d = byType(t)[0]; return `<div class="doc-slot ${d ? 'is-done' : ''}">
+      <div class="doc-slot-icon">${d ? I.checkCircle : I.file}</div>
+      <div class="doc-slot-body"><b>${esc(m.document_labels[t])}</b>${d ? `<span class="small muted">${esc(d.label)} · ${fmtSize(d.size)} · ${esc(fmtDate(d.created_at))}${d.uploaded_by_name ? ' · ' + esc(d.uploaded_by_name) : ''}</span>` : `<span class="small muted">Aucun fichier déposé</span>`}</div>
+      <div class="actions">${d ? `<a class="btn btn-sm" href="/api/students/${studentId}/documents/${d.id}/download">${I.dl} Télécharger</a><button type="button" class="btn btn-sm btn-ghost btn-danger" data-doc-del="${d.id}" aria-label="Supprimer">${I.trash}</button>` : ''}<button type="button" class="btn btn-sm ${d ? '' : 'btn-primary'}" data-doc-upload="${t}">${I.upload} ${d ? 'Remplacer' : 'Déposer'}</button></div></div>`; };
+  const others = byType('autre');
+  return `<div class="grid grid-main-side">
+    <div class="card"><div class="card-header"><h2>${I.file} Pièces du dossier</h2><span class="small muted">${REQUIRED_DOCS.filter((t) => byType(t).length).length}/3 déposées</span></div><div class="card-body doc-slots">${REQUIRED_DOCS.map(slot).join('')}</div></div>
+    <div class="card"><div class="card-header"><h2>${I.upload} Autres documents</h2><button type="button" class="btn btn-sm" data-doc-upload="autre">${I.plus} Ajouter</button></div><div class="card-body">
+      ${others.length ? `<div class="list">${others.map((d) => `<div class="list-item"><span class="doc-slot-icon">${I.file}</span><span class="list-item-what"><b>${esc(d.label)}</b><span>${fmtSize(d.size)} · ${esc(fmtDate(d.created_at))}${d.uploaded_by_name ? ' · ' + esc(d.uploaded_by_name) : ''}</span></span><a class="icon-link" href="/api/students/${studentId}/documents/${d.id}/download" title="Télécharger" aria-label="Télécharger">${I.dl}</a><button type="button" class="btn btn-sm btn-ghost btn-danger" data-doc-del="${d.id}" aria-label="Supprimer">${I.trash}</button></div>`).join('')}</div>` : emptyState(I.inbox, 'Aucun autre document', 'CV, attestation, lettre de motivation… PDF, Word ou image, 15 Mo max.')}
+    </div></div></div>
+    <input type="file" id="doc-file" class="hidden" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg">`;
+}
+async function uploadDocument(studentId, type, file) {
+  const res = await fetch(`/api/students/${studentId}/documents?type=${encodeURIComponent(type)}&name=${encodeURIComponent(file.name)}`, {
+    method: 'POST', headers: { 'Content-Type': file.type || 'application/octet-stream', 'X-Requested-With': 'XMLHttpRequest' }, body: file, credentials: 'same-origin',
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new ApiError(res.status, data);
+  return data;
+}
 const emptyState = (icon, title, text, cta = '') => `<div class="empty">${icon}<b>${esc(title)}</b><p>${esc(text)}</p>${cta}</div>`;
 const skeleton = () => `<div class="skeleton sk-title"></div><div class="grid grid-4 mb-5">${'<div class="skeleton sk-card"></div>'.repeat(4)}</div><div class="card"><div class="card-body">${'<div class="skeleton sk-line"></div>'.repeat(6)}</div></div>`;
 
@@ -491,16 +519,17 @@ VIEWS.students = {
     const sortTh = (key, label) => `<th aria-sort="${q.sort === key ? (q.dir === 'asc' ? 'ascending' : 'descending') : 'none'}">${sortBtn(key, label)}</th>`;
     return head(r.total) + studentFilters(query) + `
     <div class="card"><div class="table-wrap"><table>
-      <thead><tr>${sortTh('name', 'Étudiant')}<th>Contact</th>${sortTh('level', 'Niveau')}<th>Domaines</th>${sortTh('stage', 'Étape')}<th>Encadrant</th><th>PM</th><th>Présence</th>${sortTh('last_activity', 'Dernière activité')}</tr></thead>
+      <thead><tr>${sortTh('name', 'Étudiant')}<th>Contact</th>${sortTh('level', 'Niveau')}<th>Domaines</th>${sortTh('stage', 'Étape')}<th>Docs</th><th>Encadrant</th><th>PM</th><th>Présence</th>${sortTh('last_activity', 'Dernière activité')}</tr></thead>
       <tbody>${r.students.length ? r.students.map((s) => `<tr class="row" data-href="#/students/${s.id}" tabindex="0">
         <td><div class="cell-person">${avatar(s.first_name + ' ' + s.last_name, 'avatar-sm')}<div><span class="cell-title">${esc(s.first_name + ' ' + s.last_name)}</span><span class="cell-sub">${esc(s.school || s.status || '')}${s.city ? ' · ' + esc(s.city) : ''}</span></div></div></td>
         <td class="u-nowrap">${contactIcons(s)}</td>
         <td>${s.level ? badge(s.level, 'level') : '<span class="muted">—</span>'}</td>
         <td>${s.domains.map((d) => badge(d, 'domain')).join(' ') || '<span class="muted">—</span>'}</td>
         <td>${stageBadge(s.stage)}</td>
+        <td>${docDots(s.document_types)}</td>
         <td>${esc(s.supervisor_name || '—')}</td><td>${esc(s.manager_name || '—')}</td>
         <td>${rateBar(s.attendance_rate)}</td>
-        <td class="small muted">${esc(fmtRel(s.last_activity_at || s.created_at))}</td></tr>`).join('') : `<tr><td colspan="9">${emptyState(I.users, 'Aucun étudiant', 'Aucune fiche ne correspond à ces filtres.', isManager() ? '<button class="btn btn-primary btn-sm" id="new-student-empty">Créer un étudiant</button>' : '')}</td></tr>`}</tbody>
+        <td class="small muted">${esc(fmtRel(s.last_activity_at || s.created_at))}</td></tr>`).join('') : `<tr><td colspan="10">${emptyState(I.users, 'Aucun étudiant', 'Aucune fiche ne correspond à ces filtres.', isManager() ? '<button class="btn btn-primary btn-sm" id="new-student-empty">Créer un étudiant</button>' : '')}</td></tr>`}</tbody>
     </table></div>
     <div class="pager"><span>${r.total} étudiant(s) · page ${r.page} / ${Math.max(1, Math.ceil(r.total / r.size))}</span><span class="actions">
       <button class="btn btn-sm" data-page="${r.page - 1}" ${r.page <= 1 ? 'disabled' : ''}>Précédent</button><button class="btn btn-sm" data-page="${r.page + 1}" ${r.page * r.size >= r.total ? 'disabled' : ''}>Suivant</button></span></div></div>`;
@@ -538,7 +567,8 @@ VIEWS.students = {
 
 VIEWS.student = {
   async render({ params }) {
-    const d = await GET(`/students/${params.id}`); const s = d.student; const m = state.meta;
+    const [d, docsRes] = await Promise.all([GET(`/students/${params.id}`), GET(`/students/${params.id}/documents`)]);
+    const s = d.student; const m = state.meta; const docs = docsRes.documents;
     const full = s.first_name + ' ' + s.last_name;
     const tab = state.detailTab[s.id] || 'overview';
     const tabBtn = (key, label, count) => `<button type="button" class="${tab === key ? 'active' : ''}" data-tab="${key}" role="tab" aria-selected="${tab === key}">${label}${count != null ? `<span class="count">${count}</span>` : ''}</button>`;
@@ -549,10 +579,11 @@ VIEWS.student = {
     <div class="cover"><div class="cover-band"></div><div class="cover-body">
       <div class="cover-identity">${avatar(full, 'avatar-lg')}<div><div class="badges">${stageBadge(s.stage)}${s.level ? badge(s.level, 'level') : ''}${s.domains.map((x) => badge(x, 'domain')).join('')}${s.archived_at ? badge('Archivé', 'dropped') : ''}</div>
         <div class="small muted mt-1">${esc(s.school || s.status || '')}${s.city ? ' · ' + esc(s.city) : ''} · Créé le ${esc(fmtDate(s.created_at))} · Source : ${esc(SOURCE_LABEL[s.source] || s.source || '—')}</div></div></div>
-      <div class="cover-stats">${ring(s.attendance_rate, 'ring-lg')}<div class="stat"><b>${s.att_present}/${s.att_total}</b><span>Présences</span></div><div class="stat"><b>${d.subjects.length}</b><span>Sujets</span></div>
+      <div class="cover-stats">${ring(s.attendance_rate, 'ring-lg')}<div class="stat"><b>${s.att_present}/${s.att_total}</b><span>Présences</span></div><div class="stat"><b>${d.subjects.length}</b><span>Sujets</span></div><div class="stat"><b>${REQUIRED_DOCS.filter((t) => docs.some((x) => x.type === t)).length}/3</b><span>Documents</span></div>
         <div class="cover-stage"><label for="stage-quick">Étape</label><select id="stage-quick" aria-label="Changer l'étape">${options(m.stages, s.stage, (x) => m.stage_labels[x], undefined, '')}</select></div></div>
     </div></div>
-    <div class="tabs" role="tablist">${tabBtn('overview', 'Aperçu')}${tabBtn('attendance', 'Présences', d.attendance.length)}${tabBtn('activity', 'Suivi', d.activities.length)}</div>
+    <div class="tabs" role="tablist">${tabBtn('overview', 'Aperçu')}${tabBtn('documents', 'Documents', `${REQUIRED_DOCS.filter((t) => docs.some((x) => x.type === t)).length}/3`)}${tabBtn('attendance', 'Présences', d.attendance.length)}${tabBtn('activity', 'Suivi', d.activities.length)}</div>
+    <section class="tab-panel" data-panel="documents" ${tab !== 'documents' ? 'hidden' : ''}>${documentsPanel(s.id, docs)}</section>
     <section class="tab-panel" data-panel="overview" ${tab !== 'overview' ? 'hidden' : ''}><div class="grid grid-main-side">
       <div class="card"><div class="card-header"><h2>${I.info} Informations</h2></div><div class="card-body"><dl class="detail-list">
         <dt>Email</dt><dd>${s.email ? `<a href="mailto:${attr(s.email)}">${esc(s.email)}</a>` : '—'}</dd>
@@ -586,6 +617,16 @@ VIEWS.student = {
     $('#act').addEventListener('submit', async (e) => { e.preventDefault(); const f = e.target; const btn = $('button[type=submit]', f); setLoading(btn, true); try { await POST(`/students/${id}/activities`, formData(f)); state.detailTab[id] = 'activity'; toast('Interaction ajoutée', 'ok'); render(); } catch (err) { setLoading(btn, false); toast(err.message, 'err'); } });
     $$('[data-del-act]').forEach((b) => b.onclick = async () => { await DEL(`/students/${id}/activities/${b.dataset.delAct}`); state.detailTab[id] = 'activity'; render(); });
     $$('[data-unenroll]').forEach((b) => b.onclick = async () => { if (await confirmModal('Retirer du sujet', 'Retirer l\'étudiant de ce sujet ?')) { await DEL(`/subjects/${b.dataset.unenroll}/students/${id}`); render(); } });
+    const fileInput = $('#doc-file'); let pendingType = null;
+    $$('[data-doc-upload]').forEach((b) => b.onclick = () => { pendingType = b.dataset.docUpload; fileInput.value = ''; fileInput.click(); });
+    fileInput?.addEventListener('change', async () => {
+      const f = fileInput.files[0]; if (!f || !pendingType) return;
+      if (f.size > 15 * 1024 * 1024) return toast('Fichier trop volumineux (15 Mo max)', 'err');
+      const btn = $(`[data-doc-upload="${pendingType}"]`); setLoading(btn, true);
+      try { await uploadDocument(id, pendingType, f); state.detailTab[id] = 'documents'; toast(`${f.name} déposé`, 'ok'); render(); }
+      catch (err) { setLoading(btn, false); toast(err.details?.file || err.message, 'err'); }
+    });
+    $$('[data-doc-del]').forEach((b) => b.onclick = async () => { if (await confirmModal('Supprimer le document', 'Le fichier sera définitivement supprimé du stockage.', { label: 'Supprimer' })) { try { await DEL(`/students/${id}/documents/${b.dataset.docDel}`); state.detailTab[id] = 'documents'; toast('Document supprimé'); render(); } catch (err) { toast(err.message, 'err'); } } });
     $('#enroll').onclick = async () => {
       const [r, r2] = await Promise.all([GET('/subjects?status=open'), GET('/subjects?status=in_progress')]);
       const subs = [...r.subjects, ...r2.subjects];

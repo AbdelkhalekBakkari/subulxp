@@ -117,6 +117,7 @@ WhatsApp, statut, niveau et domaines, tout en continuant à ouvrir WhatsApp pour
 | `DATABASE_PATH` | fichier SQLite |
 | `SESSION_SECRET` | secret de signature des cookies (obligatoire en production) |
 | `SESSION_HOURS` | durée de session (12) |
+| `UPLOAD_DIR` | dossier des documents déposés (défaut : dossier de la base + `/uploads`, soit `/data/uploads` en production) |
 | `TRUST_PROXY` | `true` derrière Caddy/Nginx (cookies Secure) |
 | `INTAKE_ALLOWED_ORIGINS` | origines CORS autorisées pour `/api/public/leads` |
 | `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `ADMIN_NAME` | compte admin créé au premier démarrage si la base est vide |
@@ -129,6 +130,7 @@ Toutes les routes sous `/api` exigent une session (cookie) et l'en-tête `X-Requ
 - `GET /dashboard`, `GET /meta`
 - `GET|POST /users`, `PATCH /users/:id`, `GET /users/directory` (admin, sauf directory)
 - `GET|POST /students`, `GET|PATCH|DELETE /students/:id`, `POST /students/:id/archive`, `POST /students/:id/activities`, `GET /students/export.csv`, `POST /students/import`
+- `GET|POST /students/:id/documents` (dépôt : corps brut + `?type=&name=`), `GET /students/:id/documents/:docId/download`, `DELETE /students/:id/documents/:docId`
 - `GET|POST /subjects`, `GET|PATCH|DELETE /subjects/:id`, `POST|DELETE /subjects/:id/students[/:sid]`
 - `GET|POST /sessions`, `GET|PATCH|DELETE /sessions/:id`, `PUT /sessions/:id/attendance`, `DELETE /sessions/:id/attendance/:sid`
 - `GET /audit`, `GET /settings`, `POST /settings/intake-key/rotate` (admin)

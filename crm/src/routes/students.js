@@ -33,17 +33,19 @@ const SELECT = `
     (SELECT group_concat(domain, '|') FROM (SELECT domain FROM student_domains d WHERE d.student_id = s.id ORDER BY d.rowid)) AS domains_raw,
     (SELECT COUNT(*) FROM attendance a WHERE a.student_id = s.id) AS att_total,
     (SELECT COUNT(*) FROM attendance a WHERE a.student_id = s.id AND a.status IN ('present','late')) AS att_present,
-    (SELECT MAX(created_at) FROM activities ac WHERE ac.student_id = s.id) AS last_activity_at
+    (SELECT MAX(created_at) FROM activities ac WHERE ac.student_id = s.id) AS last_activity_at,
+    (SELECT group_concat(DISTINCT type) FROM documents d WHERE d.student_id = s.id) AS doc_types_raw
   FROM students s
   LEFT JOIN users sup ON sup.id = s.supervisor_id
   LEFT JOIN users man ON man.id = s.manager_id`;
 
 function shape(row) {
   if (!row) return row;
-  const { domains_raw, ...rest } = row;
+  const { domains_raw, doc_types_raw, ...rest } = row;
   return {
     ...rest,
     domains: domains_raw ? domains_raw.split('|') : [],
+    document_types: doc_types_raw ? doc_types_raw.split(',') : [],
     attendance_rate: row.att_total ? Math.round((row.att_present / row.att_total) * 100) : null,
   };
 }
@@ -238,7 +240,9 @@ module.exports = function studentRoutes(db) {
 
   r.delete('/:id', requireRole('admin'), (req, res) => {
     const id = parseId(req.params.id);
+    const files = db.all('SELECT stored_name FROM documents WHERE student_id = ?', id);
     const info = db.run('DELETE FROM students WHERE id = ?', id);
+    for (const f of files) { try { require('node:fs').unlinkSync(require('node:path').join(req.app.locals.config.uploadDir, require('node:path').basename(f.stored_name))); } catch { /* ignore */ } }
     if (!info.changes) throw notFound('Étudiant introuvable');
     audit(db, req, 'student.delete', 'student', id);
     res.json({ ok: true });

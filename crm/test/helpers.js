@@ -6,6 +6,7 @@ async function startApp() {
   const config = {
     port: 0, databasePath: ':memory:', trustProxy: false, secureCookies: false,
     sessionSecret: 'test-secret-test-secret-test-secret-123', sessionHours: 1,
+    uploadDir: require('node:fs').mkdtempSync(require('node:path').join(require('node:os').tmpdir(), 'crm-uploads-')),
     intakeAllowedOrigins: ['https://xp.subul.uk'], adminEmail: '', adminPassword: '', adminName: '',
   };
   const quiet = { info() {}, warn() {}, error: console.error };
@@ -31,7 +32,14 @@ async function startApp() {
       let json; try { json = JSON.parse(text); } catch { json = text; }
       return { status: res.status, body: json, headers: res.headers };
     };
+    const upload = async (path, buffer, contentType = 'application/octet-stream') => {
+      const res = await fetch(base + path, { method: 'POST', headers: { 'Content-Type': contentType, 'X-Requested-With': 'XMLHttpRequest', ...(cookie ? { Cookie: cookie } : {}) }, body: buffer });
+      const text = await res.text(); let json; try { json = JSON.parse(text); } catch { json = text; }
+      return { status: res.status, body: json, headers: res.headers };
+    };
+    const raw = async (path) => { const res = await fetch(base + path, { headers: { ...(cookie ? { Cookie: cookie } : {}) } }); return { status: res.status, buffer: Buffer.from(await res.arrayBuffer()), headers: res.headers }; };
     return {
+      upload, raw,
       get: (p, h) => call('GET', p, undefined, h), post: (p, b, h) => call('POST', p, b, h), patch: (p, b) => call('PATCH', p, b),
       put: (p, b) => call('PUT', p, b), del: (p) => call('DELETE', p),
       login: async (email) => { const r = await call('POST', '/api/auth/login', { email, password: 'Password123' }); if (r.status !== 200) throw new Error('login failed ' + JSON.stringify(r.body)); return r; },
