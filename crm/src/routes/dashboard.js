@@ -42,6 +42,18 @@ module.exports = function dashboardRoutes(db) {
       WHERE s.archived_at IS NULL AND s.stage = 'active' AND ${ss.sql}
       GROUP BY s.id HAVING total >= 2 AND absent * 1.0 / total >= 0.4 ORDER BY absent DESC LIMIT 8`, ...ss.params);
 
+    // Nouveaux étudiants par semaine (8 dernières semaines, semaine ISO commençant le lundi)
+    const weekly = [];
+    const monday = new Date(); monday.setHours(0, 0, 0, 0); monday.setDate(monday.getDate() - ((monday.getDay() + 6) % 7));
+    for (let i = 7; i >= 0; i--) {
+      const start = new Date(monday); start.setDate(start.getDate() - i * 7);
+      const end = new Date(start); end.setDate(end.getDate() + 7);
+      const n = db.get(`SELECT COUNT(*) AS n ${base} AND s.created_at >= ? AND s.created_at < ?`, ...ss.params, start.toISOString(), end.toISOString()).n;
+      weekly.push({ week_start: start.toISOString().slice(0, 10), count: n });
+    }
+    const sessionsWeek = db.get(`SELECT COUNT(*) AS n FROM lab_sessions ls WHERE ls.scheduled_at >= ? AND ls.scheduled_at < ? AND ${ls.sql}`,
+      monday.toISOString(), new Date(monday.getTime() + 7 * 86400000).toISOString(), ...ls.params).n;
+
     const newLeadsMonth = db.get(`SELECT COUNT(*) AS n ${base} AND s.created_at >= ?`, ...ss.params, monthStart.toISOString()).n;
     const unassigned = db.get(`SELECT COUNT(*) AS n ${base} AND s.supervisor_id IS NULL AND s.stage IN ('lead','contacted','lab_scheduled','active')`, ...ss.params).n;
     const total = db.get(`SELECT COUNT(*) AS n ${base}`, ...ss.params).n;
@@ -54,6 +66,7 @@ module.exports = function dashboardRoutes(db) {
         absences_30d: att.absent || 0, subjects_open: subjectsOpen, upcoming_sessions: upcoming.length,
       },
       by_stage: byStage, by_domain: byDomain, by_level: byLevel, upcoming, recent, at_risk: atRisk,
+      weekly_new: weekly, sessions_this_week: sessionsWeek,
     });
   });
 
