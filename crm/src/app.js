@@ -70,8 +70,22 @@ function createApp(config, { log = console } = {}) {
   app.use('/api/settings', require('./routes/settings')(db, config));
   app.use('/api', (req, res) => res.status(404).json({ error: 'Route introuvable' }));
 
-  app.use(express.static(path.join(__dirname, '..', 'public'), { index: 'index.html', maxAge: '1h' }));
-  app.get(/^\/(?!api\/).*/, (req, res) => res.sendFile(path.join(__dirname, '..', 'public', 'index.html')));
+  // Fichiers statiques versionnés : l'index référence app.js / styles.css avec un hash de contenu,
+  // et n'est jamais mis en cache, pour que chaque déploiement soit visible immédiatement.
+  const publicDir = path.join(__dirname, '..', 'public');
+  const fs = require('node:fs');
+  const crypto = require('node:crypto');
+  const assetVersion = crypto.createHash('sha1')
+    .update(fs.readFileSync(path.join(publicDir, 'app.js'))).update(fs.readFileSync(path.join(publicDir, 'styles.css')))
+    .digest('hex').slice(0, 10);
+  const indexHtml = fs.readFileSync(path.join(publicDir, 'index.html'), 'utf8')
+    .replace('href="/styles.css"', `href="/styles.css?v=${assetVersion}"`)
+    .replace('src="/app.js"', `src="/app.js?v=${assetVersion}"`);
+  const sendIndex = (req, res) => { res.set('Cache-Control', 'no-cache'); res.type('html').send(indexHtml); };
+  app.get('/', sendIndex);
+  app.use(express.static(publicDir, { index: false, maxAge: '7d', etag: true }));
+  app.get(/^\/(?!api\/).*/, sendIndex);
+  app.locals.assetVersion = assetVersion;
 
   // eslint-disable-next-line no-unused-vars
   app.use((err, req, res, next) => {
