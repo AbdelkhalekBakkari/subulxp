@@ -1,0 +1,2206 @@
+[
+ {
+  "dom": "AI",
+  "t": "Détection de défauts industriels par vision par ordinateur",
+  "stack": [
+   "PyTorch",
+   "OpenCV",
+   "Albumentations",
+   "FastAPI"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "AI",
+  "t": "Moteur de recherche sémantique multilingue pour documents administratifs",
+  "stack": [
+   "sentence-transformers",
+   "Qdrant",
+   "FastAPI"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "AI",
+  "t": "Reconnaissance automatique de la parole en arabe dialectal tunisien",
+  "stack": [
+   "Whisper",
+   "Kaldi",
+   "HuggingFace Datasets"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "AI",
+  "t": "Résumé automatique de rapports techniques longs",
+  "stack": [
+   "Llama.cpp",
+   "LangChain",
+   "Streamlit"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 4
+ },
+ {
+  "dom": "AI",
+  "t": "Segmentation d'images médicales pulmonaires",
+  "stack": [
+   "MONAI",
+   "PyTorch",
+   "nnU-Net"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "AI",
+  "t": "Prévision de la consommation électrique par séries temporelles",
+  "stack": [
+   "Darts",
+   "Prophet",
+   "scikit-learn"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "AI",
+  "t": "Détection de fraude bancaire par apprentissage déséquilibré",
+  "stack": [
+   "imbalanced-learn",
+   "XGBoost",
+   "MLflow"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "AI",
+  "t": "Classification de sentiments sur avis clients en français",
+  "stack": [
+   "spaCy",
+   "CamemBERT",
+   "Gradio"
+  ],
+  "lvl": "Débutant",
+  "mois": 4
+ },
+ {
+  "dom": "AI",
+  "t": "Génération de descriptions produit à partir d'images",
+  "stack": [
+   "BLIP-2",
+   "PyTorch",
+   "FastAPI"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "AI",
+  "t": "OCR de documents manuscrits scannés",
+  "stack": [
+   "Tesseract",
+   "PaddleOCR",
+   "OpenCV"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 4
+ },
+ {
+  "dom": "AI",
+  "t": "Système de recommandation hybride pour plateforme e-learning",
+  "stack": [
+   "LightFM",
+   "Implicit",
+   "PostgreSQL"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "AI",
+  "t": "Détection d'anomalies sur capteurs IoT industriels",
+  "stack": [
+   "PyOD",
+   "River",
+   "Kafka"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "AI",
+  "t": "Traduction automatique français–arabe spécialisée juridique",
+  "stack": [
+   "MarianMT",
+   "OpenNMT",
+   "SacreBLEU"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "AI",
+  "t": "Estimation de pose humaine pour analyse sportive",
+  "stack": [
+   "MediaPipe",
+   "OpenPose",
+   "OpenCV"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "AI",
+  "t": "Compression et quantification de modèles pour l'embarqué",
+  "stack": [
+   "ONNX Runtime",
+   "TensorFlow Lite",
+   "Neural Compressor"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "AI",
+  "t": "Classification de déchets par images pour tri automatisé",
+  "stack": [
+   "PyTorch",
+   "timm",
+   "FastAPI"
+  ],
+  "lvl": "Débutant",
+  "mois": 4
+ },
+ {
+  "dom": "AI",
+  "t": "Prédiction du décrochage étudiant à partir de traces d'apprentissage",
+  "stack": [
+   "scikit-learn",
+   "SHAP",
+   "Metabase"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "AI",
+  "t": "Détection de maladies des plantes sur photos de terrain",
+  "stack": [
+   "TensorFlow",
+   "Keras",
+   "Flutter"
+  ],
+  "lvl": "Débutant",
+  "mois": 4
+ },
+ {
+  "dom": "AI",
+  "t": "Modèle de scoring crédit explicable",
+  "stack": [
+   "LightGBM",
+   "SHAP",
+   "Streamlit"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "AI",
+  "t": "Synthèse vocale en arabe standard",
+  "stack": [
+   "Coqui TTS",
+   "espeak-ng",
+   "Praat"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "AI",
+  "t": "Analyse automatique de CV et appariement aux offres",
+  "stack": [
+   "spaCy",
+   "sentence-transformers",
+   "Elasticsearch"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "AI",
+  "t": "Suivi multi-objets pour comptage de véhicules",
+  "stack": [
+   "YOLOv8 (Ultralytics)",
+   "ByteTrack",
+   "OpenCV"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "AI",
+  "t": "Détection de contenus haineux sur réseaux sociaux",
+  "stack": [
+   "HuggingFace Transformers",
+   "Optuna",
+   "FastAPI"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "AI",
+  "t": "Apprentissage fédéré pour données de santé distribuées",
+  "stack": [
+   "Flower",
+   "PyTorch",
+   "Docker"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "AI",
+  "t": "Reconnaissance de langue des signes par vidéo",
+  "stack": [
+   "MediaPipe",
+   "PyTorch",
+   "OpenCV"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "AI",
+  "t": "Super-résolution d'images satellitaires",
+  "stack": [
+   "Real-ESRGAN",
+   "PyTorch",
+   "Rasterio"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "AI",
+  "t": "Prédiction de la qualité de l'air urbain",
+  "stack": [
+   "scikit-learn",
+   "Darts",
+   "Grafana"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 4
+ },
+ {
+  "dom": "AI",
+  "t": "Détection de plagiat sémantique dans les mémoires",
+  "stack": [
+   "sentence-transformers",
+   "FAISS",
+   "FastAPI"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "AI",
+  "t": "Classification audio d'événements urbains",
+  "stack": [
+   "torchaudio",
+   "librosa",
+   "PyTorch"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "AI",
+  "t": "Optimisation d'hyperparamètres distribuée",
+  "stack": [
+   "Optuna",
+   "Ray Tune",
+   "MLflow"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "AI",
+  "t": "Modèle de diffusion pour génération d'images de synthèse",
+  "stack": [
+   "Stable Diffusion (Diffusers)",
+   "PyTorch",
+   "Gradio"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "AI",
+  "t": "Extraction d'entités nommées sur documents financiers",
+  "stack": [
+   "spaCy",
+   "Label Studio",
+   "FastAPI"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "AI",
+  "t": "Interprétabilité des réseaux de neurones convolutifs",
+  "stack": [
+   "Captum",
+   "Grad-CAM",
+   "PyTorch"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "AI",
+  "t": "Détection de somnolence du conducteur en temps réel",
+  "stack": [
+   "MediaPipe",
+   "OpenCV",
+   "Raspberry Pi OS"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "AI",
+  "t": "Apprentissage par renforcement pour gestion de stocks",
+  "stack": [
+   "Gymnasium",
+   "Stable-Baselines3",
+   "SimPy"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "AI",
+  "t": "Correction orthographique et grammaticale en français",
+  "stack": [
+   "LanguageTool",
+   "spaCy",
+   "FastAPI"
+  ],
+  "lvl": "Débutant",
+  "mois": 4
+ },
+ {
+  "dom": "AI",
+  "t": "Détection de deepfakes vidéo",
+  "stack": [
+   "PyTorch",
+   "OpenCV",
+   "timm"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "AI",
+  "t": "Prédiction de maintenance prédictive sur machines tournantes",
+  "stack": [
+   "River",
+   "scikit-learn",
+   "InfluxDB"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "AI",
+  "t": "Génération de données synthétiques tabulaires",
+  "stack": [
+   "SDV",
+   "CTGAN",
+   "pandas"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "AI",
+  "t": "Moteur de questions-réponses sur base documentaire interne",
+  "stack": [
+   "Haystack",
+   "Elasticsearch",
+   "Llama.cpp"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "AGENTS",
+  "t": "Agent autonome de résolution d'incidents IT",
+  "stack": [
+   "LangGraph",
+   "Ollama",
+   "Zabbix API"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "AGENTS",
+  "t": "Assistant conversationnel RAG sur documentation technique",
+  "stack": [
+   "LlamaIndex",
+   "Qdrant",
+   "Ollama"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "AGENTS",
+  "t": "Agent de revue de code automatisée sur pull requests",
+  "stack": [
+   "CrewAI",
+   "Ollama",
+   "GitLab API"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "AGENTS",
+  "t": "Orchestrateur multi-agents pour veille concurrentielle",
+  "stack": [
+   "AutoGen",
+   "Ollama",
+   "Scrapy"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "AGENTS",
+  "t": "Agent de génération et exécution de tests automatisés",
+  "stack": [
+   "LangChain",
+   "Playwright",
+   "Ollama"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "AGENTS",
+  "t": "Copilote de requêtes SQL en langage naturel",
+  "stack": [
+   "Vanna.ai",
+   "DuckDB",
+   "Ollama"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "AGENTS",
+  "t": "Agent de triage automatique des tickets support",
+  "stack": [
+   "LangGraph",
+   "Ollama",
+   "PostgreSQL"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "AGENTS",
+  "t": "Assistant de recherche académique avec citations vérifiées",
+  "stack": [
+   "LlamaIndex",
+   "Zotero API",
+   "Ollama"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "AGENTS",
+  "t": "Agent de surveillance et synthèse de flux réglementaires",
+  "stack": [
+   "LangChain",
+   "Chroma",
+   "Ollama"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "AGENTS",
+  "t": "Framework d'évaluation de la qualité des agents",
+  "stack": [
+   "DeepEval",
+   "Ragas",
+   "Langfuse"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "AGENTS",
+  "t": "Agent de remplissage automatique de formulaires web",
+  "stack": [
+   "Playwright",
+   "LangChain",
+   "Ollama"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "AGENTS",
+  "t": "Assistant de préparation aux entretiens techniques",
+  "stack": [
+   "Ollama",
+   "LangChain",
+   "Streamlit"
+  ],
+  "lvl": "Débutant",
+  "mois": 4
+ },
+ {
+  "dom": "AGENTS",
+  "t": "Agent de génération de documentation à partir du code source",
+  "stack": [
+   "LangChain",
+   "tree-sitter",
+   "Ollama"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "AGENTS",
+  "t": "Système multi-agents de simulation de négociation commerciale",
+  "stack": [
+   "AutoGen",
+   "Mesa",
+   "Ollama"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "AGENTS",
+  "t": "Agent de détection et correction de données incohérentes",
+  "stack": [
+   "LangGraph",
+   "Great Expectations",
+   "Ollama"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "AGENTS",
+  "t": "Copilote d'administration Kubernetes en langage naturel",
+  "stack": [
+   "LangChain",
+   "kubectl",
+   "Ollama"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "AGENTS",
+  "t": "Agent de résumé et action sur courriels entrants",
+  "stack": [
+   "LangChain",
+   "IMAP",
+   "Ollama"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 4
+ },
+ {
+  "dom": "AGENTS",
+  "t": "Protocole d'outillage d'agents via Model Context Protocol",
+  "stack": [
+   "MCP SDK",
+   "Ollama",
+   "FastAPI"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "AGENTS",
+  "t": "Agent de génération de tableaux de bord analytiques",
+  "stack": [
+   "LangChain",
+   "Apache Superset",
+   "Ollama"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "AGENTS",
+  "t": "Assistant pédagogique adaptatif pour apprentissage du code",
+  "stack": [
+   "Ollama",
+   "LangGraph",
+   "Jupyter"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "AGENTS",
+  "t": "Agent de curation et classement de candidatures",
+  "stack": [
+   "LangChain",
+   "Qdrant",
+   "Ollama"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "AGENTS",
+  "t": "Mémoire à long terme pour agents conversationnels",
+  "stack": [
+   "Mem0",
+   "Qdrant",
+   "Ollama"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "AGENTS",
+  "t": "Agent de rédaction de rapports d'audit technique",
+  "stack": [
+   "CrewAI",
+   "Ollama",
+   "Pandoc"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "AGENTS",
+  "t": "Système d'agents pour tests de charge intelligents",
+  "stack": [
+   "LangChain",
+   "k6",
+   "Ollama"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "AGENTS",
+  "t": "Agent de traduction et localisation de logiciels",
+  "stack": [
+   "LangChain",
+   "Weblate",
+   "Ollama"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "AGENTS",
+  "t": "Orchestration d'agents sur workflows métier",
+  "stack": [
+   "n8n",
+   "LangChain",
+   "Ollama"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "AGENTS",
+  "t": "Agent de détection de vulnérabilités dans les dépendances",
+  "stack": [
+   "LangChain",
+   "OSV-Scanner",
+   "Ollama"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "AGENTS",
+  "t": "Assistant vocal local pour poste de travail",
+  "stack": [
+   "Whisper",
+   "Piper",
+   "Ollama"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "AGENTS",
+  "t": "Agent de génération de données de test réalistes",
+  "stack": [
+   "LangChain",
+   "Faker",
+   "Ollama"
+  ],
+  "lvl": "Débutant",
+  "mois": 4
+ },
+ {
+  "dom": "AGENTS",
+  "t": "Garde-fous et filtrage de sortie des agents",
+  "stack": [
+   "Guardrails-AI",
+   "NeMo Guardrails",
+   "Ollama"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "AGENTS",
+  "t": "Agent de planification de sprints à partir du backlog",
+  "stack": [
+   "LangGraph",
+   "Jira API",
+   "Ollama"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "AGENTS",
+  "t": "Comparateur automatisé de modèles de langage locaux",
+  "stack": [
+   "Ollama",
+   "lm-evaluation-harness",
+   "MLflow"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "AGENTS",
+  "t": "Agent d'analyse de journaux applicatifs",
+  "stack": [
+   "LangChain",
+   "Loki",
+   "Ollama"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "AGENTS",
+  "t": "Système RAG multimodal texte et image",
+  "stack": [
+   "LlamaIndex",
+   "CLIP",
+   "Qdrant"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "AGENTS",
+  "t": "Agent de migration de code entre frameworks",
+  "stack": [
+   "LangChain",
+   "tree-sitter",
+   "Ollama"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "AGENTS",
+  "t": "Assistant de conformité RGPD sur bases de données",
+  "stack": [
+   "LangChain",
+   "PostgreSQL",
+   "Ollama"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "AGENTS",
+  "t": "Agent de génération de scénarios de test de sécurité",
+  "stack": [
+   "CrewAI",
+   "OWASP ZAP",
+   "Ollama"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "AGENTS",
+  "t": "Observabilité et traçage des chaînes d'agents",
+  "stack": [
+   "Langfuse",
+   "OpenTelemetry",
+   "Ollama"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "AGENTS",
+  "t": "Agent de synthèse de réunions enregistrées",
+  "stack": [
+   "Whisper",
+   "LangChain",
+   "Ollama"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 4
+ },
+ {
+  "dom": "AGENTS",
+  "t": "Marketplace interne d'outils pour agents",
+  "stack": [
+   "MCP SDK",
+   "FastAPI",
+   "PostgreSQL"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "DEVOPS",
+  "t": "Plateforme GitOps de déploiement continu multi-environnements",
+  "stack": [
+   "ArgoCD",
+   "Kubernetes",
+   "Helm",
+   "Git"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "DEVOPS",
+  "t": "Chaîne CI/CD complète pour microservices",
+  "stack": [
+   "GitLab CI",
+   "Docker",
+   "Kubernetes",
+   "Helm"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "DEVOPS",
+  "t": "Infrastructure as Code multi-cloud reproductible",
+  "stack": [
+   "Terraform",
+   "OpenTofu",
+   "Ansible"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "DEVOPS",
+  "t": "Plateforme d'observabilité unifiée logs, métriques et traces",
+  "stack": [
+   "Prometheus",
+   "Loki",
+   "Tempo",
+   "Grafana"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "DEVOPS",
+  "t": "Automatisation de la configuration de parcs serveurs",
+  "stack": [
+   "Ansible",
+   "Molecule",
+   "Vagrant"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "DEVOPS",
+  "t": "Service mesh et gestion du trafic inter-services",
+  "stack": [
+   "Istio",
+   "Envoy",
+   "Kubernetes"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "DEVOPS",
+  "t": "Registre d'artefacts et gestion des dépendances internes",
+  "stack": [
+   "Harbor",
+   "Nexus",
+   "Docker"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "DEVOPS",
+  "t": "Tests de charge automatisés intégrés au pipeline",
+  "stack": [
+   "k6",
+   "Grafana",
+   "GitLab CI"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "DEVOPS",
+  "t": "Gestion centralisée des secrets applicatifs",
+  "stack": [
+   "HashiCorp Vault",
+   "External Secrets",
+   "Kubernetes"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "DEVOPS",
+  "t": "Auto-scaling événementiel de charges de travail",
+  "stack": [
+   "KEDA",
+   "Kubernetes",
+   "Kafka"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "DEVOPS",
+  "t": "Plateforme de déploiement progressif canary et blue-green",
+  "stack": [
+   "Argo Rollouts",
+   "Flagger",
+   "Kubernetes"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "DEVOPS",
+  "t": "Environnements de développement éphémères à la demande",
+  "stack": [
+   "Kubernetes",
+   "Devcontainers",
+   "Tilt"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "DEVOPS",
+  "t": "Supervision de coûts d'infrastructure Kubernetes",
+  "stack": [
+   "OpenCost",
+   "Prometheus",
+   "Grafana"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "DEVOPS",
+  "t": "Pipeline de build reproductible et cache distribué",
+  "stack": [
+   "Bazel",
+   "BuildKit",
+   "GitLab CI"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "DEVOPS",
+  "t": "Sauvegarde et restauration de clusters Kubernetes",
+  "stack": [
+   "Velero",
+   "MinIO",
+   "Kubernetes"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "DEVOPS",
+  "t": "Orchestration de traitements batch planifiés",
+  "stack": [
+   "Apache Airflow",
+   "Kubernetes",
+   "PostgreSQL"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "DEVOPS",
+  "t": "Plateforme de conteneurisation d'applications héritées",
+  "stack": [
+   "Docker",
+   "Podman",
+   "Buildah"
+  ],
+  "lvl": "Débutant",
+  "mois": 4
+ },
+ {
+  "dom": "DEVOPS",
+  "t": "Chaos engineering et tests de résilience",
+  "stack": [
+   "Chaos Mesh",
+   "LitmusChaos",
+   "Kubernetes"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "DEVOPS",
+  "t": "Politique de conformité as code sur clusters",
+  "stack": [
+   "OPA Gatekeeper",
+   "Kyverno",
+   "Kubernetes"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "DEVOPS",
+  "t": "Passerelle d'API interne avec authentification",
+  "stack": [
+   "Kong",
+   "Traefik",
+   "Keycloak"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "DEVOPS",
+  "t": "Plateforme de journalisation à haute volumétrie",
+  "stack": [
+   "Fluent Bit",
+   "OpenSearch",
+   "Kubernetes"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "DEVOPS",
+  "t": "Automatisation du provisionnement réseau",
+  "stack": [
+   "Terraform",
+   "Netbox",
+   "Ansible"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "DEVOPS",
+  "t": "Portail développeur et catalogue de services",
+  "stack": [
+   "Backstage",
+   "PostgreSQL",
+   "Kubernetes"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "DEVOPS",
+  "t": "Migration d'une monolithe vers des microservices conteneurisés",
+  "stack": [
+   "Docker",
+   "Kubernetes",
+   "Kafka"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "DEVOPS",
+  "t": "Gestion de configuration applicative dynamique",
+  "stack": [
+   "Consul",
+   "Vault",
+   "Kubernetes"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "DEVOPS",
+  "t": "Pipeline de livraison pour applications mobiles",
+  "stack": [
+   "Fastlane",
+   "GitLab CI",
+   "Docker"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "DEVOPS",
+  "t": "Base de données en haute disponibilité sur Kubernetes",
+  "stack": [
+   "CloudNativePG",
+   "PostgreSQL",
+   "Kubernetes"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "DEVOPS",
+  "t": "Automatisation de la gestion des certificats TLS",
+  "stack": [
+   "cert-manager",
+   "Let's Encrypt",
+   "Kubernetes"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 4
+ },
+ {
+  "dom": "DEVOPS",
+  "t": "Tableau de bord DORA metrics pour équipes de développement",
+  "stack": [
+   "Grafana",
+   "PostgreSQL",
+   "GitLab API"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "DEVOPS",
+  "t": "Plateforme serverless auto-hébergée",
+  "stack": [
+   "Knative",
+   "OpenFaaS",
+   "Kubernetes"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "DEVOPS",
+  "t": "Gestion multi-tenant d'un cluster partagé",
+  "stack": [
+   "Capsule",
+   "Kubernetes",
+   "RBAC"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "DEVOPS",
+  "t": "Automatisation des runbooks d'exploitation",
+  "stack": [
+   "Ansible",
+   "Rundeck",
+   "Prometheus"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "DEVOPS",
+  "t": "Détection de dérive de configuration d'infrastructure",
+  "stack": [
+   "Driftctl",
+   "Terraform",
+   "GitLab CI"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "DEVOPS",
+  "t": "Cluster Kubernetes en périphérie sur matériel contraint",
+  "stack": [
+   "K3s",
+   "Flux",
+   "Raspberry Pi OS"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "DEVOPS",
+  "t": "Passerelle de messagerie asynchrone résiliente",
+  "stack": [
+   "RabbitMQ",
+   "Kafka",
+   "Kubernetes"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "DEVOPS",
+  "t": "Automatisation de la mise à jour des dépendances",
+  "stack": [
+   "Renovate",
+   "GitLab CI",
+   "Docker"
+  ],
+  "lvl": "Débutant",
+  "mois": 4
+ },
+ {
+  "dom": "DEVOPS",
+  "t": "Plateforme d'exécution de tests end-to-end parallélisés",
+  "stack": [
+   "Playwright",
+   "Selenium Grid",
+   "Kubernetes"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "DEVOPS",
+  "t": "Supervision synthétique de parcours utilisateurs",
+  "stack": [
+   "Blackbox Exporter",
+   "Grafana",
+   "Playwright"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 4
+ },
+ {
+  "dom": "DEVOPS",
+  "t": "Gestion du cycle de vie des images de conteneurs",
+  "stack": [
+   "Trivy",
+   "Harbor",
+   "Kubernetes"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "DEVOPS",
+  "t": "Interconnexion multi-clusters et fédération",
+  "stack": [
+   "Cilium Cluster Mesh",
+   "Submariner",
+   "Kubernetes"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "CYBER",
+  "t": "Centre opérationnel de sécurité complet auto-hébergé",
+  "stack": [
+   "Wazuh",
+   "OpenSearch",
+   "TheHive"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "CYBER",
+  "t": "Détection d'intrusions réseau par analyse comportementale",
+  "stack": [
+   "Suricata",
+   "Zeek",
+   "Elasticsearch"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "CYBER",
+  "t": "Plateforme de gestion et corrélation d'incidents",
+  "stack": [
+   "TheHive",
+   "Cortex",
+   "MISP"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "CYBER",
+  "t": "Automatisation des réponses à incident",
+  "stack": [
+   "Shuffle",
+   "TheHive",
+   "Wazuh"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "CYBER",
+  "t": "Scanner de vulnérabilités d'infrastructure automatisé",
+  "stack": [
+   "OpenVAS",
+   "Nmap",
+   "PostgreSQL"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "CYBER",
+  "t": "Analyse de sécurité des applications web",
+  "stack": [
+   "OWASP ZAP",
+   "Nuclei",
+   "Burp Suite Community"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "CYBER",
+  "t": "Plateforme de renseignement sur les menaces",
+  "stack": [
+   "MISP",
+   "OpenCTI",
+   "Python"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "CYBER",
+  "t": "Sécurisation de la chaîne d'approvisionnement logicielle",
+  "stack": [
+   "Sigstore",
+   "Syft",
+   "Grype"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "CYBER",
+  "t": "Analyse statique de code et détection de secrets",
+  "stack": [
+   "Semgrep",
+   "Gitleaks",
+   "TruffleHog"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "CYBER",
+  "t": "Durcissement automatisé de systèmes Linux",
+  "stack": [
+   "OpenSCAP",
+   "Lynis",
+   "Ansible"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "CYBER",
+  "t": "Honeypot distribué et analyse des attaques",
+  "stack": [
+   "T-Pot",
+   "Cowrie",
+   "Elasticsearch"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "CYBER",
+  "t": "Analyse de logiciels malveillants en environnement isolé",
+  "stack": [
+   "Cuckoo Sandbox",
+   "YARA",
+   "Radare2"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "CYBER",
+  "t": "Gestion des identités et accès fédérés",
+  "stack": [
+   "Keycloak",
+   "OpenLDAP",
+   "OAuth2 Proxy"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "CYBER",
+  "t": "Détection de menaces sur conteneurs à l'exécution",
+  "stack": [
+   "Falco",
+   "Tetragon",
+   "Kubernetes"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "CYBER",
+  "t": "Audit de sécurité de clusters Kubernetes",
+  "stack": [
+   "kube-bench",
+   "kube-hunter",
+   "Trivy"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "CYBER",
+  "t": "Analyse forensique de postes compromis",
+  "stack": [
+   "Autopsy",
+   "Volatility",
+   "Sleuth Kit"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "CYBER",
+  "t": "Plateforme de simulation de phishing et sensibilisation",
+  "stack": [
+   "GoPhish",
+   "Postfix",
+   "PostgreSQL"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 4
+ },
+ {
+  "dom": "CYBER",
+  "t": "Architecture zero trust pour accès distant",
+  "stack": [
+   "WireGuard",
+   "Pomerium",
+   "Keycloak"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "CYBER",
+  "t": "Chiffrement de bout en bout pour messagerie interne",
+  "stack": [
+   "Signal Protocol",
+   "libsodium",
+   "Matrix"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "CYBER",
+  "t": "Détection de fuites de données sortantes",
+  "stack": [
+   "Suricata",
+   "Zeek",
+   "OpenSearch"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "CYBER",
+  "t": "Pare-feu applicatif web configurable",
+  "stack": [
+   "ModSecurity",
+   "Coraza",
+   "OWASP CRS"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "CYBER",
+  "t": "Gestion du cycle de vie des certificats internes",
+  "stack": [
+   "step-ca",
+   "cert-manager",
+   "Vault"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "CYBER",
+  "t": "Tests d'intrusion automatisés et rapport reproductible",
+  "stack": [
+   "Metasploit Framework",
+   "Nmap",
+   "Nuclei"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "CYBER",
+  "t": "Sécurité des API et détection d'abus",
+  "stack": [
+   "Kong",
+   "OpenAPI",
+   "ModSecurity"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "CYBER",
+  "t": "Analyse de sécurité d'applications mobiles Android",
+  "stack": [
+   "MobSF",
+   "Frida",
+   "apktool"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "CYBER",
+  "t": "Plateforme de gestion des vulnérabilités priorisées",
+  "stack": [
+   "DefectDojo",
+   "Trivy",
+   "OSV-Scanner"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "CYBER",
+  "t": "Détection d'usurpation dans les réseaux sans fil",
+  "stack": [
+   "Kismet",
+   "Aircrack-ng",
+   "Scapy"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "CYBER",
+  "t": "Journalisation inviolable et intégrité des traces",
+  "stack": [
+   "Auditd",
+   "Wazuh",
+   "Sigstore"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "CYBER",
+  "t": "Sécurisation des systèmes industriels et protocoles OT",
+  "stack": [
+   "Suricata",
+   "Conpot",
+   "Zeek"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "CYBER",
+  "t": "Analyse de la surface d'attaque externe",
+  "stack": [
+   "Amass",
+   "Subfinder",
+   "Nuclei"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "CYBER",
+  "t": "Détection de mouvements latéraux en environnement Windows",
+  "stack": [
+   "Wazuh",
+   "Sysmon",
+   "Velociraptor"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "CYBER",
+  "t": "Plateforme de chasse aux menaces",
+  "stack": [
+   "Velociraptor",
+   "OpenSearch",
+   "Sigma"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "CYBER",
+  "t": "Protection des données au repos et gestion des clés",
+  "stack": [
+   "LUKS",
+   "Vault",
+   "age"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "CYBER",
+  "t": "Détection d'attaques par déni de service applicatif",
+  "stack": [
+   "Nginx",
+   "Suricata",
+   "Prometheus"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "CYBER",
+  "t": "Conformité et rapport d'audit automatisé",
+  "stack": [
+   "OpenSCAP",
+   "Wazuh",
+   "Grafana"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "CYBER",
+  "t": "Analyse de sécurité des images de conteneurs",
+  "stack": [
+   "Trivy",
+   "Grype",
+   "Clair"
+  ],
+  "lvl": "Débutant",
+  "mois": 4
+ },
+ {
+  "dom": "CYBER",
+  "t": "Détection de comportements anormaux par apprentissage",
+  "stack": [
+   "PyOD",
+   "Zeek",
+   "OpenSearch"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "CYBER",
+  "t": "Gestion des accès privilégiés et enregistrement de sessions",
+  "stack": [
+   "Teleport",
+   "Keycloak",
+   "PostgreSQL"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "CYBER",
+  "t": "Sécurisation d'une chaîne CI/CD contre les compromissions",
+  "stack": [
+   "Sigstore",
+   "Semgrep",
+   "GitLab CI"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "CYBER",
+  "t": "Anonymisation et pseudonymisation de données sensibles",
+  "stack": [
+   "ARX",
+   "Faker",
+   "PostgreSQL"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "DATA",
+  "t": "Entrepôt de données analytique moderne auto-hébergé",
+  "stack": [
+   "DuckDB",
+   "dbt",
+   "Apache Superset"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "DATA",
+  "t": "Pipeline ELT orchestré pour sources hétérogènes",
+  "stack": [
+   "Airbyte",
+   "dbt",
+   "Apache Airflow"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "DATA",
+  "t": "Lakehouse avec gestion de versions de données",
+  "stack": [
+   "Apache Iceberg",
+   "Trino",
+   "MinIO"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "DATA",
+  "t": "Traitement de flux temps réel à grande échelle",
+  "stack": [
+   "Apache Flink",
+   "Kafka",
+   "ClickHouse"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "DATA",
+  "t": "Plateforme de qualité et validation de données",
+  "stack": [
+   "Great Expectations",
+   "Soda Core",
+   "Airflow"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "DATA",
+  "t": "Catalogue de données et traçabilité des transformations",
+  "stack": [
+   "OpenMetadata",
+   "dbt",
+   "PostgreSQL"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "DATA",
+  "t": "Tableau de bord décisionnel pour direction commerciale",
+  "stack": [
+   "Metabase",
+   "PostgreSQL",
+   "dbt"
+  ],
+  "lvl": "Débutant",
+  "mois": 4
+ },
+ {
+  "dom": "DATA",
+  "t": "Analyse géospatiale de données de mobilité urbaine",
+  "stack": [
+   "PostGIS",
+   "GeoPandas",
+   "QGIS"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "DATA",
+  "t": "Migration d'un système décisionnel vers une architecture ouverte",
+  "stack": [
+   "Trino",
+   "dbt",
+   "MinIO"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "DATA",
+  "t": "Base de données orientée colonnes pour analyse à haute cardinalité",
+  "stack": [
+   "ClickHouse",
+   "Grafana",
+   "Kafka"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "DATA",
+  "t": "Analyse de la performance commerciale par cohortes",
+  "stack": [
+   "DuckDB",
+   "pandas",
+   "Streamlit"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 4
+ },
+ {
+  "dom": "DATA",
+  "t": "Plateforme de reporting réglementaire automatisé",
+  "stack": [
+   "dbt",
+   "Airflow",
+   "Apache Superset"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "DATA",
+  "t": "Détection de doublons et réconciliation d'identités",
+  "stack": [
+   "Splink",
+   "DuckDB",
+   "pandas"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "DATA",
+  "t": "Analyse de paniers d'achat et règles d'association",
+  "stack": [
+   "mlxtend",
+   "pandas",
+   "Metabase"
+  ],
+  "lvl": "Débutant",
+  "mois": 4
+ },
+ {
+  "dom": "DATA",
+  "t": "Entrepôt de séries temporelles pour supervision industrielle",
+  "stack": [
+   "TimescaleDB",
+   "Grafana",
+   "Telegraf"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "DATA",
+  "t": "Analyse de sentiment et de tendances sur données publiques",
+  "stack": [
+   "spaCy",
+   "DuckDB",
+   "Streamlit"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 4
+ },
+ {
+  "dom": "DATA",
+  "t": "Plateforme de partage de jeux de données ouverts",
+  "stack": [
+   "CKAN",
+   "PostgreSQL",
+   "MinIO"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "DATA",
+  "t": "Modélisation dimensionnelle d'un domaine métier complexe",
+  "stack": [
+   "dbt",
+   "PostgreSQL",
+   "dbt-docs"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "DATA",
+  "t": "Analyse prédictive du churn client",
+  "stack": [
+   "scikit-learn",
+   "dbt",
+   "Metabase"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "DATA",
+  "t": "Pipeline de traitement de données massives par lots",
+  "stack": [
+   "Apache Spark",
+   "Delta Lake",
+   "MinIO"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "DATA",
+  "t": "Observabilité des pipelines et détection de régressions",
+  "stack": [
+   "OpenLineage",
+   "Marquez",
+   "Airflow"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "DATA",
+  "t": "Analyse de la logistique et optimisation de tournées",
+  "stack": [
+   "OR-Tools",
+   "GeoPandas",
+   "Streamlit"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "DATA",
+  "t": "Tableau de bord de suivi des indicateurs hospitaliers",
+  "stack": [
+   "Metabase",
+   "PostgreSQL",
+   "dbt"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "DATA",
+  "t": "Analyse de journaux web et parcours utilisateurs",
+  "stack": [
+   "ClickHouse",
+   "Grafana",
+   "Kafka"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "DATA",
+  "t": "Plateforme de features pour modèles d'apprentissage",
+  "stack": [
+   "Feast",
+   "Redis",
+   "PostgreSQL"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "DATA",
+  "t": "Analyse de la consommation énergétique par segmentation",
+  "stack": [
+   "scikit-learn",
+   "DuckDB",
+   "Apache Superset"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "DATA",
+  "t": "Automatisation de la collecte de données web",
+  "stack": [
+   "Scrapy",
+   "Playwright",
+   "PostgreSQL"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 4
+ },
+ {
+  "dom": "DATA",
+  "t": "Analyse de données d'enquête et redressement statistique",
+  "stack": [
+   "R",
+   "pandas",
+   "Quarto"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "DATA",
+  "t": "Entrepôt de données pour établissement d'enseignement",
+  "stack": [
+   "dbt",
+   "PostgreSQL",
+   "Metabase"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "DATA",
+  "t": "Analyse de la fraude par graphes de relations",
+  "stack": [
+   "Neo4j Community",
+   "NetworkX",
+   "Cypher"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "DATA",
+  "t": "Plateforme de tests A/B et analyse statistique",
+  "stack": [
+   "GrowthBook",
+   "PostgreSQL",
+   "Python"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "DATA",
+  "t": "Analyse de la performance financière et prévisions",
+  "stack": [
+   "Prophet",
+   "DuckDB",
+   "Apache Superset"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "DATA",
+  "t": "Traitement et analyse de documents non structurés à grande échelle",
+  "stack": [
+   "Apache Tika",
+   "Elasticsearch",
+   "Airflow"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "DATA",
+  "t": "Gouvernance et contrôle d'accès aux données sensibles",
+  "stack": [
+   "Apache Ranger",
+   "Trino",
+   "Keycloak"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "DATA",
+  "t": "Analyse de données de capteurs agricoles",
+  "stack": [
+   "TimescaleDB",
+   "Grafana",
+   "pandas"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "DATA",
+  "t": "Rapports analytiques reproductibles et versionnés",
+  "stack": [
+   "Quarto",
+   "DuckDB",
+   "Git"
+  ],
+  "lvl": "Débutant",
+  "mois": 4
+ },
+ {
+  "dom": "DATA",
+  "t": "Plateforme d'analyse en libre-service pour métiers",
+  "stack": [
+   "Apache Superset",
+   "Trino",
+   "dbt"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "DATA",
+  "t": "Détection d'anomalies sur indicateurs métier",
+  "stack": [
+   "Prophet",
+   "PyOD",
+   "Grafana"
+  ],
+  "lvl": "Intermédiaire",
+  "mois": 5
+ },
+ {
+  "dom": "DATA",
+  "t": "Analyse du trafic réseau pour dimensionnement",
+  "stack": [
+   "ClickHouse",
+   "Zeek",
+   "Grafana"
+  ],
+  "lvl": "Avancé",
+  "mois": 6
+ },
+ {
+  "dom": "DATA",
+  "t": "Modernisation d'un processus de reporting manuel",
+  "stack": [
+   "dbt",
+   "Airflow",
+   "Metabase"
+  ],
+  "lvl": "Débutant",
+  "mois": 4
+ }
+]
