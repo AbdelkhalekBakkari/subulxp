@@ -11,6 +11,19 @@ describe('Subul XP CRM API', () => {
   });
   after(async () => { await ctx.stop(); });
 
+  test('index is never cached and references versioned assets', async () => {
+    const res = await fetch(ctx.base + '/');
+    assert.equal(res.status, 200);
+    assert.equal(res.headers.get('cache-control'), 'no-cache');
+    const html = await res.text();
+    assert.match(html, /src="\/app\.js\?v=[0-9a-f]{10}"/);
+    assert.match(html, /href="\/styles\.css\?v=[0-9a-f]{10}"/);
+    const deep = await fetch(ctx.base + '/students/42');
+    assert.equal(deep.status, 200); assert.equal(deep.headers.get('cache-control'), 'no-cache');
+    const js = await fetch(ctx.base + '/app.js?v=abc');
+    assert.match(js.headers.get('cache-control'), /max-age=604800/);
+  });
+
   test('rejects unauthenticated access and wrong credentials', async () => {
     const anon = ctx.client();
     assert.equal((await anon.get('/api/students')).status, 401);
