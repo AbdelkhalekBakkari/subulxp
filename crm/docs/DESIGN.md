@@ -62,3 +62,13 @@ Tout est dans `public/styles.css`, organisé en tokens, base, layout, composants
 - **Utilitaires** : `.u-nowrap`, `.u-prewrap`, `.u-truncate`, `.u-center`, `.u-self-center`, `.flex-row`, `.mt-*`, `.mb-*`, `.scroll-list`.
   Ils remplacent les styles inline dans `app.js`.
 - **Mouvement** : réduit automatiquement avec `prefers-reduced-motion`.
+- **Thème sombre** : tokens redéfinis sous `:root[data-theme="dark"]`, choisi par le bouton de la barre latérale (persisté dans
+  `localStorage`) ou par la préférence système. La barre latérale et la page de connexion restent sombres dans les deux thèmes.
+- **Identité** : logo Subul (`assets/subul-mark.webp` dans la barre latérale, `assets/subul-logo.webp` à la connexion) sur tuile
+  blanche, signature Smartovate (`assets/smartovate-logo.webp`), dégradé de marque `--brand-gradient` pour les accents.
+- **Composants v2** : recherche globale (`Ctrl K`, résultats étudiants + sujets), Kanban du pipeline avec glisser-déposer
+  (`PATCH /students/:id` sur `stage`), en-tête de fiche `cover` avec anneau de présence et onglets, cartes de sujets avec jauge de
+  capacité, feuille de présence avec compteurs en direct, états vides illustrés (`emptyState()`), squelettes de chargement.
+- **Dataviz** (skill dataviz) : entonnoir du pipeline en rampe séquentielle violette, anneau de domaines en palette catégorielle
+  validée (`--series-1 … --series-6`, ordre fixe = ordre des domaines, légende + valeurs directes + infobulles), mini-courbe
+  hebdomadaire mono-série, anneaux de taux de présence. Les textes gardent les couleurs de texte, jamais celles des séries.
