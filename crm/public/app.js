@@ -140,7 +140,7 @@ const rateBar = (rate) => rate == null ? '<span class="muted">—</span>' : `<sp
 function ring(rate, cls = '') {
   const r = 28, c = 2 * Math.PI * r; const v = rate == null ? 0 : Math.max(0, Math.min(100, rate));
   const tone = rate == null ? '' : rate < 60 ? 'ring-low' : rate < 80 ? 'ring-mid' : '';
-  return `<span class="ring ${attr(cls)} ${tone}" role="img" aria-label="Taux de présence ${rate == null ? 'inconnu' : rate + ' %'}"><svg viewBox="0 0 64 64"><circle class="ring-track" cx="32" cy="32" r="${r}"/><circle class="ring-value" cx="32" cy="32" r="${r}" stroke-dasharray="${c}" stroke-dashoffset="${c * (1 - v / 100)}"/></svg><span class="ring-label">${rate == null ? 'n/a' : rate + '%'}</span></span>`;
+  return `<span class="ring ${attr(cls)} ${tone}" role="img" aria-label="Taux de présence ${rate == null ? 'inconnu' : rate + ' %'}"><svg viewBox="0 0 64 64"><circle class="ring-track" cx="32" cy="32" r="${r}"/><circle class="ring-value" cx="32" cy="32" r="${r}" stroke-dasharray="${c}" stroke-dashoffset="${c * (1 - v / 100)}"/></svg><span class="ring-label">${rate == null ? '—' : rate + '%'}</span></span>`;
 }
 function sparkline(values, label) {
   const w = 96, h = 34, max = Math.max(1, ...values); const n = values.length;
@@ -579,7 +579,7 @@ VIEWS.student = {
     <div class="cover"><div class="cover-band"></div><div class="cover-body">
       <div class="cover-identity">${avatar(full, 'avatar-lg')}<div><div class="badges">${stageBadge(s.stage)}${s.level ? badge(s.level, 'level') : ''}${s.domains.map((x) => badge(x, 'domain')).join('')}${s.archived_at ? badge('Archivé', 'dropped') : ''}</div>
         <div class="small muted mt-1">${esc(s.school || s.status || '')}${s.city ? ' · ' + esc(s.city) : ''} · Créé le ${esc(fmtDate(s.created_at))} · Source : ${esc(SOURCE_LABEL[s.source] || s.source || '—')}</div></div></div>
-      <div class="cover-stats">${ring(s.attendance_rate, 'ring-lg')}<div class="stat"><b>${s.att_present}/${s.att_total}</b><span>Présences</span></div><div class="stat"><b>${d.subjects.length}</b><span>Sujets</span></div><div class="stat"><b>${REQUIRED_DOCS.filter((t) => docs.some((x) => x.type === t)).length}/3</b><span>Documents</span></div>
+      <div class="cover-stats"><div class="stat stat-ring">${ring(s.attendance_rate, 'ring-sm')}<span class="stat-text"><b>${s.attendance_rate == null ? '—' : s.attendance_rate + ' %'}</b><span>Assiduité</span></span></div><div class="stat"><b>${s.att_present}/${s.att_total}</b><span>Présences</span></div><div class="stat"><b>${d.subjects.length}</b><span>Sujets</span></div><div class="stat"><b>${REQUIRED_DOCS.filter((t) => docs.some((x) => x.type === t)).length}/3</b><span>Documents</span></div>
         <div class="cover-stage"><label for="stage-quick">Étape</label><select id="stage-quick" aria-label="Changer l'étape">${options(m.stages, s.stage, (x) => m.stage_labels[x], undefined, '')}</select></div></div>
     </div></div>
     <div class="tabs" role="tablist">${tabBtn('overview', 'Aperçu')}${tabBtn('documents', 'Documents', `${REQUIRED_DOCS.filter((t) => docs.some((x) => x.type === t)).length}/3`)}${tabBtn('attendance', 'Présences', d.attendance.length)}${tabBtn('activity', 'Suivi', d.activities.length)}</div>
